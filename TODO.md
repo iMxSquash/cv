@@ -27,16 +27,15 @@
 
 ## Phase 1 : Données (Supabase) · skill `cv-admin-data`
 
-- [ ] Migrations `supabase/migrations/` : `cv_profile` (singleton), `cv_experiences`, `cv_education`, `cv_skills`, `cv_tools`, `cv_languages`, `cv_links`, `cv_mobility` (schéma dans la skill)
-- [ ] RLS sur chaque table (lecture publique des lignes `visible`, écriture `authenticated`) + trigger `updated_at`
-- [ ] Bucket `cv-assets` (png/webp/jpeg/avif, 5 Mo, pas de SVG) + policies
-- [ ] Migration de seed avec le contenu du CV Figma ; **valider les dates avec moi** (FD Formation « Sep 2025 - Sep 2026 » et la recherche d'alternance « septembre 2025 » semblent dépassées au 1er octobre 2026)
-- [ ] Uploader avatar + logos (FD Formation, Digital Campus, Lycée Montesquieu) dans `cv-assets`
-- [ ] `get_advisors` (security + performance) sans alerte sur les objets `cv_*`
-- [ ] Types générés dans `src/lib/database.types.ts`
-- [ ] `src/lib/supabase/` : env validées au démarrage (fail fast), client public (anon, sans cookies), client serveur (`@supabase/ssr`)
-- [ ] Retirer `--passWithNoTests` du script `test` dès le premier test écrit
-- [ ] `getCv()` dans `src/lib/cv/queries.ts` (requêtes parallèles, objet typé `Cv`) + tests des fonctions pures (parsing `**mot-clé**`, calcul « Actuel », formatage des dates FR)
+- [x] Migrations `supabase/migrations/` : `cv_profile` (singleton), `cv_experiences`, `cv_education`, `cv_skills`, `cv_tools`, `cv_languages`, `cv_links`, `cv_mobility` (schéma dans la skill)
+- [x] RLS sur chaque table (lecture publique des lignes `visible`, écriture `authenticated`, écritures `anon` révoquées) + trigger `updated_at` ; enums Postgres pour les ensembles fermés ; testé avec la clé anon (lecture OK, écriture refusée, lignes masquées invisibles)
+- [x] Bucket `cv-assets` (png/webp/jpeg/avif, 5 Mo, pas de SVG) + policies (pas de listing public)
+- [x] Migration de seed avec le contenu du CV Figma tel quel (décision : dates mises à jour plus tard via l'admin ; téléphone non publié)
+- [x] `get_advisors` (security + performance) sans alerte sur les objets `cv_*`
+- [x] Types générés dans `src/lib/database.types.ts`
+- [x] `src/lib/supabase/` : env validées (fail fast), client public (anon, sans cookies) ; le client serveur `@supabase/ssr` arrive avec l'admin (phase 8)
+- [x] Retirer `--passWithNoTests` du script `test` dès le premier test écrit
+- [x] `getCv()` dans `src/lib/cv/queries.ts` (requêtes parallèles, objet typé `Cv`) + tests des fonctions pures (parsing `**mot-clé**`, calcul « Actuel », formatage des dates FR)
 
 ## Phase 2 : Fondations visuelles · skill `cv-design-system`
 
@@ -95,11 +94,13 @@
 
 ## Phase 8 : Backoffice `/admin` · skill `cv-admin-data`
 
+- [ ] Client serveur `@supabase/ssr` (`src/lib/supabase/server.ts`)
 - [ ] `src/proxy.ts` (matcher `/admin/:path*`) + `requireAdminPage` / `requireAdminAction` (modèle `adobe-apps`)
 - [ ] `/admin/login` (même compte Supabase que le portfolio, erreur générique)
 - [ ] Schémas Zod `src/lib/cv/schemas.ts` alignés sur les contraintes SQL + tests Vitest
 - [ ] Pages : Profil, Expériences, Éducation, Compétences, Tools, Langues, Liens, Mobilité (liste, formulaire, ↑↓, toggle `visible`, suppression confirmée)
 - [ ] Upload avatar/logos : MIME + magic bytes, 5 Mo, nom régénéré, suppression de l'ancien fichier
+- [ ] Uploader l'avatar et les logos (FD Formation, Digital Campus, Lycée Montesquieu) via l'admin (export depuis le Figma)
 - [ ] `revalidatePath("/")` et `/print` après chaque écriture ; lien « Voir le site »
 - [ ] `/admin` en `noindex`, absent du sitemap
 - [ ] Skill `check-security` (Invariants elwen.dev) déroulée sur l'admin, findings corrigés

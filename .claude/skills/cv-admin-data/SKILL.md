@@ -49,8 +49,8 @@ create table public.cv_education (
   id uuid primary key default gen_random_uuid(),
   school text not null, city text,
   degree text not null, details text,
-  start_year int not null check (start_year between 1990 and 2100),
-  end_year int check (end_year is null or end_year >= start_year),
+  start_year int,                          -- null = entrée sur une seule année (diplôme obtenu en end_year)
+  end_year int not null,
   logo_url text,
   sort_order int not null default 0, visible boolean not null default true,
   created_at timestamptz not null default now()
@@ -58,7 +58,7 @@ create table public.cv_education (
 
 create table public.cv_skills (
   id uuid primary key default gen_random_uuid(),
-  category text not null check (category in ('design', 'development')),
+  category public.cv_skill_category not null,   -- enum ('design', 'development')
   label text not null,                      -- 'CSS'
   details text[] not null default '{}',     -- {'Tailwind'} / {'NextJS','NestJS','PHP'}
   sort_order int not null default 0, visible boolean not null default true,
@@ -83,7 +83,7 @@ create table public.cv_languages (
 
 create table public.cv_links (
   id uuid primary key default gen_random_uuid(),
-  platform text not null check (platform in ('linkedin', 'github', 'freecodecamp', 'website', 'other')),
+  platform public.cv_link_platform not null,    -- enum ('linkedin', 'github', 'freecodecamp', 'website', 'other')
   label text not null,                      -- 'elwen-coussot'
   url text not null check (url ~ '^https://'),
   sort_order int not null default 0, visible boolean not null default true,
@@ -99,8 +99,11 @@ create table public.cv_mobility (
 );
 ```
 
-- Index `(sort_order)` (et `(category, sort_order)` pour `cv_skills`), `comment on table` sur chaque table (cohérence avec les autres repos).
-- **RLS sur chaque table**, même modèle que `artworks` : `select` public `using (visible = true)` (profil : `using (true)`), `select` complet + `insert/update/delete` pour `authenticated`. Trigger `updated_at` sur `cv_profile`.
+- **Ensembles fermés en enums Postgres** (`cv_skill_category`, `cv_link_platform`) : les types générés portent les unions, aucun resserrement manuel côté TS. Ajouter une valeur : `alter type ... add value`.
+- **Pas d'index sur `sort_order`** : quelques dizaines de lignes par table, Postgres fait toujours un seq scan (index supprimés après l'advisor `unused_index`).
+- `comment on table` sur chaque table (cohérence avec les autres repos).
+- **RLS sur chaque table**, une policy par rôle (évite l'advisor `multiple_permissive_policies`) : `select` pour `anon` `using (visible = true)` (profil : `using (true)`), `for all` pour `authenticated`. `revoke insert, update, delete, truncate ... from anon` en défense en profondeur. Trigger `updated_at` sur `cv_profile`.
+- Bucket : **pas de policy `select` publique** (un bucket public sert ses fichiers par URL sans elle, et elle permettrait de lister le bucket).
 - Bucket **`cv-assets`** : public en lecture, écriture `authenticated`, `allowed_mime_types` = png/webp/jpeg/avif, `file_size_limit` 5 Mo. Policies sur `storage.objects` filtrées par `bucket_id = 'cv-assets'`.
 - Migration de **seed** avec le contenu actuel du CV Figma (à valider avec Elwen : certaines dates semblent dépassées au 1er octobre 2026).
 - Après chaque migration : `get_advisors` (security + performance) via le MCP Supabase, puis `generate_typescript_types` vers `src/lib/database.types.ts`.
