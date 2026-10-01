@@ -9,13 +9,23 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # Types must match the Node runtime (Node 24: .nvmrc, CI, Vercel).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint (via eslint-config-next) does not support TS 7 yet.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # eslint-plugin-react (via eslint-config-next) crashes on ESLint 10.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     groups:
-      actions-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      # Workflow-only changes, verified by the CI run itself: one PR is enough.
+      github-actions:
+        patterns:
+          - "*"
