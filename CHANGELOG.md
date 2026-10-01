@@ -16,3 +16,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Supabase schema for the resume (`cv_*` tables with row level security, `cv-assets` storage bucket) and initial content seeded from the Figma resume.
 - Typed public Supabase client and `getCv()` loader; the home page now renders the profile from the database.
 - Formatting helpers for the about text keywords and French date ranges, with unit tests.
+- Design system from the Figma resume: color tokens with light and dark section themes, Outfit and DM Sans fonts, fluid type scale, skip link and focus styles.
+- Base UI components (badge, card, skill chip, icons, flags) and a first server-rendered version of every resume section.

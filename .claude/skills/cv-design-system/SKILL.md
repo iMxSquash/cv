@@ -48,15 +48,18 @@ Toute nouvelle paire texte/fond est mesurée avant d'être utilisée.
 ## Mise en œuvre
 
 - Tokens en **CSS custom properties** dans `src/app/globals.css`, exposés à Tailwind v4 via `@theme` (`--color-primary`, `--color-surface-dark`…). Jamais une couleur hexadécimale dans un composant.
-- Les mêmes valeurs sont exportées en TS (`src/lib/theme.ts`) pour les uniforms WebGL : **une seule définition**, l'autre est dérivée (ex. lire les variables CSS au montage, ou générer le CSS depuis le TS ; choisir une approche et s'y tenir).
-- Thèmes de section via `data-theme="light|dark"` sur chaque `<section>` ; la nav lit `--current-interface-color`.
+- **Source unique = `globals.css`** : palette brute en `--palette-*` sur `:root`, variables sémantiques (`--surface`, `--surface-raised`, `--text`, `--text-muted`, `--accent-text`, `--accent-display`, `--focus-ring`, `--interface-color`) redéfinies par `[data-theme="light|dark"]`, puis exposées à Tailwind via `@theme inline` (`bg-surface`, `text-accent`, `text-display-xl`…). La scène WebGL (phase 5) lira ces variables au montage (`getComputedStyle`) : **pas de miroir TS**.
+- Deux couleurs hors Figma, ajoutées pour le contraste du thème sombre : `--palette-primary-light` #C9A8FB (texte accent sur sombre, 9.16:1) et `--palette-surface-dark-raised` #231942 (cartes sur sombre, 14.81:1 avec le texte).
+- Thèmes de section via `data-theme="light|dark"` sur chaque `<section>` (la règle de base `[data-theme]` peint fond et texte, aucune classe à ajouter) ; `--interface-color` donne la couleur de l'UI fixe (nav) pour la section à l'écran, branché en phase 4.
+- Icônes : `@tabler/icons-react` (même bibliothèque que le portfolio) via `CvIcon` (`src/components/icons/CvIcon.tsx`), clé → composant ; drapeaux en SVG locaux (`Flag.tsx`).
 
 ## Typographie
 
-- **Outfit** (titres, nom, phrases géantes) et **DM Sans** (texte, métadonnées), via `next/font/google`, `display: "swap"`, sous-ensemble `latin`, variables CSS `--font-display` / `--font-body`.
+- **Outfit** (titres, nom, phrases géantes) et **DM Sans** (texte, métadonnées), via `next/font/google`, `display: "swap"`, sous-ensemble `latin`, exposées à Tailwind en `--font-display` (`font-display`) et `--font-sans` (police par défaut).
+- Utilitaires partagés dans `globals.css` : `section-shell` (padding de section), `title-section` (titre de section, display L), `title-card` (titre de carte).
 - Le Figma est en échelle A4 (titres 16 px) : sur le web, échelle fluide en `clamp()` :
-  - display XL (nom hero, phrases cinétiques) : `clamp(4rem, 14vw, 14rem)`, `letter-spacing: -0.025em`, line-height 0.9
-  - display L (titres de section) : `clamp(2.5rem, 7vw, 6rem)`
+  - display XL (nom hero, phrases cinétiques) : `clamp(3rem, 14vmin, 14rem)`, `letter-spacing: -0.025em`, line-height 0.9
+  - display L (titres de section) : `clamp(2.25rem, 8vmin, 6rem)`
   - H3 (cartes) : `clamp(1.25rem, 2vw, 1.75rem)` Outfit Medium
   - body : 1rem à 1.125rem DM Sans, line-height 1.5
   - caption : 0.875rem, jamais en dessous de 12 px rendu
@@ -68,7 +71,7 @@ Toute nouvelle paire texte/fond est mesurée avant d'être utilisée.
 - **Carte expérience/éducation** : logo carré arrondi, rôle en `Gray/Default`, entreprise en Outfit, dates + lieu à droite (empilés en mobile). Fond `Gray/Lightest 2`, `Elevation/Light`.
 - **Puce compétence** : texte `Primary` centré, détail secondaire (`+ Tailwind`) en caption.
 - **Capsule nav** : pill translucide (backdrop-blur léger), liens en DM Sans.
-- **Icônes** : tools et réseaux en composants SVG locaux (`src/components/icons/`), choisis dans l'admin par une clé (`icon_key`) ; jamais de SVG uploadé.
+- **Icônes** : tools et réseaux via `CvIcon` (Tabler), choisis dans l'admin par une clé (`icon_key`) ; jamais de SVG uploadé.
 - Drapeaux langues : emoji drapeau ou SVG local, toujours accompagnés du nom de la langue en texte.
 
 ## Version A4 imprimable (`/print`)
