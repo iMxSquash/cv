@@ -31,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experiences scene: the journey told one step at a time (roles and degrees in chronological order) between two gradient panels, then the detail cards rise into view.
 - Skills scene (from 900 px wide): a face-down deck where each skill card flips over then flies off, tools closing the pile, while the subtitle follows the current category. Smaller screens and reduced motion keep the grid.
 - Infos bento (availability, languages, mobility) whose tiles rise into view one after the other.
+- Closing scene: the availability sentence travels along a gradient curve until it settles in the middle, trailed by a glowing WebGL orb, before the email call to action and the footer.

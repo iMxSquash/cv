@@ -44,7 +44,7 @@ export default function WebGLCanvas() {
         trigger: "#hero",
         start: "top bottom",
         end: "bottom top",
-        onToggle: (self) => experience?.setActive(self.isActive),
+        onToggle: (self) => experience?.setHeroOnScreen(self.isActive),
       });
       return teardown;
     });
