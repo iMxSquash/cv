@@ -46,14 +46,3 @@ const MONTH_YEAR_FORMAT = new Intl.DateTimeFormat("fr-FR", {
 export function formatMonthYear(value: string): string {
   return MONTH_YEAR_FORMAT.format(parseSqlDate(value));
 }
-
-/** "sept. 2025 – sept. 2026", or "sept. 2025 – aujourd'hui" when ongoing. */
-export function formatPeriod(startDate: string, endDate: string | null): string {
-  const end = endDate === null ? "aujourd'hui" : formatMonthYear(endDate);
-  return `${formatMonthYear(startDate)} – ${end}`;
-}
-
-/** "2023 – 2026", or just "2023" for a single-year entry. */
-export function formatYearRange(startYear: number | null, endYear: number): string {
-  return startYear === null || startYear === endYear ? `${endYear}` : `${startYear} – ${endYear}`;
-}
