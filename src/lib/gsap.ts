@@ -11,8 +11,15 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 /** Media query of every scroll animation; the CSS `pinned:` variant mirrors it. */
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
+/** MOTION_OK from 900 px wide; the CSS `pinned-wide:` variant mirrors it. */
+export const MOTION_OK_WIDE = `${MOTION_OK} and (min-width: 900px)`;
 
-/** Scrubs a timeline over the whole pin of a PinnedStage (`[data-pin]`). */
+/** The tall wrapper of the PinnedStage inside `root`, if any. */
+export function findPin(root: Element): HTMLElement | null {
+  return root.querySelector<HTMLElement>("[data-pin]");
+}
+
+/** Scrubs a timeline over the whole pin of a PinnedStage (see `findPin`). */
 export function pinnedScrub(trigger: Element): ScrollTrigger.Vars {
   return { trigger, start: "top top", end: "bottom bottom", scrub: true };
 }
