@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useRef } from "react";
-import { gsap, MOTION_OK, useGSAP } from "@/lib/gsap";
+import { gsap, MOTION_OK, pinnedScrub, useGSAP } from "@/lib/gsap";
 
 /** Letter wave travelling along the quote. */
 const WAVE = {
@@ -27,7 +27,7 @@ export function ManifestoMotion({ children }: { children: ReactNode }) {
     () => {
       const mm = gsap.matchMedia();
       mm.add(MOTION_OK, () => {
-        const pin = root.current?.querySelector<HTMLElement>("[data-manifesto-pin]");
+        const pin = root.current?.querySelector<HTMLElement>("[data-pin]");
         const track = pin?.querySelector<HTMLElement>("[data-manifesto-track]");
         if (pin && track) {
           const letters = gsap.utils.toArray<HTMLElement>("[data-manifesto-letter]");
@@ -51,10 +51,7 @@ export function ManifestoMotion({ children }: { children: ReactNode }) {
               x: () => track.clientWidth - track.scrollWidth,
               ease: "none",
               scrollTrigger: {
-                trigger: pin,
-                start: "top top",
-                end: "bottom bottom",
-                scrub: true,
+                ...pinnedScrub(pin),
                 invalidateOnRefresh: true,
                 onUpdate: (self) => ripple(self.progress),
                 // Own layers while rippling: the huge line is composited, not repainted, every frame.

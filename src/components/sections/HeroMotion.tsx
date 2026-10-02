@@ -1,34 +1,33 @@
 "use client";
 
 import { type ReactNode, useRef } from "react";
-import { gsap, MOTION_OK, useGSAP } from "@/lib/gsap";
+import { gsap, MOTION_OK, pinnedScrub, useGSAP } from "@/lib/gsap";
 import { scrollProgress } from "@/webgl/scrollProgress";
 
 /** How far each half of the name travels outwards, in % of its own width. */
 const WORD_SPREAD_PERCENT = 60;
 
 /**
- * Sticky stage of the hero. While the tall section scrolls by, the name splits
+ * Hero choreography. While the pinned stage scrolls by, the name splits
  * apart and fades while the WebGL monogram grows to the center. In flow,
  * without any motion, under reduced motion.
  */
 export function HeroMotion({ children }: { children: ReactNode }) {
-  const stage = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MOTION_OK, () => {
+        const pin = root.current?.querySelector("[data-pin]");
+        if (!pin) return;
         const words = gsap.utils.toArray<HTMLElement>("[data-hero-word]");
         const half = (words.length - 1) / 2;
         gsap
           .timeline({
             defaults: { ease: "none" },
             scrollTrigger: {
-              trigger: stage.current?.parentElement,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: true,
+              ...pinnedScrub(pin),
               onUpdate: (self) => {
                 scrollProgress.hero = self.progress;
               },
@@ -51,15 +50,8 @@ export function HeroMotion({ children }: { children: ReactNode }) {
         };
       });
     },
-    { scope: stage },
+    { scope: root },
   );
 
-  return (
-    <div
-      ref={stage}
-      className="flex min-h-dvh flex-col overflow-hidden p-2 md:p-4 pinned:sticky pinned:top-0 pinned:h-dvh"
-    >
-      {children}
-    </div>
-  );
+  return <div ref={root}>{children}</div>;
 }
