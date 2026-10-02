@@ -4,23 +4,33 @@ import {
   IconBrandGithub,
   IconBrandLinkedin,
   IconBrandVscode,
+  IconBriefcase,
   IconCampfire,
   IconCar,
+  IconCode,
+  IconDownload,
   IconHome,
   IconLink,
   IconMail,
   IconMapPin,
+  IconPalette,
   IconPhone,
+  IconPrinter,
+  IconSchool,
   IconTrain,
   IconWorld,
   type Icon,
 } from "@tabler/icons-react";
 
-// Keys stored in Supabase (`icon_key`, `platform`) plus contact rows. The admin
+// Keys stored in Supabase (`icon_key`, `platform`, skill `category`) plus interface icons. The admin
 // picks from these keys: icons are never uploaded (no stored SVG).
 const ICONS: Record<string, Icon> = {
   adobe: IconBrandAdobe,
+  briefcase: IconBriefcase,
   car: IconCar,
+  design: IconPalette,
+  development: IconCode,
+  download: IconDownload,
   figma: IconBrandFigma,
   freecodecamp: IconCampfire,
   github: IconBrandGithub,
@@ -30,6 +40,8 @@ const ICONS: Record<string, Icon> = {
   mail: IconMail,
   metro: IconTrain,
   phone: IconPhone,
+  printer: IconPrinter,
+  school: IconSchool,
   vscode: IconBrandVscode,
   website: IconWorld,
 };

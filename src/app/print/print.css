@@ -1,0 +1,25 @@
+/* Imported by /print only: the sheet is exactly one A4 page, without browser margins. */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+/*
+ * Soft color halos behind the sidebar, placed as in the Figma A4 (in points).
+ * Radial gradients rather than blurred shapes: they print the same in every
+ * browser.
+ */
+.print-halos {
+  --halo-primary: color-mix(in srgb, var(--palette-primary) 10%, transparent);
+  --halo-secondary: color-mix(in srgb, var(--palette-secondary) 10%, transparent);
+  --halo-info: color-mix(in srgb, var(--palette-info) 10%, transparent);
+  --halo-success: color-mix(in srgb, var(--palette-success) 10%, transparent);
+  background-image:
+    radial-gradient(70pt 70pt at 33pt 14pt, var(--halo-secondary), transparent),
+    radial-gradient(84pt 85pt at 172pt 62pt, var(--halo-info), transparent),
+    radial-gradient(71pt 75pt at 126pt 160pt, var(--halo-success), transparent),
+    radial-gradient(74pt 124pt at 162pt 375pt, var(--halo-secondary), transparent),
+    radial-gradient(90pt 82pt at 145pt 686pt, var(--halo-info), transparent),
+    radial-gradient(71pt 88pt at 54pt 755pt, var(--halo-success), transparent),
+    radial-gradient(83pt 88pt at 185pt 825pt, var(--halo-primary), transparent);
+}

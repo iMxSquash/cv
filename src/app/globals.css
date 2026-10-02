@@ -24,6 +24,8 @@
   --palette-secondary: #516cf7;
   --palette-secondary-light: #95aafb;
   --palette-secondary-lighter: #e1e7fe;
+  /* Not in Figma: secondary darkened for small text on light surfaces (6.20:1 on gray-lightest-2). */
+  --palette-secondary-dark: #3a4fd0;
   --palette-info: #22c3f1;
   --palette-success: #4ac06f;
   --palette-gray-darker: #2e2e48;
@@ -79,6 +81,8 @@
   --color-accent: var(--accent-text);
   --color-accent-display: var(--accent-display);
   --color-badge: var(--palette-primary-lighter);
+  /* Hairlines and icon tiles on light surfaces. */
+  --color-line: var(--palette-gray-lightest);
   --color-badge-text: var(--palette-primary-dark);
   --color-success: var(--palette-success);
 
@@ -98,6 +102,23 @@
   --text-body--line-height: 1.5;
   --text-caption: 0.875rem;
   --text-caption--line-height: 1.4;
+
+  /* Figma text styles of the A4 resume, in points: /print lays a sheet out in physical units. */
+  --text-print-h1: 16pt;
+  --text-print-h1--line-height: 20pt;
+  --text-print-h1--letter-spacing: -0.02em;
+  --text-print-h2: 12pt;
+  --text-print-h2--line-height: 16pt;
+  --text-print-h3: 9pt;
+  --text-print-h3--line-height: 12pt;
+  --text-print-body-1: 8pt;
+  --text-print-body-1--line-height: 10pt;
+  --text-print-body-2: 7pt;
+  --text-print-body-2--line-height: 9pt;
+  --text-print-caption-1: 6pt;
+  --text-print-caption-1--line-height: 8pt;
+  --text-print-caption-2: 5pt;
+  --text-print-caption-2--line-height: 6.5pt;
 
   --shadow-sm: 0 2px 8px #0000000f;
   --shadow-elevation: inset 0 1px 1px #0000000a, 0 6px 24px #0000000a, 0 1px 4px #0000000d;

@@ -49,7 +49,7 @@ Toute nouvelle paire texte/fond est mesurée avant d'être utilisée.
 
 - Tokens en **CSS custom properties** dans `src/app/globals.css`, exposés à Tailwind v4 via `@theme` (`--color-primary`, `--color-surface-dark`…). Jamais une couleur hexadécimale dans un composant.
 - **Source unique = `globals.css`** : palette brute en `--palette-*` sur `:root`, variables sémantiques (`--surface`, `--surface-raised`, `--text`, `--text-muted`, `--accent-text`, `--accent-display`, `--focus-ring`, `--interface-color`) redéfinies par `[data-theme="light|dark"]`, puis exposées à Tailwind via `@theme inline` (`bg-surface`, `text-accent`, `text-display-xl`…). La scène WebGL (phase 5) lira ces variables au montage (`getComputedStyle`) : **pas de miroir TS**.
-- Deux couleurs hors Figma, ajoutées pour le contraste du thème sombre : `--palette-primary-light` #C9A8FB (texte accent sur sombre, 9.16:1) et `--palette-surface-dark-raised` #231942 (cartes sur sombre, 14.81:1 avec le texte).
+- Couleurs hors Figma, ajoutées pour le contraste : `--palette-primary-light` #C9A8FB (texte accent sur sombre, 9.16:1), `--palette-surface-dark-raised` #231942 (cartes sur sombre, 14.81:1 avec le texte) et `--palette-secondary-dark` #3A4FD0 (petit texte bleu sur clair, 6.20:1 sur `Gray/Lightest 2`, compétences « Développement » de `/print`).
 - Thèmes de section via `data-theme="light|dark"` sur chaque `<section>` (la règle de base `[data-theme]` peint fond et texte, aucune classe à ajouter) ; `--interface-color` donne la couleur de l'UI fixe (nav) pour la section à l'écran, branché en phase 4.
 - Icônes : `@tabler/icons-react` (même bibliothèque que le portfolio) via `CvIcon` (`src/components/icons/CvIcon.tsx`), clé → composant ; drapeaux en SVG locaux (`Flag.tsx`).
 
@@ -77,6 +77,9 @@ Toute nouvelle paire texte/fond est mesurée avant d'être utilisée.
 ## Version A4 imprimable (`/print`)
 
 - Route dédiée qui reproduit **fidèlement la maquette Figma** (sidebar gauche avec photo, contact, réseaux, langues, mobilité ; colonne droite À propos, Expériences, Éducation, Compétences, Tools) à partir des **mêmes données Supabase**.
-- `@page { size: A4; margin: 0 }`, mise en page en `mm`, `print-color-adjust: exact`, aucune animation, aucune WebGL, `noindex`.
+- `@page { size: A4; margin: 0 }` (dans `src/app/print/print.css`, importé par la seule route `/print`), feuille de 210 × 297 mm, `print-color-adjust: exact`, aucune animation, aucune WebGL, `noindex`.
+- Cotes internes en **points** : le Figma A4 mesure 594 × 842, soit 1 px Figma ≈ 1 pt. Les styles de texte Figma sont des tokens `text-print-*` (`h1` 16 pt, `h2` 12 pt, `h3` 9 pt, `body-1` 8 pt, `body-2` 7 pt, `caption-1` 6 pt, `caption-2` 5 pt) ; les halos de la sidebar sont la classe `print-halos` de `print.css` (dégradés radiaux, imprimés pareil partout, contrairement aux `filter: blur`).
+- Écarts assumés avec le Figma pour le contraste AA : `Gray/Default` → `Gray/Dark` pour les libellés et `Gray/Darker` pour les valeurs ; mots-clés et titre en `Primary/Dark` au lieu du dégradé ; compétences en `Primary/Dark` / `Secondary/Dark`.
+- Composants : `src/components/print/` (`PrintSidebar`, `PrintContent` en frise verticale, `PrintControls` qui lance `window.print()` une fois `document.fonts.ready`). La feuille garde sa taille physique : une fenêtre étroite la fait défiler horizontalement dans `<main>`, jamais la page.
 - Bouton « Télécharger le CV (PDF) » dans le footer de la page principale : ouvre `/print` qui déclenche `window.print()` (l'utilisateur choisit « Enregistrer en PDF »). Pas de génération PDF serveur (pas de Chromium headless : coût et surface d'attaque injustifiés).
 - Vérifier que le rendu tient sur **une seule page A4** avec le contenu actuel ; si le contenu déborde, réduire l'échelle via une variable plutôt que tronquer.

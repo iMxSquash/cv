@@ -19,7 +19,7 @@ const FLAGS: Record<string, React.ReactNode> = {
 };
 
 /** Decorative flag next to the language name; unknown codes render nothing. */
-export function Flag({ code }: { code: string }) {
+export function Flag({ code, className = "h-4 w-6" }: { code: string; className?: string }) {
   const artwork = FLAGS[code];
   if (!artwork) return null;
   return (
@@ -27,7 +27,7 @@ export function Flag({ code }: { code: string }) {
       aria-hidden="true"
       viewBox="0 0 60 30"
       preserveAspectRatio="xMidYMid slice"
-      className="h-4 w-6 shrink-0 rounded-sm"
+      className={`shrink-0 rounded-sm ${className}`}
     >
       {artwork}
     </svg>
