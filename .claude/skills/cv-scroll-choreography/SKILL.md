@@ -23,7 +23,7 @@ Hauteurs indicatives en écrans (`vh`) de scroll, à ajuster au ressenti. Chaque
 
 Barre de nav latérale (pattern `scroll-indicator`) : une barre par section, la barre active s'allonge (12 → 28 → 48 px), `<nav aria-label>` avec de vrais `<a href="#id">` et `aria-current="location"`. Menu capsule en haut (glass léger) qui se cache au scroll vers le bas, réapparaît vers le haut.
 
-Transitions de thème : la couleur d'interface (`--current-interface-color`) bascule crème/sombre quand une section franchit le milieu de l'écran (ScrollTrigger `onToggle`), en transition CSS. Nav et curseur suivent.
+Transitions de thème : quand une section franchit le milieu de l'écran (ScrollTrigger `onToggle`, dans `ScrollChrome`), son `data-theme` est recopié sur l'UI fixe (nav latérale, capsule), qui hérite ainsi de tous les tokens du thème (`--interface-color`, `--surface`, `--focus-ring`…) et transitionne en CSS. Le curseur (s'il arrive) suit le même principe.
 
 ## Setup (une seule fois, dans `src/components/scroll/SmoothScroll.tsx`)
 
@@ -56,10 +56,10 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 }
 ```
 
-- **Une seule instance Lenis**, exposée via un contexte React si un composant doit `scrollTo` (nav). Jamais `new Lenis()` ailleurs.
+- **Une seule instance Lenis**, créée dans `SmoothScroll`. Jamais `new Lenis()` ailleurs. Pas de contexte React : les ancres passent par l'écouteur délégué ci-dessous ; n'en ajouter un que si un composant doit appeler `scrollTo` hors d'un lien.
 - `gsap.ticker` est l'unique boucle : la scène three.js s'y abonne aussi (voir `cv-webgl-scene`).
 - `ScrollTrigger.config({ ignoreMobileResize: true })` ; `ScrollTrigger.refresh()` après `document.fonts.ready` et le chargement des images du hero.
-- Ancres : les clics de nav passent par `lenis.scrollTo("#id", { offset: 0 })` ; sans Lenis (reduced motion), comportement natif. L'URL garde le hash (partage d'une section).
+- Ancres : un écouteur `click` délégué sur `document` (dans `SmoothScroll`) intercepte tout `<a href="#id">` : `lenis.scrollTo`, `pushState` du hash, focus sur la cible. Aucun `onClick` à câbler sur les liens. Sans Lenis (reduced motion), comportement natif. Au chargement, `ScrollTrigger.refresh()` après polices + `load`, puis re-saut vers le hash.
 
 ## Patterns
 

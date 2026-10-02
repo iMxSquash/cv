@@ -1,4 +1,5 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ScrollChrome } from "@/components/scroll/ScrollChrome";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -12,6 +13,7 @@ export default async function Home() {
   const today = new Date();
   return (
     <>
+      <ScrollChrome name={cv.profile.full_name} />
       <main id="content">
         <HeroSection profile={cv.profile} />
         <AboutSection profile={cv.profile} />

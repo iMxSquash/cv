@@ -22,3 +22,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Legal notice page (`/mentions-legales`) and a custom 404 page.
 - Machine-readable `<time>` dates on experiences and education.
 - Daily revalidation of the static pages so the "Actuel" badge stays accurate.
+- Scroll engine: a single Lenis smooth scroll driven by the GSAP ticker (native scroll under reduced motion), with trigger refresh once fonts and images are loaded.
+- Side section navigation (scroll indicator) and a top capsule menu that hides while scrolling down; both follow the light or dark theme of the section on screen.
