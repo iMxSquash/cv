@@ -28,3 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Intro loader that draws the "EC" monogram then wipes away, in pure CSS (1.4 s), played once per session and never without JS or under reduced motion.
 - Pinned hero scene: a rounded frame over the WebGL gradient where the name splits apart and fades while the 3D monogram grows to the center. Stays in flow, without pin, under reduced motion or without JS.
 - Manifesto scene: the quote crosses a pinned stage as one giant rippling line, then the about text lights up word by word as it scrolls into view.
+- Experiences scene: the journey told one step at a time (roles and degrees in chronological order) between two gradient panels, then the detail cards rise into view.
