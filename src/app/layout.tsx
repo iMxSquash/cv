@@ -5,6 +5,10 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
 
+// Every page is static: a daily rebuild keeps date-based content (the "Actuel"
+// badge) accurate even when the resume is not edited.
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: {
     default: "Elwen Coussot, développeur full-stack",
