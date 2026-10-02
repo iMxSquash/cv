@@ -6,7 +6,10 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Elwen Coussot, développeur full-stack",
+  title: {
+    default: "Elwen Coussot, développeur full-stack",
+    template: "%s · Elwen Coussot",
+  },
   description: "CV d'Elwen Coussot, développeur full-stack.",
 };
 
