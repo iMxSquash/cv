@@ -20,13 +20,14 @@ src/webgl/
   uniforms.ts              // shared uniforms: uTime, uScroll, uPointer, uTheme
 ```
 
-- Montage : `src/components/webgl/WebGLCanvas.tsx` (client, `next/dynamic` avec `ssr: false`, chargé après le premier paint pour ne pas pénaliser le LCP).
+- Montage : `src/components/webgl/WebGLBackground.tsx` charge `WebGLCanvas.tsx` en `next/dynamic` avec `ssr: false` (après le premier paint, pour ne pas pénaliser le LCP). `WebGLCanvas` rend un conteneur fixe `aria-hidden` ; **`Experience` crée son propre `<canvas>` dedans et le retire au `dispose()`** : un canvas dont le contexte a été perdu par `forceContextLoss()` ne peut plus accueillir de renderer (remontage Strict Mode, fast refresh).
+- `<html data-webgl="ready">` est posé à la première frame : le canvas apparaît en fondu et le fallback CSS du hero (`hero-gradient-fallback`) s'efface (variante Tailwind `in-data-[webgl=ready]:`).
 - **Boucle** : `gsap.ticker.add(experience.render)`, jamais de `requestAnimationFrame` propre ni `renderer.setAnimationLoop`.
 - **Scroll vers WebGL** : les ScrollTriggers des sections écrivent dans des uniforms ou propriétés (`gsap.to(uniforms.uProgress, { value: 1, scrollTrigger })`). La scène ne lit jamais `window.scrollY` elle-même.
 
 ## Effets prévus (adaptés de la référence)
 
-1. **Gradient animé du hero** : plan plein écran, shader fragment de type « mesh gradient » (bruit simplex 2D/3D qui déforme des UV, mélange de 3 à 4 couleurs). Couleurs = tokens du design system (primaire `#9251F7`, secondaire `#516CF7`, info `#22C3F1`, une touche chaude possible), passées en uniforms depuis `src/lib/theme.ts` (jamais en dur dans le GLSL). Grain léger (bruit hash) pour casser le banding.
+1. **Gradient animé du hero** : plan plein écran, shader fragment de type « mesh gradient » (bruit simplex 2D/3D qui déforme des UV, mélange de 3 à 4 couleurs). Couleurs = tokens du design system (primaire `#9251F7`, secondaire `#516CF7`, info `#22C3F1`, une touche chaude possible), lues au montage dans les variables CSS de `globals.css` (`src/webgl/palette.ts`, `getComputedStyle`, pas de miroir TS) et passées en uniforms (jamais en dur dans le GLSL). Grain léger (bruit hash) pour casser le banding.
 2. **Monogramme 3D** : le logo existant du portfolio (`../portfolio/public/logo.svg`), modélisé dans **Blender** (voir « Pipeline Blender » ci-dessous) et chargé en `.glb` avec `GLTFLoader`. Matériau `MeshPhysicalMaterial` léger (transmission désactivée sur mobile) ou matcap pour le coût. Rotation douce vers le pointeur (lerp), grossit et se centre au scroll du hero.
 3. **Visuels gradient des phrases de trajectoire** (section `experiences`) : de préférence en **CSS** (gradients + grain SVG) plutôt qu'en WebGL ; WebGL seulement si l'effet l'exige.
 4. **Orbe** de la section `next` : sphère shader (fresnel + gradient) qui suit le texte courbe.
@@ -71,4 +72,4 @@ Si un autre objet 3D est envisagé plus tard (ex. icônes 3D des tools), le prop
 
 ## Accessibilité
 
-Le canvas est décoratif : `aria-hidden="true"`, aucun texte uniquement dans la WebGL. Le contraste du texte posé sur le gradient animé doit rester ≥ 4.5:1 sur **toutes** les couleurs du gradient (texte blanc sur les zones claires : ajouter un voile ou assombrir le gradient). Vérifier sur plusieurs frames.
+Le canvas est décoratif : `aria-hidden="true"`, aucun texte uniquement dans la WebGL. Le contraste du texte posé sur le gradient animé doit rester ≥ 4.5:1 sur **toutes** les couleurs du gradient. Mise en œuvre : le shader plafonne la luminance relative (WCAG, espace linéaire) à `MAX_GRADIENT_LUMINANCE` = 0.11 (`HeroGradient.ts`), ce qui garantit 5.8:1 pour le nom et 3.2:1 pour le sous-titre display ; le fallback CSS applique le même plafond (`color-mix(in srgb-linear, …, black)`). Vérifier sur plusieurs frames (luminance max mesurée sur captures, texte masqué).

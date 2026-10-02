@@ -24,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Daily revalidation of the static pages so the "Actuel" badge stays accurate.
 - Scroll engine: a single Lenis smooth scroll driven by the GSAP ticker (native scroll under reduced motion), with trigger refresh once fonts and images are loaded.
 - Side section navigation (scroll indicator) and a top capsule menu that hides while scrolling down; both follow the light or dark theme of the section on screen.
+- WebGL background scene (three.js, single renderer on the GSAP ticker, lazy-loaded after first paint): animated mesh gradient in the hero with a luminance cap that keeps the text contrast, and a 3D "EC" monogram modelled in Blender that turns towards the pointer. Static frame under reduced motion, CSS gradient fallback without WebGL 2 or after a context loss.

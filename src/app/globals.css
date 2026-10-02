@@ -28,7 +28,7 @@
   --palette-surface-dark-raised: #231942;
   --palette-linkedin: #0077b5;
 }
-/* The palette mirrors the whole Figma file on purpose: secondary/info feed the WebGL gradient (phase 5). */
+/* The palette mirrors the whole Figma file on purpose: secondary/info feed the WebGL gradient. */
 
 /*
  * Section themes: every <section> sets data-theme, the semantic variables below
@@ -136,4 +136,29 @@
 
 @utility title-card {
   @apply font-display text-heading font-medium;
+}
+
+/*
+ * Static stand-in for the WebGL hero gradient (no JS, no WebGL 2, before the
+ * canvas is ready). Each color is scaled in linear light to a luminance of
+ * ~0.11, the cap the shader applies, so the hero text keeps its contrast.
+ */
+@utility hero-gradient-fallback {
+  background-color: var(--palette-primary-darkest);
+  background-image:
+    radial-gradient(
+      circle at 20% 25%,
+      color-mix(in srgb-linear, var(--palette-primary) 58%, black),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      color-mix(in srgb-linear, var(--palette-secondary) 57%, black),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 65% 85%,
+      color-mix(in srgb-linear, var(--palette-info) 24%, black),
+      transparent 45%
+    );
 }

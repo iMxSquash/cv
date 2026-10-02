@@ -51,6 +51,8 @@ src/
   components/     React components (sections, scroll, webgl mount, ui)
   lib/            Supabase clients, data queries, Zod schemas, theme tokens
   webgl/          framework-free three.js scene (renderer, shaders)
+public/models/    compressed glTF models loaded by the scene
+design/3d/        Blender sources of the models (regenerate the .glb from them)
 supabase/
   migrations/     versioned SQL migrations (cv_* tables, RLS, cv-assets bucket)
 .claude/skills/   project skills used by Claude Code during development
@@ -60,7 +62,7 @@ The roadmap lives in [`TODO.md`](./TODO.md); development conventions in [`CLAUDE
 
 ## Architecture notes
 
-- **Content first**: the whole resume is server-rendered semantic HTML. Animations (GSAP, Lenis) and the WebGL scene are progressive enhancements, disabled under `prefers-reduced-motion`.
+- **Content first**: the whole resume is server-rendered semantic HTML. Animations (GSAP, Lenis) and the WebGL scene are progressive enhancements: under `prefers-reduced-motion` animations are off and the scene renders a single still frame; without WebGL 2 the hero keeps a CSS gradient.
 - **Single animation loop**: `gsap.ticker` drives Lenis and the three.js renderer.
 - **Shared Supabase project**: this app only owns `cv_*` tables and the `cv-assets` bucket. Row Level Security is enabled on every table.
 - **Embeddable**: `frame-ancestors` allows the elwen.dev portfolio to load the site in an iframe.

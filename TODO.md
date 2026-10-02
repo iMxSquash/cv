@@ -68,12 +68,12 @@
 
 ## Phase 5 : Scène WebGL · skill `cv-webgl-scene`
 
-- [ ] `src/webgl/Experience.ts` : renderer unique, canvas fixe `aria-hidden`, branché sur `gsap.ticker`, resize via `ResizeObserver`, `dispose()` complet
-- [ ] Chargement `next/dynamic` (`ssr: false`) après premier paint ; fallback CSS si pas de WebGL2 / contexte perdu
-- [ ] Shader « mesh gradient » du hero (couleurs depuis `theme.ts`, grain anti-banding)
-- [ ] Monogramme 3D : logo du portfolio modélisé dans Blender (MCP `blender`, biseau arrondi), exporté en `public/models/monogram.glb` compressé (< 50 Ko), source `design/3d/monogram.blend` ; chargé via `GLTFLoader`, suivi du pointeur
-- [ ] Pause du rendu hors champ / onglet caché ; reduced motion = une frame figée
-- [ ] Mesures : 60 fps M1, chunk WebGL < 200 Ko gzip, `renderer.info.memory` revient à 0 au démontage
+- [x] `src/webgl/Experience.ts` : renderer unique, canvas fixe `aria-hidden`, branché sur `gsap.ticker`, resize via `ResizeObserver`, `dispose()` complet (le canvas est créé et retiré par `Experience` : un canvas dont le contexte a été perdu ne se réutilise pas)
+- [x] Chargement `next/dynamic` (`ssr: false`) après premier paint ; fallback CSS si pas de WebGL2 / contexte perdu
+- [x] Shader « mesh gradient » du hero (couleurs lues dans les variables CSS de `globals.css`, grain anti-banding, luminance plafonnée pour le contraste du texte)
+- [x] Monogramme 3D : logo du portfolio modélisé dans Blender (MCP `blender`, biseau arrondi, lettres « EC » extrudées depuis l'espace négatif du SVG), exporté en `public/models/monogram.glb` compressé (meshopt, 46 Ko), source `design/3d/monogram.blend` ; chargé via `GLTFLoader`, suivi du pointeur
+- [x] Pause du rendu hors champ / onglet caché ; reduced motion = une frame figée
+- [ ] Mesures : 60 fps M1 (à mesurer sur la machine), chunk WebGL < 200 Ko gzip (163 Ko ✓), `renderer.info.memory` revient à 0 au démontage (✓ hors LUT BRDF interne de three.js, libérée avec le contexte)
 
 ## Phase 6 : Sections animées (une PR par section)
 

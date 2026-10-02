@@ -6,6 +6,7 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { InfosSection } from "@/components/sections/InfosSection";
 import { NextSection } from "@/components/sections/NextSection";
 import { SkillsSection } from "@/components/sections/SkillsSection";
+import { WebGLBackground } from "@/components/webgl/WebGLBackground";
 import { getCv } from "@/lib/cv/queries";
 
 export default async function Home() {
@@ -13,6 +14,7 @@ export default async function Home() {
   const today = new Date();
   return (
     <>
+      <WebGLBackground />
       <ScrollChrome name={cv.profile.full_name} />
       <main id="content">
         <HeroSection profile={cv.profile} />
