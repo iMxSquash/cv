@@ -53,6 +53,13 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
           {profile.location}
         </p>
       )}
+      <NextLink
+        href="/print"
+        className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-raised px-5 font-medium text-accent underline-offset-4 shadow-elevation hover:underline"
+      >
+        <CvIcon name="download" />
+        Télécharger le CV (PDF)
+      </NextLink>
       <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-text-muted/30 pt-6 text-caption text-text-muted">
         <p>
           © {today.getFullYear()} {profile.full_name}

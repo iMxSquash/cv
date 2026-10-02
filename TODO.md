@@ -88,9 +88,10 @@
 
 ## Phase 7 : Version A4 imprimable · skill `cv-design-system`
 
-- [ ] Route `/print` fidèle à la maquette Figma (sidebar + colonne principale), mêmes données `getCv()`
-- [ ] `@page A4`, mise en page en `mm`, `print-color-adjust: exact`, tient sur une page, `noindex`
-- [ ] Bouton « Télécharger le CV (PDF) » dans le footer → `/print` + `window.print()` ; tester Chrome, Safari, Firefox et dans l'iframe du portfolio
+- [x] Route `/print` fidèle à la maquette Figma (sidebar + colonne principale), mêmes données `getCv()` (petits textes passés en `Gray/Dark`, mots-clés et compétences en `Primary/Dark` / `Secondary/Dark` pour le contraste AA ; avatar et logos remplacés par des icônes tant qu'ils ne sont pas uploadés, phase 8)
+- [x] `@page A4`, feuille de 210 × 297 mm (cotes internes en points, l'unité du Figma A4), `print-color-adjust: exact`, tient sur une page (PDF Chromium : 1 page A4), `noindex`
+- [x] Bouton « Télécharger le CV (PDF) » dans le footer → `/print` + `window.print()` (une fois les polices chargées, puis bouton « Imprimer ou enregistrer en PDF ») ; vérifié dans Chromium (1440×900, 700×450, 390×844, sans JS, clavier, axe 0 violation)
+- [ ] Tester l'impression dans Safari et Firefox, et depuis l'iframe du portfolio (phase 12)
 
 ## Phase 8 : Backoffice `/admin` · skill `cv-admin-data`
 
@@ -100,7 +101,7 @@
 - [ ] Schémas Zod `src/lib/cv/schemas.ts` alignés sur les contraintes SQL + tests Vitest
 - [ ] Pages : Profil, Expériences, Éducation, Compétences, Tools, Langues, Liens, Mobilité (liste, formulaire, ↑↓, toggle `visible`, suppression confirmée)
 - [ ] Upload avatar/logos : MIME + magic bytes, 5 Mo, nom régénéré, suppression de l'ancien fichier
-- [ ] Uploader l'avatar et les logos (FD Formation, Digital Campus, Lycée Montesquieu) via l'admin (export depuis le Figma)
+- [ ] Uploader l'avatar et les logos (FD Formation, Digital Campus, Lycée Montesquieu) via l'admin (export depuis le Figma), puis les afficher sur `/` et `/print` (à la place des icônes)
 - [ ] `revalidatePath("/")` et `/print` après chaque écriture ; lien « Voir le site »
 - [ ] `/admin` en `noindex`, absent du sitemap
 - [ ] Skill `check-security` (Invariants elwen.dev) déroulée sur l'admin, findings corrigés

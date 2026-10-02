@@ -2,7 +2,8 @@ import { CvIcon } from "@/components/icons/CvIcon";
 import { Badge } from "@/components/ui/Badge";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { Card } from "@/components/ui/Card";
-import { formatMonthYear, isOngoing } from "@/lib/cv/format";
+import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
+import { isOngoing } from "@/lib/cv/format";
 import { buildTrajectory } from "@/lib/cv/trajectory";
 import type { Education, Experience } from "@/lib/cv/types";
 import { ExperienceMotion } from "./ExperienceMotion";
@@ -41,11 +42,6 @@ function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "to
   );
 }
 
-/** SQL date "2025-09-01" -> <time dateTime="2025-09">sept. 2025</time> */
-function MonthTime({ date }: { date: string }) {
-  return <time dateTime={date.slice(0, 7)}>{formatMonthYear(date)}</time>;
-}
-
 interface ExperienceSectionProps {
   experiences: Experience[];
   education: Education[];
@@ -75,13 +71,7 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
                         <Badge>Actuel</Badge>
                       )}
                       <span>
-                        <MonthTime date={experience.start_date} />
-                        {" – "}
-                        {experience.end_date ? (
-                          <MonthTime date={experience.end_date} />
-                        ) : (
-                          "aujourd'hui"
-                        )}
+                        <MonthPeriod start={experience.start_date} end={experience.end_date} />
                       </span>
                     </p>
                     {experience.location && (
@@ -108,13 +98,7 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
                   <h3 className="mt-1 title-card">{entry.degree}</h3>
                   {entry.details && <p className="mt-2">{entry.details}</p>}
                   <p className="mt-2 text-caption text-text-muted">
-                    {entry.start_year !== null && entry.start_year !== entry.end_year && (
-                      <>
-                        <time>{entry.start_year}</time>
-                        {" – "}
-                      </>
-                    )}
-                    <time>{entry.end_year}</time>
+                    <YearPeriod start={entry.start_year} end={entry.end_year} />
                   </p>
                 </article>
               </Card>
