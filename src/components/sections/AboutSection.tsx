@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { parseKeywords } from "@/lib/cv/format";
 import type { Profile } from "@/lib/cv/types";
+import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { ManifestoMotion } from "./ManifestoMotion";
 
 /** One span per letter, grouped by word so the static layout only wraps between words. */
@@ -39,8 +40,12 @@ export function AboutSection({ profile }: { profile: Profile }) {
     <section id="manifesto" aria-labelledby="manifesto-title" data-theme="light">
       <ManifestoMotion>
         {quote && (
-          <div data-manifesto-pin className="pinned:h-[250svh] pinned:min-[900px]:h-[400svh]">
-            <figure className="section-shell pb-0 pinned:sticky pinned:top-0 pinned:flex pinned:h-dvh pinned:flex-col pinned:justify-center pinned:overflow-hidden">
+          <PinnedStage
+            screens={4}
+            mobileScreens={2.5}
+            stageClassName="pinned:flex pinned:flex-col pinned:justify-center"
+          >
+            <figure className="section-shell pb-0">
               <blockquote
                 data-manifesto-track
                 className="title-section pinned:text-[clamp(5rem,30vmin,22rem)] pinned:leading-none pinned:whitespace-nowrap"
@@ -56,7 +61,7 @@ export function AboutSection({ profile }: { profile: Profile }) {
                 </figcaption>
               )}
             </figure>
-          </div>
+          </PinnedStage>
         )}
         <div className="section-shell">
           <h2 id="manifesto-title" className="title-card">

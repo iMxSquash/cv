@@ -178,6 +178,16 @@
     );
 }
 
+/* Decorative gradient panels of the experiences journey. */
+@utility gradient-panel {
+  background-image: linear-gradient(
+    var(--panel-angle, 160deg),
+    var(--palette-primary),
+    var(--palette-secondary) 55%,
+    var(--palette-info)
+  );
+}
+
 /*
  * Intro loader (Loader.tsx): the monogram outline draws itself, fills, then the
  * screen slides up. 1.4 s in all, under the 1.5 s budget; the closing
