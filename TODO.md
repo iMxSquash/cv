@@ -83,7 +83,7 @@
 - [x] **Expériences & éducation** : phrases de trajectoire (`buildTrajectory`, une étape par rôle/diplôme distinct, ordre chronologique) + panneaux gradient CSS latéraux (pattern « I bridge »), puis cartes détail avec badge « Actuel » qui montent en stagger (pin sticky 8 vh, 5 vh sous 900 px ; trajectoire `aria-hidden` car redondante avec les cartes, absente en reduced motion). Cartes laissées sur fond sombre (le storyboard prévoyait « sombre puis crème »), à rediscuter
 - [x] **Compétences & tools** : titre + sous-titre qui bascule Design / Développement / Outils, pile de cartes face cachée qui se retournent (flip 3D) puis s'envolent, tools en fin de pile (pin sticky 6 vh, à partir de 900 px de large : variante `pinned-wide:` + `MOTION_OK_WIDE`) ; grille sous 900 px et en reduced motion. Mêmes `<ul>` par catégorie dans les deux modes
 - [x] **Infos** : bento langues + mobilité + disponibilité (disponibilité large + langues, mobilité pleine largeur), apparition en stagger (`ScrollTrigger.batch`, une fois). Section laissée sombre (alternance avec Compétences en crème)
-- [ ] **Next / contact** : phrase sur chemin courbe en dégradé qui avance au scroll + orbe, puis footer
+- [x] **Next / contact** : phrase sur chemin courbe (`textPath`, dégradé primaire) qui avance au scroll jusqu'au centre (pin sticky 3 vh, 2 vh sous 900 px ; copie `aria-hidden`, vrai `<h2>` en `sr-only`) + orbe WebGL (sphère fresnel, même renderer) qui la suit comme un point final, puis CTA et footer. Stage transparent seulement si la WebGL est prête ; sans mouvement, titre statique et pas d'orbe
 - [ ] Pour chaque section : protocole `cv-a11y-perf` complet (dont reduced motion et 700×450)
 
 ## Phase 7 : Version A4 imprimable · skill `cv-design-system`
