@@ -27,3 +27,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WebGL background scene (three.js, single renderer on the GSAP ticker, lazy-loaded after first paint): animated mesh gradient in the hero with a luminance cap that keeps the text contrast, and a 3D "EC" monogram modelled in Blender that turns towards the pointer. Static frame under reduced motion, CSS gradient fallback without WebGL 2 or after a context loss.
 - Intro loader that draws the "EC" monogram then wipes away, in pure CSS (1.4 s), played once per session and never without JS or under reduced motion.
 - Pinned hero scene: a rounded frame over the WebGL gradient where the name splits apart and fades while the 3D monogram grows to the center. Stays in flow, without pin, under reduced motion or without JS.
+- Manifesto scene: the quote crosses a pinned stage as one giant rippling line, then the about text lights up word by word as it scrolls into view.

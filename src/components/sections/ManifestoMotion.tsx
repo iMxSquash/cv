@@ -1,0 +1,89 @@
+"use client";
+
+import { type ReactNode, useRef } from "react";
+import { gsap, MOTION_OK, useGSAP } from "@/lib/gsap";
+
+/** Letter wave travelling along the quote. */
+const WAVE = {
+  /** Phase step between neighbouring letters (rad). */
+  spread: 0.45,
+  /** Crests passing a letter over the whole pin. */
+  cycles: 6,
+  heightPercent: 14,
+  tiltDegrees: 6,
+};
+/** Opacity of a word of the about text before its turn comes. */
+const DIMMED_WORD_OPACITY = 0.15;
+
+/**
+ * Manifesto choreography: the quote crosses the pinned stage as one giant line
+ * whose letters ripple, then the about text lights up word by word. Without
+ * motion, both read as plain static text.
+ */
+export function ManifestoMotion({ children }: { children: ReactNode }) {
+  const root = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(MOTION_OK, () => {
+        const pin = root.current?.querySelector<HTMLElement>("[data-manifesto-pin]");
+        const track = pin?.querySelector<HTMLElement>("[data-manifesto-track]");
+        if (pin && track) {
+          const letters = gsap.utils.toArray<HTMLElement>("[data-manifesto-letter]");
+          const setters = letters.map((letter) => ({
+            y: gsap.quickSetter(letter, "yPercent"),
+            rotation: gsap.quickSetter(letter, "rotation", "deg"),
+          }));
+          const ripple = (progress: number) => {
+            const phase = progress * WAVE.cycles * Math.PI * 2;
+            setters.forEach(({ y, rotation }, index) => {
+              const angle = index * WAVE.spread - phase;
+              y(Math.sin(angle) * WAVE.heightPercent);
+              rotation(Math.cos(angle) * WAVE.tiltDegrees);
+            });
+          };
+          // The line enters from the right edge and stops once its end is in view.
+          gsap.fromTo(
+            track,
+            { x: () => track.clientWidth },
+            {
+              x: () => track.clientWidth - track.scrollWidth,
+              ease: "none",
+              scrollTrigger: {
+                trigger: pin,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: true,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => ripple(self.progress),
+                // Own layers while rippling: the huge line is composited, not repainted, every frame.
+                onToggle: (self) =>
+                  gsap.set(letters, { willChange: self.isActive ? "transform" : "auto" }),
+              },
+            },
+          );
+        }
+
+        gsap.fromTo(
+          "[data-manifesto-word]",
+          { opacity: DIMMED_WORD_OPACITY },
+          {
+            opacity: 1,
+            ease: "none",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: "[data-manifesto-about]",
+              start: "top 80%",
+              end: "bottom 50%",
+              scrub: true,
+            },
+          },
+        );
+      });
+    },
+    { scope: root },
+  );
+
+  return <div ref={root}>{children}</div>;
+}
