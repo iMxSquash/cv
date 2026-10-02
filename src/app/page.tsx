@@ -1,3 +1,4 @@
+import { Loader } from "@/components/layout/Loader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ScrollChrome } from "@/components/scroll/ScrollChrome";
 import { AboutSection } from "@/components/sections/AboutSection";
@@ -14,6 +15,7 @@ export default async function Home() {
   const today = new Date();
   return (
     <>
+      <Loader />
       <WebGLBackground />
       <ScrollChrome name={cv.profile.full_name} />
       <main id="content">
