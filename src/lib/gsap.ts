@@ -9,4 +9,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // on every such resize would make pinned sections jump.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
+/** Media query of every scroll animation; the CSS `pinned:` variant mirrors it. */
+export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
+
 export { gsap, ScrollTrigger, useGSAP };

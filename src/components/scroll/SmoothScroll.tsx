@@ -3,7 +3,7 @@
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import type { ReactNode } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, MOTION_OK, ScrollTrigger, useGSAP } from "@/lib/gsap";
 
 /** Resolves once late layout shifts (web fonts, images) have landed. */
 function whenLoaded(): Promise<unknown> {
@@ -46,7 +46,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     let lenis: Lenis | null = null;
 
     const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
+    mm.add(MOTION_OK, () => {
       const instance = new Lenis({ autoRaf: false });
       instance.on("scroll", ScrollTrigger.update);
       const tick = (time: number) => instance.raf(time * 1000);
