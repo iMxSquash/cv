@@ -1,8 +1,13 @@
 import { CvIcon } from "@/components/icons/CvIcon";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { formatPeriod, formatYearRange, isOngoing } from "@/lib/cv/format";
+import { formatMonthYear, isOngoing } from "@/lib/cv/format";
 import type { Education, Experience } from "@/lib/cv/types";
+
+/** SQL date "2025-09-01" -> <time dateTime="2025-09">sept. 2025</time> */
+function MonthTime({ date }: { date: string }) {
+  return <time dateTime={date.slice(0, 7)}>{formatMonthYear(date)}</time>;
+}
 
 interface ExperienceSectionProps {
   experiences: Experience[];
@@ -34,7 +39,11 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
                   {isOngoing(experience.start_date, experience.end_date, today) && (
                     <Badge>Actuel</Badge>
                   )}
-                  {formatPeriod(experience.start_date, experience.end_date)}
+                  <span>
+                    <MonthTime date={experience.start_date} />
+                    {" – "}
+                    {experience.end_date ? <MonthTime date={experience.end_date} /> : "aujourd'hui"}
+                  </span>
                 </p>
                 {experience.location && (
                   <p className="flex items-center gap-1 text-caption text-text-muted">
@@ -60,7 +69,13 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
               <h3 className="mt-1 title-card">{entry.degree}</h3>
               {entry.details && <p className="mt-2">{entry.details}</p>}
               <p className="mt-2 text-caption text-text-muted">
-                {formatYearRange(entry.start_year, entry.end_year)}
+                {entry.start_year !== null && entry.start_year !== entry.end_year && (
+                  <>
+                    <time>{entry.start_year}</time>
+                    {" – "}
+                  </>
+                )}
+                <time>{entry.end_year}</time>
               </p>
             </article>
           </Card>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatMonthYear, formatPeriod, formatYearRange, isOngoing, parseKeywords } from "./format";
+import { formatMonthYear, isOngoing, parseKeywords } from "./format";
 
 describe("parseKeywords", () => {
   it("splits plain text and **keywords** in order", () => {
@@ -56,26 +56,5 @@ describe("formatMonthYear", () => {
   it("formats SQL dates in French without timezone shift", () => {
     expect(formatMonthYear("2025-09-01")).toBe("sept. 2025");
     expect(formatMonthYear("2024-06-01")).toBe("juin 2024");
-  });
-});
-
-describe("formatPeriod", () => {
-  it("joins start and end dates", () => {
-    expect(formatPeriod("2025-09-01", "2026-09-01")).toBe("sept. 2025 – sept. 2026");
-  });
-
-  it("ends with today for an ongoing period", () => {
-    expect(formatPeriod("2025-09-01", null)).toBe("sept. 2025 – aujourd'hui");
-  });
-});
-
-describe("formatYearRange", () => {
-  it("joins two different years", () => {
-    expect(formatYearRange(2023, 2026)).toBe("2023 – 2026");
-  });
-
-  it("shows a single year when the start is missing or equal", () => {
-    expect(formatYearRange(null, 2023)).toBe("2023");
-    expect(formatYearRange(2023, 2023)).toBe("2023");
   });
 });

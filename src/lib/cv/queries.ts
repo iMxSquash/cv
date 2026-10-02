@@ -1,5 +1,19 @@
-import type { Cv } from "@/lib/cv/types";
+import type { Cv, Profile } from "@/lib/cv/types";
 import { createPublicClient } from "@/lib/supabase/public";
+
+/** Loads the profile alone, for pages that do not render the resume. */
+export async function getProfile(): Promise<Profile> {
+  try {
+    const { data } = await createPublicClient()
+      .from("cv_profile")
+      .select("*")
+      .single()
+      .throwOnError();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to load the resume profile from Supabase", { cause: error });
+  }
+}
 
 /** Loads the whole resume in parallel; every list is ordered by `sort_order`. */
 export async function getCv(): Promise<Cv> {

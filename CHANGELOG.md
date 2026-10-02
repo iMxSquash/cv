@@ -18,3 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Formatting helpers for the about text keywords and French date ranges, with unit tests.
 - Design system from the Figma resume: color tokens with light and dark section themes, Outfit and DM Sans fonts, fluid type scale, skip link and focus styles.
 - Base UI components (badge, card, skill chip, icons, flags) and a first server-rendered version of every resume section.
+- Closing "next" section with an email call to action, and a site footer with contact links and a legal notice link.
+- Legal notice page (`/mentions-legales`) and a custom 404 page.
+- Machine-readable `<time>` dates on experiences and education.
+- Daily revalidation of the static pages so the "Actuel" badge stays accurate.

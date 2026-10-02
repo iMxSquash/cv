@@ -50,12 +50,12 @@
 
 > À la fin de cette phase, le site est déjà un bon CV en ligne : complet, rapide, accessible, indexable.
 
-- [ ] `layout.tsx` : `lang="fr"`, polices, metadata de base, `<main id="content">`, skip link
-- [ ] Sections dans l'ordre du storyboard (`hero`, `manifesto`, `experiences`, `skills`, `infos`, `next`), chacune un composant serveur qui reçoit ses données en props (première version posée en phase 2 pour valider le design system)
-- [ ] Footer : email, LinkedIn, GitHub, FreeCodeCamp, bouton « Télécharger le CV (PDF) », mentions légales
-- [ ] Page `/mentions-legales` (éditeur, hébergeur Vercel, données Supabase)
-- [ ] `export const revalidate = 86400` (badge « Actuel » à jour) + `not-found.tsx` (vrai 404)
-- [ ] Vérification protocole `cv-a11y-perf` (1440×900, 700×450, 390×844, clavier, sans JS)
+- [x] `layout.tsx` : `lang="fr"`, polices, metadata de base, `<main id="content">`, skip link
+- [x] Sections dans l'ordre du storyboard (`hero`, `manifesto`, `experiences`, `skills`, `infos`, `next`), chacune un composant serveur qui reçoit ses données en props (première version posée en phase 2 pour valider le design system)
+- [x] Footer : email, LinkedIn, GitHub, FreeCodeCamp, mentions légales (le bouton « Télécharger le CV (PDF) » arrive avec `/print` en phase 7, pour ne pas publier un lien mort)
+- [x] Page `/mentions-legales` (éditeur, hébergeur Vercel, données Supabase)
+- [x] `export const revalidate = 86400` (badge « Actuel » à jour) + `not-found.tsx` (vrai 404)
+- [x] Vérification protocole `cv-a11y-perf` (1440×900, 700×450, 390×844, clavier, sans JS)
 
 ## Phase 4 : Moteur de scroll · skill `cv-scroll-choreography`
 
@@ -90,7 +90,7 @@
 
 - [ ] Route `/print` fidèle à la maquette Figma (sidebar + colonne principale), mêmes données `getCv()`
 - [ ] `@page A4`, mise en page en `mm`, `print-color-adjust: exact`, tient sur une page, `noindex`
-- [ ] Bouton PDF du footer → `/print` + `window.print()` ; tester Chrome, Safari, Firefox et dans l'iframe du portfolio
+- [ ] Bouton « Télécharger le CV (PDF) » dans le footer → `/print` + `window.print()` ; tester Chrome, Safari, Firefox et dans l'iframe du portfolio
 
 ## Phase 8 : Backoffice `/admin` · skill `cv-admin-data`
 
