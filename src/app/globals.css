@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 /*
+ * Pinned scenes (tall wrapper + sticky stage) only exist when their scroll
+ * animation can run: without JS or under reduced motion, sections stay in flow.
+ */
+@custom-variant pinned (@media (prefers-reduced-motion: no-preference) and (scripting: enabled));
+
+/*
  * Design tokens from the Figma resume (file 0xFIzZIyxruyvJlxDVLimS), the single
  * source of truth for colors: components and the WebGL scene read these
  * variables, never raw hex values. Contrast ratios: see the cv-design-system skill.

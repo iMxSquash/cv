@@ -2,9 +2,11 @@ import {
   DirectionalLight,
   Group,
   type Material,
+  MathUtils,
   Mesh,
   MeshPhysicalMaterial,
   type Vector2,
+  Vector3,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -16,12 +18,19 @@ const MAX_TILT = { x: 0.3, y: 0.5 };
 /** How fast the monogram catches up with the pointer (1/s). */
 const FOLLOW_SPEED = 4;
 
-/** The portfolio's "EC" logo in 3D, turning towards the pointer. */
+/**
+ * The portfolio's "EC" logo in 3D, turning towards the pointer. Rests beside
+ * the hero text, then grows towards the center as the hero is scrolled.
+ */
 export class Monogram {
   readonly group = new Group();
   private readonly pivot = new Group();
   private readonly material: MeshPhysicalMaterial;
   private readonly lights: DirectionalLight[];
+  private readonly restPosition = new Vector3();
+  private restSize = 1;
+  private centerSize = 1;
+  private progress = 0;
   private mesh: Mesh | null = null;
   private isDisposed = false;
 
@@ -60,18 +69,27 @@ export class Monogram {
     this.pivot.add(mesh);
   }
 
-  /** Places and sizes the monogram from the visible world size at z = 0. */
+  /** Sizes the rest and centered states from the visible world size at z = 0. */
   layout(viewWidth: number, viewHeight: number): void {
     const isLandscape = viewWidth > viewHeight;
-    const size = isLandscape
+    this.restSize = isLandscape
       ? Math.min(viewWidth * 0.24, viewHeight * 0.45)
       : Math.min(viewWidth * 0.55, viewHeight * 0.25);
-    this.pivot.scale.setScalar(size);
-    this.pivot.position.set(
+    this.centerSize = isLandscape
+      ? Math.min(viewWidth * 0.45, viewHeight * 0.75)
+      : Math.min(viewWidth * 0.7, viewHeight * 0.35);
+    this.restPosition.set(
       isLandscape ? viewWidth * 0.3 : 0,
       isLandscape ? -viewHeight * 0.05 : -viewHeight * 0.22,
       0,
     );
+    this.applyProgress();
+  }
+
+  /** Hero scroll progress, 0 (at rest) to 1 (centered). */
+  setProgress(progress: number): void {
+    this.progress = MathUtils.smoothstep(progress, 0, 1);
+    this.applyProgress();
   }
 
   /** `pointer` in normalized device coordinates (-1..1, y up). */
@@ -80,6 +98,11 @@ export class Monogram {
     const rotation = this.pivot.rotation;
     rotation.y += (pointer.x * MAX_TILT.y - rotation.y) * ease;
     rotation.x += (-pointer.y * MAX_TILT.x - rotation.x) * ease;
+  }
+
+  private applyProgress(): void {
+    this.pivot.scale.setScalar(MathUtils.lerp(this.restSize, this.centerSize, this.progress));
+    this.pivot.position.copy(this.restPosition).multiplyScalar(1 - this.progress);
   }
 
   dispose(): void {
