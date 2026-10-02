@@ -77,7 +77,7 @@
 
 ## Phase 6 : Sections animées (une PR par section)
 
-- [ ] **Loader** : monogramme qui se dessine, 1 fois par session, < 1,5 s, `role="status"`
+- [x] **Loader** : monogramme qui se dessine, 1 fois par session, < 1,5 s, `role="status"` (CSS pur déclenché par un script inline avant le premier paint ; jamais sans JS ni en reduced motion)
 - [ ] **Hero** : bloc encadré arrondi, gradient WebGL, nom géant, monogramme 3D devant ; au scroll, texte qui s'écarte et monogramme qui se centre (pin ≈ 3 vh)
 - [ ] **Manifesto** : citation en texte horizontal géant avec ondulation des lettres (pin ≈ 4 vh) ; « À propos » révélé mot à mot, mots-clés en accent
 - [ ] **Expériences & éducation** : phrases de trajectoire + visuels gradient latéraux (pattern « I bridge »), puis cartes détail avec badge « Actuel » (pin ≈ 8 vh)
@@ -116,7 +116,7 @@
 
 ## Phase 10 : Sécurité
 
-- [ ] CSP complète avec nonce (proxy Next 16) : `default-src 'self'`, `script-src 'self' 'nonce-…' 'strict-dynamic'`, `img-src` Supabase, `connect-src` Supabase, `frame-ancestors` inchangé
+- [ ] CSP complète avec nonce (proxy Next 16) : `default-src 'self'`, `script-src 'self' 'nonce-…' 'strict-dynamic'`, `img-src` Supabase, `connect-src` Supabase, `frame-ancestors` inchangé ; passer le nonce aux scripts inline via `InlineScript` (loader)
 - [ ] Vérifier qu'aucune clé `service_role` n'existe dans le repo ni dans Vercel pour ce projet
 - [ ] `npm audit --omit=dev` propre ; CodeQL vert
 - [ ] Skill `check-security` complète avant la mise en prod
