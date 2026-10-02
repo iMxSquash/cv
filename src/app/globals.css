@@ -33,7 +33,8 @@
 /*
  * Section themes: every <section> sets data-theme, the semantic variables below
  * follow it. `--interface-color` is what fixed UI (nav, cursor) should use when
- * the section is on screen (wired by the scroll engine in phase 4).
+ * the section is on screen; the scroll engine mirrors the active section's
+ * data-theme on the fixed navs.
  */
 :root,
 [data-theme="light"] {
@@ -102,6 +103,11 @@
     outline: 3px solid var(--focus-ring);
     outline-offset: 3px;
     border-radius: 4px;
+  }
+
+  /* Anchor targets receive focus programmatically after a smooth jump: they are not controls. */
+  :is(main, section)[tabindex="-1"]:focus-visible {
+    outline: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
