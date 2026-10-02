@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, MOTION_OK, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Experience } from "@/webgl/Experience";
 
 /**
@@ -20,7 +20,7 @@ export default function WebGLCanvas() {
     const mm = gsap.matchMedia();
     const conditions = {
       isStatic: "(prefers-reduced-motion: reduce)",
-      isAnimated: "(prefers-reduced-motion: no-preference)",
+      isAnimated: MOTION_OK,
     };
     mm.add(conditions, (context) => {
       let experience: Experience | null = null;

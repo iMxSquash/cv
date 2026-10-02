@@ -78,7 +78,7 @@
 ## Phase 6 : Sections animées (une PR par section)
 
 - [x] **Loader** : monogramme qui se dessine, 1 fois par session, < 1,5 s, `role="status"` (CSS pur déclenché par un script inline avant le premier paint ; jamais sans JS ni en reduced motion)
-- [ ] **Hero** : bloc encadré arrondi, gradient WebGL, nom géant, monogramme 3D devant ; au scroll, texte qui s'écarte et monogramme qui se centre (pin ≈ 3 vh)
+- [x] **Hero** : bloc encadré arrondi, gradient WebGL, nom géant, monogramme 3D ; au scroll, texte qui s'écarte et monogramme qui se centre (pin sticky 3 vh, 2 vh sous 900 px ; sans pin ni JS en reduced motion via la variante `pinned:`). Le monogramme reste derrière le texte (canvas unique en arrière-plan) : le texte s'écarte avant qu'ils se croisent
 - [ ] **Manifesto** : citation en texte horizontal géant avec ondulation des lettres (pin ≈ 4 vh) ; « À propos » révélé mot à mot, mots-clés en accent
 - [ ] **Expériences & éducation** : phrases de trajectoire + visuels gradient latéraux (pattern « I bridge »), puis cartes détail avec badge « Actuel » (pin ≈ 8 vh)
 - [ ] **Compétences & tools** : titre + sous-titre qui bascule Design / Développement, pile de cartes flip 3D, tools en fin de pile (pin ≈ 5 vh) ; grille en reduced motion / mobile

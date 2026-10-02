@@ -12,6 +12,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { readPalette } from "./palette";
 import { HeroGradient } from "./scenes/HeroGradient";
 import { Monogram } from "./scenes/Monogram";
+import { scrollProgress } from "./scrollProgress";
 import { createSharedUniforms } from "./uniforms";
 
 const CAMERA_FOV = 35;
@@ -141,6 +142,7 @@ export class Experience {
 
   private renderFrame(time: number, deltaSeconds = 0): void {
     this.uniforms.uTime.value = time;
+    this.monogram.setProgress(scrollProgress.hero);
     this.monogram.update(deltaSeconds, this.uniforms.uPointer.value);
     this.renderer.render(this.scene, this.camera);
     if (this.hasRendered) return;
