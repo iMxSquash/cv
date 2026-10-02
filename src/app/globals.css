@@ -1,1 +1,129 @@
 @import "tailwindcss";
+
+/*
+ * Design tokens from the Figma resume (file 0xFIzZIyxruyvJlxDVLimS), the single
+ * source of truth for colors: components and the WebGL scene read these
+ * variables, never raw hex values. Contrast ratios: see the cv-design-system skill.
+ */
+:root {
+  --palette-primary: #9251f7;
+  --palette-primary-dark: #5531a7;
+  --palette-primary-darkest: #170f2e;
+  --palette-primary-lighter: #efe2f9;
+  --palette-primary-lightest: #f8f2fc;
+  /* Not in Figma: primary lightened for small accent text on dark (9.16:1 on darkest). */
+  --palette-primary-light: #c9a8fb;
+  --palette-secondary: #516cf7;
+  --palette-secondary-light: #95aafb;
+  --palette-secondary-lighter: #e1e7fe;
+  --palette-info: #22c3f1;
+  --palette-success: #4ac06f;
+  --palette-gray-darker: #2e2e48;
+  --palette-gray-dark: #47516b;
+  --palette-gray: #79819a;
+  --palette-gray-light: #acb1c3;
+  --palette-gray-lightest: #e2e6ee;
+  --palette-gray-lightest-2: #f7f9fc;
+  /* Not in Figma: card surface on dark sections (14.81:1 with lightest text). */
+  --palette-surface-dark-raised: #231942;
+  --palette-linkedin: #0077b5;
+}
+/* The palette mirrors the whole Figma file on purpose: secondary/info feed the WebGL gradient (phase 5). */
+
+/*
+ * Section themes: every <section> sets data-theme, the semantic variables below
+ * follow it. `--interface-color` is what fixed UI (nav, cursor) should use when
+ * the section is on screen (wired by the scroll engine in phase 4).
+ */
+:root,
+[data-theme="light"] {
+  --surface: var(--palette-primary-lightest);
+  --surface-raised: var(--palette-gray-lightest-2);
+  --text: var(--palette-gray-darker);
+  --text-muted: var(--palette-gray-dark);
+  --accent-text: var(--palette-primary-dark);
+  --accent-display: var(--palette-primary);
+  --focus-ring: var(--palette-primary-dark);
+  --interface-color: var(--palette-primary-darkest);
+}
+
+[data-theme="dark"] {
+  --surface: var(--palette-primary-darkest);
+  --surface-raised: var(--palette-surface-dark-raised);
+  --text: var(--palette-primary-lightest);
+  --text-muted: var(--palette-gray-light);
+  --accent-text: var(--palette-primary-light);
+  --accent-display: var(--palette-primary-light);
+  --focus-ring: var(--palette-primary-light);
+  --interface-color: var(--palette-primary-lightest);
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent-text);
+  --color-accent-display: var(--accent-display);
+  --color-badge: var(--palette-primary-lighter);
+  --color-badge-text: var(--palette-primary-dark);
+  --color-success: var(--palette-success);
+
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid scale: display sizes follow min(vw, vh) so pinned sections fit a 700x450 window. */
+  --text-display-xl: clamp(3rem, 14vmin, 14rem);
+  --text-display-xl--line-height: 0.9;
+  --text-display-xl--letter-spacing: -0.025em;
+  --text-display-l: clamp(2.25rem, 8vmin, 6rem);
+  --text-display-l--line-height: 1;
+  --text-display-l--letter-spacing: -0.02em;
+  --text-heading: clamp(1.25rem, 2vw, 1.75rem);
+  --text-heading--line-height: 1.2;
+  --text-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-body--line-height: 1.5;
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.4;
+
+  --shadow-sm: 0 2px 8px #0000000f;
+  --shadow-elevation: inset 0 1px 1px #0000000a, 0 6px 24px #0000000a, 0 1px 4px #0000000d;
+}
+
+@layer base {
+  /* A theme is a single attribute: every [data-theme] element paints its own surface. */
+  html,
+  [data-theme] {
+    background-color: var(--surface);
+    color: var(--text);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility section-shell {
+  @apply px-6 py-24 md:px-12;
+}
+
+@utility title-section {
+  @apply font-display text-display-l font-medium;
+}
+
+@utility title-card {
+  @apply font-display text-heading font-medium;
+}

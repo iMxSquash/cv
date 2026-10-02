@@ -39,19 +39,19 @@
 
 ## Phase 2 : Fondations visuelles · skill `cv-design-system`
 
-- [ ] Tokens Figma en CSS custom properties + `@theme` Tailwind (`globals.css`) et miroir TS `src/lib/theme.ts` (une seule source de vérité)
-- [ ] Polices Outfit + DM Sans via `next/font/google` (variables `--font-display` / `--font-body`)
-- [ ] Échelle typographique fluide (`clamp`, basée sur `min(vw, vh)` pour les display)
-- [ ] Thèmes de section `data-theme="light|dark"` + variable `--current-interface-color`
-- [ ] Composants de base : `Badge`, `Card`, `SkillChip`, icônes SVG locales (`src/components/icons/` : VS Code, Figma, Adobe, GitHub, LinkedIn, FreeCodeCamp, permis, Navigo, télétravail, drapeaux)
-- [ ] Focus visible et skip link stylés pour les deux thèmes
+- [x] Tokens Figma en CSS custom properties + `@theme` Tailwind (`globals.css`), source unique (la WebGL lira les variables CSS, pas de miroir TS)
+- [x] Polices Outfit + DM Sans via `next/font/google` (`font-display` / `font-sans`)
+- [x] Échelle typographique fluide (`clamp`, basée sur `vmin` pour les display) + utilitaires `title-section`, `title-card`, `section-shell`
+- [x] Thèmes de section `data-theme="light|dark"` (fond et texte peints par la règle de base) + variable `--interface-color`
+- [x] Composants de base : `Badge`, `Card`, `SkillChip`, `CvIcon` (`@tabler/icons-react`), drapeaux SVG locaux
+- [x] Focus visible et skip link stylés pour les deux thèmes (axe : 0 violation WCAG 2.2 AA)
 
 ## Phase 3 : CV statique complet (SSR, sans animation) · skill `cv-a11y-perf`
 
 > À la fin de cette phase, le site est déjà un bon CV en ligne : complet, rapide, accessible, indexable.
 
 - [ ] `layout.tsx` : `lang="fr"`, polices, metadata de base, `<main id="content">`, skip link
-- [ ] Sections dans l'ordre du storyboard (`hero`, `manifesto`, `experiences`, `skills`, `infos`, `next`), chacune un composant serveur qui reçoit ses données en props
+- [ ] Sections dans l'ordre du storyboard (`hero`, `manifesto`, `experiences`, `skills`, `infos`, `next`), chacune un composant serveur qui reçoit ses données en props (première version posée en phase 2 pour valider le design system)
 - [ ] Footer : email, LinkedIn, GitHub, FreeCodeCamp, bouton « Télécharger le CV (PDF) », mentions légales
 - [ ] Page `/mentions-legales` (éditeur, hébergeur Vercel, données Supabase)
 - [ ] `export const revalidate = 86400` (badge « Actuel » à jour) + `not-found.tsx` (vrai 404)
