@@ -5,6 +5,8 @@
  * animation can run: without JS or under reduced motion, sections stay in flow.
  */
 @custom-variant pinned (@media (prefers-reduced-motion: no-preference) and (scripting: enabled));
+/* Scenes too dense for small screens: pinned from 900 px wide only (MOTION_OK_WIDE in gsap.ts). */
+@custom-variant pinned-wide (@media (prefers-reduced-motion: no-preference) and (scripting: enabled) and (min-width: 900px));
 
 /*
  * Design tokens from the Figma resume (file 0xFIzZIyxruyvJlxDVLimS), the single
@@ -52,6 +54,10 @@
   --accent-display: var(--palette-primary);
   --focus-ring: var(--palette-primary-dark);
   --interface-color: var(--palette-primary-darkest);
+  /* Category accents of the skills deck (decorative bands, never behind text). */
+  --deck-design: var(--palette-primary);
+  --deck-development: var(--palette-secondary);
+  --deck-tools: var(--palette-info);
 }
 
 [data-theme="dark"] {

@@ -10,11 +10,14 @@ type MotionSetup = (root: HTMLDivElement) => void | (() => void);
  * the returned ref: selector strings resolve inside it, and every tween and
  * ScrollTrigger is reverted on unmount or when the motion preference changes.
  */
-export function useScrollMotion(setup: MotionSetup): RefObject<HTMLDivElement | null> {
+export function useScrollMotion(
+  setup: MotionSetup,
+  query: string = MOTION_OK,
+): RefObject<HTMLDivElement | null> {
   const root = useRef<HTMLDivElement>(null);
   useGSAP(
     () => {
-      gsap.matchMedia().add(MOTION_OK, () => {
+      gsap.matchMedia().add(query, () => {
         if (root.current) return setup(root.current);
       });
     },
