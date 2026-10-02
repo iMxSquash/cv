@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
-import { gsap, pinnedScrub } from "@/lib/gsap";
+import { findPin, gsap, pinnedScrub } from "@/lib/gsap";
 
 /** Letter wave travelling along the quote. */
 const WAVE = {
@@ -23,7 +23,7 @@ const DIMMED_WORD_OPACITY = 0.15;
  */
 export function ManifestoMotion({ children }: { children: ReactNode }) {
   const root = useScrollMotion((element) => {
-    const pin = element.querySelector<HTMLElement>("[data-pin]");
+    const pin = findPin(element);
     const track = pin?.querySelector<HTMLElement>("[data-manifesto-track]");
     if (pin && track) {
       const letters = gsap.utils.toArray<HTMLElement>("[data-manifesto-letter]");

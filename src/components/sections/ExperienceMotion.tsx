@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
-import { gsap, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
+import { findPin, gsap, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
 
 /** Timeline units: a step fades in, holds, then fades out. */
 const STEP = { in: 1, hold: 1, out: 1 };
@@ -51,7 +51,7 @@ function animateJourney(pin: Element): void {
  */
 export function ExperienceMotion({ children }: { children: ReactNode }) {
   const root = useScrollMotion((element) => {
-    const pin = element.querySelector("[data-pin]");
+    const pin = findPin(element);
     if (pin) animateJourney(pin);
 
     const cards = gsap.utils.toArray<HTMLElement>("[data-experience-cards] > li");

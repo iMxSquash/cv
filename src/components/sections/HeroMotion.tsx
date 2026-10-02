@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
-import { gsap, pinnedScrub } from "@/lib/gsap";
+import { findPin, gsap, pinnedScrub } from "@/lib/gsap";
 import { scrollProgress } from "@/webgl/scrollProgress";
 
 /** How far each half of the name travels outwards, in % of its own width. */
@@ -15,7 +15,7 @@ const WORD_SPREAD_PERCENT = 60;
  */
 export function HeroMotion({ children }: { children: ReactNode }) {
   const root = useScrollMotion((element) => {
-    const pin = element.querySelector("[data-pin]");
+    const pin = findPin(element);
     if (!pin) return;
     const words = gsap.utils.toArray<HTMLElement>("[data-hero-word]");
     const half = (words.length - 1) / 2;
