@@ -84,7 +84,7 @@
 - [x] **Compétences & tools** : titre + sous-titre qui bascule Design / Développement / Outils, pile de cartes face cachée qui se retournent (flip 3D) puis s'envolent, tools en fin de pile (pin sticky 6 vh, à partir de 900 px de large : variante `pinned-wide:` + `MOTION_OK_WIDE`) ; grille sous 900 px et en reduced motion. Mêmes `<ul>` par catégorie dans les deux modes
 - [x] **Infos** : bento langues + mobilité + disponibilité (disponibilité large + langues, mobilité pleine largeur), apparition en stagger (`ScrollTrigger.batch`, une fois). Section laissée sombre (alternance avec Compétences en crème)
 - [x] **Next / contact** : phrase sur chemin courbe (`textPath`, dégradé primaire) qui avance au scroll jusqu'au centre (pin sticky 3 vh, 2 vh sous 900 px ; copie `aria-hidden`, vrai `<h2>` en `sr-only`) + orbe WebGL (sphère fresnel, même renderer) qui la suit comme un point final, puis CTA et footer. Stage transparent seulement si la WebGL est prête ; sans mouvement, titre statique et pas d'orbe
-- [ ] Pour chaque section : protocole `cv-a11y-perf` complet (dont reduced motion et 700×450)
+- [x] Pour chaque section : protocole `cv-a11y-perf` complet (dont reduced motion et 700×450) : 1440×900, 700×450, 390×844, reduced motion et sans JS vérifiés (contenu complet, aucun pin, aucun débordement horizontal) ; Tab sur toute la page sans focus perdu ni masqué ; 23 ScrollTriggers avant et après 3 allers-retours `/` ↔ `/mentions-legales` (heap snapshot), un seul canvas. Restent à mesurer sur vraie machine : 60 fps et CPU x4 (phase 11)
 
 ## Phase 7 : Version A4 imprimable · skill `cv-design-system`
 
