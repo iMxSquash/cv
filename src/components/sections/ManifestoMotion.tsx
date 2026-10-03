@@ -13,8 +13,12 @@ const WAVE = {
   heightPercent: 14,
   tiltDegrees: 6,
 };
-/** Opacity of a word of the about text before its turn comes. */
-const DIMMED_WORD_OPACITY = 0.15;
+/**
+ * Words of the about text wait in the muted text color (AA contrast, unlike a
+ * low opacity) and settle on the full text color when their turn comes.
+ */
+const DIMMED_WORD_COLOR = "var(--text-muted)";
+const LIT_WORD_COLOR = "var(--text)";
 
 /**
  * Manifesto choreography: the quote crosses the pinned stage as one giant line
@@ -60,9 +64,9 @@ export function ManifestoMotion({ children }: { children: ReactNode }) {
 
     gsap.fromTo(
       "[data-manifesto-word]",
-      { opacity: DIMMED_WORD_OPACITY },
+      { color: DIMMED_WORD_COLOR },
       {
-        opacity: 1,
+        color: LIT_WORD_COLOR,
         ease: "none",
         stagger: 0.1,
         scrollTrigger: {
