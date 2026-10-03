@@ -6,6 +6,7 @@ import { getProfile } from "@/lib/cv/queries";
 export const metadata: Metadata = {
   title: "Mentions légales",
   description: "Éditeur, hébergement et données du CV en ligne d'Elwen Coussot (cv.elwen.dev).",
+  alternates: { canonical: "/mentions-legales" },
 };
 
 const LINK_CLASS = "font-medium text-accent underline underline-offset-4";

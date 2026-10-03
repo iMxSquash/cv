@@ -108,11 +108,11 @@
 
 ## Phase 9 : SEO & GEO · skill utilisateur `seo-geo-boost`
 
-- [ ] Metadata : title (~55 car.), description (~155 car.), canonical `https://cv.elwen.dev`, Open Graph + Twitter Card
-- [ ] Image OG 1200×630 générée (`opengraph-image.tsx`) aux couleurs du CV
-- [ ] JSON-LD `ProfilePage` + `Person` (`jobTitle`, `alumniOf`, `knowsAbout`, `sameAs` LinkedIn/GitHub, `worksFor`)
-- [ ] `sitemap.ts`, `robots.ts` (bloque `/admin`, `/print`), `llms.txt`
-- [ ] Date de mise à jour visible (depuis `cv_profile.updated_at`)
+- [x] Metadata : title (~55 car.), description (~155 car.), canonical `https://cv.elwen.dev`, Open Graph + Twitter Card
+- [x] Image OG 1200×630 générée (`opengraph-image.tsx`) aux couleurs du CV
+- [x] JSON-LD `ProfilePage` + `Person` (`jobTitle`, `alumniOf`, `knowsAbout`, `sameAs` LinkedIn/GitHub, `worksFor`)
+- [x] `sitemap.ts`, `robots.ts` (bloque `/admin`, `/print`), `llms.txt`
+- [x] Date de mise à jour visible (depuis `cv_profile.updated_at`)
 - [ ] Rich Results Test sans erreur
 
 ## Phase 10 : Sécurité

@@ -2,6 +2,7 @@ import NextLink from "next/link";
 import { CvIcon } from "@/components/icons/CvIcon";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ExternalLink } from "@/components/ui/ExternalLink";
+import { formatLongDate } from "@/lib/cv/format";
 import type { Link, Profile } from "@/lib/cv/types";
 
 const LINK_CLASS =
@@ -68,7 +69,8 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
       </NextLink>
       <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-text-muted/30 pt-6 text-caption text-text-muted">
         <p>
-          © {today.getFullYear()} {profile.full_name}
+          © {today.getFullYear()} {profile.full_name} · Mis à jour le{" "}
+          <time dateTime={profile.updated_at}>{formatLongDate(profile.updated_at)}</time>
         </p>
         <NextLink href="/mentions-legales" className={LINK_CLASS}>
           Mentions légales

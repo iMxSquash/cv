@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit } from "next/font/google";
 import { SmoothScroll } from "@/components/scroll/SmoothScroll";
+import { getProfile } from "@/lib/cv/queries";
+import { buildOpenGraphBase } from "@/lib/cv/seo";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
@@ -10,13 +13,18 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display
 // badge) accurate even when the resume is not edited.
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  title: {
-    default: "Elwen Coussot, développeur full-stack",
-    template: "%s · Elwen Coussot",
-  },
-  description: "CV d'Elwen Coussot, développeur full-stack.",
-};
+/** Site-wide defaults; each indexable page sets its own description and canonical URL. */
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getProfile();
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: profile.full_name, template: `%s · ${profile.full_name}` },
+    authors: [{ name: profile.full_name, url: SITE_URL }],
+    creator: profile.full_name,
+    openGraph: buildOpenGraphBase(profile),
+    twitter: { card: "summary_large_image" },
+  };
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

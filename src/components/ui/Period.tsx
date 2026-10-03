@@ -1,4 +1,4 @@
-import { formatMonthYear } from "@/lib/cv/format";
+import { formatMonthYear, hasDistinctStartYear, OPEN_END_LABEL } from "@/lib/cv/format";
 
 /** SQL date "2025-09-01" -> <time dateTime="2025-09">sept. 2025</time> */
 function MonthTime({ date }: { date: string }) {
@@ -11,7 +11,7 @@ export function MonthPeriod({ start, end }: { start: string; end: string | null 
     <>
       <MonthTime date={start} />
       {" – "}
-      {end ? <MonthTime date={end} /> : "aujourd'hui"}
+      {end ? <MonthTime date={end} /> : OPEN_END_LABEL}
     </>
   );
 }
@@ -20,7 +20,7 @@ export function MonthPeriod({ start, end }: { start: string; end: string | null 
 export function YearPeriod({ start, end }: { start: number | null; end: number }) {
   return (
     <>
-      {start !== null && start !== end && (
+      {hasDistinctStartYear(start, end) && (
         <>
           <time>{start}</time>
           {" – "}
