@@ -22,7 +22,7 @@ Roadmap : `TODO.md`, en phases avec cases à cocher. **Cocher les cases au fur e
 ## Points non négociables
 
 - **Le contenu est du HTML rendu côté serveur, la WebGL n'est qu'un décor.** Tout le CV (textes, dates, liens) existe dans le DOM sémantique, lisible sans JS, sans WebGL et avec `prefers-reduced-motion`. Le canvas est `aria-hidden="true"` et ne porte jamais d'information exclusive.
-- **`frame-ancestors 'self' https://elwen.dev https://www.elwen.dev`** dans `next.config.ts` : condition d'existence de l'embed. Jamais de `X-Frame-Options`.
+- **`frame-ancestors 'self' https://elwen.dev https://www.elwen.dev`** dans la CSP du proxy (`src/lib/security/csp.ts`, jamais dans `next.config.ts` : un en-tête posé par le proxy remplace celui de la config) : condition d'existence de l'embed. Jamais de `X-Frame-Options`.
 - **Une seule boucle d'animation** : `gsap.ticker` pilote Lenis ET le rendu three.js. Pas de `requestAnimationFrame` concurrent.
 - **Tout ScrollTrigger / tween est nettoyé** (`useGSAP` ou `gsap.context().revert()`), toute ressource three.js est `dispose()`. Zéro fuite au démontage (fast refresh, navigation).
 - **`prefers-reduced-motion`** : pas de smooth scroll, pas de pin long, pas de scrub ; contenu statique complet. Géré via `gsap.matchMedia()`, jamais en dupliquant les composants.

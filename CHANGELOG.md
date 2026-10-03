@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Per-request nonce Content-Security-Policy set by the proxy (scripts via nonce and `strict-dynamic`, images and network limited to the site and Supabase), with unit tests.
+
 - Next.js 16 project setup with TypeScript, Tailwind v4, ESLint, Prettier and Vitest.
 - GSAP, Lenis, three.js, Supabase and Zod dependencies.
 - Baseline security headers, including `frame-ancestors` for the elwen.dev portfolio embed.
@@ -21,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Closing "next" section with an email call to action, and a site footer with contact links and a legal notice link.
 - Legal notice page (`/mentions-legales`) and a custom 404 page.
 - Machine-readable `<time>` dates on experiences and education.
-- Daily revalidation of the static pages so the "Actuel" badge stays accurate.
 - Scroll engine: a single Lenis smooth scroll driven by the GSAP ticker (native scroll under reduced motion), with trigger refresh once fonts and images are loaded.
 - Side section navigation (scroll indicator) and a top capsule menu that hides while scrolling down; both follow the light or dark theme of the section on screen.
 - WebGL background scene (three.js, single renderer on the GSAP ticker, lazy-loaded after first paint): animated mesh gradient in the hero with a luminance cap that keeps the text contrast, and a 3D "EC" monogram modelled in Blender that turns towards the pointer. Static frame under reduced motion, CSS gradient fallback without WebGL 2 or after a context loss.
@@ -36,3 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backoffice (`/admin`, not indexed, never framed cross-origin): Supabase sign-in, one page per resume entity (profile, experiences, education, skills, tools, languages, links, mobility) with create and edit forms, reordering, visibility toggle and confirmed deletion. Server-side validation with Zod schemas mirroring the database constraints.
 - Avatar and logo uploads (PNG, JPEG, WebP or AVIF, 5 MB, checked by magic bytes): logos on the experience and education cards of the resume and the A4 version, avatar in the hero corner, the footer and the A4 sidebar, once uploaded.
 - SEO and GEO: page metadata, canonical URLs, Open Graph and Twitter cards generated from the Supabase profile, a 1200×630 Open Graph image, `ProfilePage` + `Person` JSON-LD, `sitemap.xml`, `robots.txt` (blocks `/admin` and `/print`, allows AI crawlers), a Markdown `/llms.txt` of the whole resume, and the last update date in the footer.
+
+### Changed
+
+- Pages are rendered per request (required by the nonce CSP); the resume reads are cached with the `cv` tag and dropped by every `/admin` write, with a daily expiry as a safety net. The "Actuel" badge is now always current.

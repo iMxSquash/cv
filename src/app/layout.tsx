@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit } from "next/font/google";
+import { connection } from "next/server";
 import { SmoothScroll } from "@/components/scroll/SmoothScroll";
 import { getProfile } from "@/lib/cv/queries";
 import { buildOpenGraphBase } from "@/lib/cv/seo";
@@ -8,10 +9,6 @@ import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
-
-// Every page is static: a daily rebuild keeps date-based content (the "Actuel"
-// badge) accurate even when the resume is not edited.
-export const revalidate = 86400;
 
 /** Site-wide defaults; each indexable page sets its own description and canonical URL. */
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,7 +23,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The CSP nonce is per request: a statically prerendered page would ship
+  // scripts without it and the browser would block them all.
+  await connection();
   return (
     <html lang="fr" data-theme="light" className={`${outfit.variable} ${dmSans.variable}`}>
       <body className="text-body antialiased">

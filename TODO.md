@@ -117,8 +117,8 @@
 
 ## Phase 10 : Sécurité
 
-- [ ] CSP complète avec nonce (proxy Next 16) : `default-src 'self'`, `script-src 'self' 'nonce-…' 'strict-dynamic'`, `img-src` Supabase, `connect-src` Supabase, `frame-ancestors` inchangé ; passer le nonce aux scripts inline via `InlineScript` (loader)
-- [ ] Vérifier qu'aucune clé `service_role` n'existe dans le repo ni dans Vercel pour ce projet
+- [x] CSP complète avec nonce (proxy Next 16) : `default-src 'self'`, `script-src 'self' 'nonce-…' 'strict-dynamic'`, `img-src` Supabase, `connect-src` Supabase, `frame-ancestors` inchangé (désormais dans la CSP du proxy, pas dans `next.config.ts`) ; nonce passé au script inline du loader via `InlineScript` ; pages rendues par requête (`connection()` dans le layout), données mises en cache (`unstable_cache`, tag `cv`) ; `'wasm-unsafe-eval'` pour le décodeur du monogramme
+- [x] Vérifier qu'aucune clé `service_role` n'existe dans le repo ni dans Vercel pour ce projet (historique git et 3 variables Vercel contrôlés)
 - [ ] `npm audit --omit=dev` propre ; CodeQL vert
 - [ ] Skill `check-security` complète avant la mise en prod
 

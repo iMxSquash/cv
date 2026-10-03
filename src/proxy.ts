@@ -2,14 +2,23 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { ADMIN_LOGIN_PATH, ADMIN_PATH } from "@/lib/admin/paths";
+import { buildCsp, createNonce } from "@/lib/security/csp";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
+const NONCE_HEADER = "x-nonce";
+const CSP_HEADER = "Content-Security-Policy";
+
+function isAdminPath(pathname: string): boolean {
+  return pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`);
+}
+
 /**
- * First gate of `/admin/*`: refreshes the Supabase session cookies and sends
- * visitors without a user to the login form (and signed-in ones away from it). Not a security boundary on its
- * own: every admin page and Server Action re-checks the user (`lib/admin/auth`).
+ * Gates `/admin/*`: refreshes the Supabase session cookies and sends visitors
+ * without a user to the login form (and signed-in ones away from it). Not a
+ * security boundary on its own: every admin page and Server Action re-checks
+ * the user (`lib/admin/auth`).
  */
-export async function proxy(req: NextRequest): Promise<NextResponse> {
+async function gateAdmin(req: NextRequest, csp: string): Promise<NextResponse> {
   let response = NextResponse.next({ request: req });
   const { url, anonKey } = getSupabaseEnv();
   const supabase = createServerClient(url, anonKey, {
@@ -31,9 +40,37 @@ export async function proxy(req: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL(ADMIN_LOGIN_PATH, req.url));
   }
   if (data.user && isLoginPage) return NextResponse.redirect(new URL(ADMIN_PATH, req.url));
+  response.headers.set(CSP_HEADER, csp);
+  return response;
+}
+
+/**
+ * Sets a per-request nonce CSP: Next reads it from the request headers to
+ * stamp its own scripts, and pages read `x-nonce` for their inline ones.
+ * Admin requests also go through the session gate.
+ */
+export async function proxy(req: NextRequest): Promise<NextResponse> {
+  const nonce = createNonce();
+  const isAdmin = isAdminPath(req.nextUrl.pathname);
+  const csp = buildCsp({
+    nonce,
+    isDev: process.env.NODE_ENV === "development",
+    supabaseUrl: getSupabaseEnv().url,
+    isAdmin,
+  });
+  req.headers.set(NONCE_HEADER, nonce);
+  req.headers.set(CSP_HEADER, csp);
+
+  if (isAdmin) return gateAdmin(req, csp);
+
+  const response = NextResponse.next({ request: req });
+  response.headers.set(CSP_HEADER, csp);
   return response;
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  // Pages only: static assets and metadata files carry no script to protect.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|opengraph-image|sitemap.xml|robots.txt|llms.txt).*)",
+  ],
 };

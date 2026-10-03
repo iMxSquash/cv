@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 
 import type { EntityTable } from "@/lib/admin/entities";
 import {
@@ -11,13 +11,14 @@ import {
   extensionOf,
   isValidUploadPath,
 } from "@/lib/admin/image";
+import { CV_CACHE_TAG } from "@/lib/cv/queries";
 import type { Database } from "@/lib/database.types";
 
 type Supabase = SupabaseClient<Database>;
 
-/** Every public page renders resume data (`/`, `/print`, legal notice): rebuild them all. */
+/** Every public page renders resume data (`/`, `/print`, legal notice): drop the cached reads they share. */
 export function revalidateCv(): void {
-  revalidatePath("/", "layout");
+  updateTag(CV_CACHE_TAG);
 }
 
 export async function removeFromBucket(supabase: Supabase, path: string): Promise<void> {
