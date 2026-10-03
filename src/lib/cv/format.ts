@@ -46,3 +46,33 @@ const MONTH_YEAR_FORMAT = new Intl.DateTimeFormat("fr-FR", {
 export function formatMonthYear(value: string): string {
   return MONTH_YEAR_FORMAT.format(parseSqlDate(value));
 }
+
+const LONG_DATE_FORMAT = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "Europe/Paris",
+});
+
+/** Timestamp "2026-10-01T14:41:08Z" -> "1 octobre 2026", in the owner's timezone. */
+export function formatLongDate(timestamp: string): string {
+  return LONG_DATE_FORMAT.format(new Date(timestamp));
+}
+
+/** Wording of an ongoing period's end, shared by the page and /llms.txt. */
+export const OPEN_END_LABEL = "aujourd'hui";
+
+/** A degree shows its start year only when it differs from the end year. */
+export function hasDistinctStartYear(start: number | null, end: number): start is number {
+  return start !== null && start !== end;
+}
+
+/** "sept. 2025 – sept. 2026", or "… – aujourd'hui" when the end is open. */
+export function formatMonthPeriod(start: string, end: string | null): string {
+  return `${formatMonthYear(start)} – ${end ? formatMonthYear(end) : OPEN_END_LABEL}`;
+}
+
+/** "2023 – 2026", or the end year alone when there is no distinct start. */
+export function formatYearPeriod(start: number | null, end: number): string {
+  return hasDistinctStartYear(start, end) ? `${start} – ${end}` : String(end);
+}

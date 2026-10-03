@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatMonthYear, isOngoing, parseKeywords } from "./format";
+import { formatLongDate, formatMonthYear, isOngoing, parseKeywords } from "./format";
 
 describe("parseKeywords", () => {
   it("splits plain text and **keywords** in order", () => {
@@ -56,5 +56,15 @@ describe("formatMonthYear", () => {
   it("formats SQL dates in French without timezone shift", () => {
     expect(formatMonthYear("2025-09-01")).toBe("sept. 2025");
     expect(formatMonthYear("2024-06-01")).toBe("juin 2024");
+  });
+});
+
+describe("formatLongDate", () => {
+  it("formats a timestamp as a French long date", () => {
+    expect(formatLongDate("2026-10-01T14:41:08.780105+00:00")).toBe("1 octobre 2026");
+  });
+
+  it("uses the Paris day, not the UTC one", () => {
+    expect(formatLongDate("2026-09-30T23:30:00Z")).toBe("1 octobre 2026");
   });
 });
