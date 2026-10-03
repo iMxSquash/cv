@@ -33,3 +33,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Infos bento (availability, languages, mobility) whose tiles rise into view one after the other.
 - Closing scene: the availability sentence travels along a gradient curve until it settles in the middle, trailed by a glowing WebGL orb, before the email call to action and the footer.
 - Printable A4 version (`/print`, not indexed) laid out as the Figma resume from the same data, exactly one page, and a "Télécharger le CV (PDF)" button in the footer that opens it with the print dialog.
+- Backoffice (`/admin`, not indexed, never framed cross-origin): Supabase sign-in, one page per resume entity (profile, experiences, education, skills, tools, languages, links, mobility) with create and edit forms, reordering, visibility toggle and confirmed deletion. Server-side validation with Zod schemas mirroring the database constraints.
+- Avatar and logo uploads (PNG, JPEG, WebP or AVIF, 5 MB, checked by magic bytes): logos on the experience and education cards of the resume and the A4 version, avatar in the hero corner, the footer and the A4 sidebar, once uploaded.
