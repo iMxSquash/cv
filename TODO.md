@@ -125,6 +125,7 @@
 ## Phase 11 : Accessibilité & performance finales · skill `cv-a11y-perf`
 
 - [ ] Lighthouse mobile : Perf ≥ 90, A11y = 100, Best Practices ≥ 95, SEO = 100
+  - Mesuré en local (`next start`, preset mobile, serveur à chaud) : Perf 93, A11y 96, Best Practices 100, SEO 100 ; TBT 30 ms, CLS 0, LCP simulé 3,1 s (observé sans throttling : 50 ms). Manifeste corrigé (mots non révélés en `--text-muted` au lieu d'une opacité 0.15). Reste 1 contraste signalé sur le sous-titre du hero : faux positif probable (texte clair sur le dégradé/canvas WebGL, que Lighthouse ne résout pas, il retient le fond crème du body). À re-mesurer sur le déploiement Vercel (LCP et A11y)
 - [ ] axe DevTools sans violation ; VoiceOver macOS + iOS sur tout le parcours
 - [ ] Core Web Vitals : LCP < 2,5 s, INP < 200 ms, CLS < 0,1 (Vercel Speed Insights une fois en ligne)
 - [ ] Test sur vrais appareils : iPhone Safari, Android Chrome, MacBook trackpad (inertie Lenis)
