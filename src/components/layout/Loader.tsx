@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+
 import { InlineScript } from "@/components/ui/InlineScript";
 
 const LOADER_ID = "loader";
@@ -22,7 +24,8 @@ const PLAY_SCRIPT = `(function(){try{if(sessionStorage.getItem("${SEEN_KEY}")||m
  * JS bundle. Plays on the first full load of the session only, never without JS
  * or under reduced motion: hidden until the play script sets data-state.
  */
-export function Loader() {
+export async function Loader() {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <>
       <div
@@ -44,7 +47,7 @@ export function Loader() {
           ))}
         </svg>
       </div>
-      <InlineScript html={PLAY_SCRIPT} />
+      <InlineScript html={PLAY_SCRIPT} nonce={nonce} />
     </>
   );
 }
