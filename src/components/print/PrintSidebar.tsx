@@ -1,17 +1,9 @@
 import { Flag } from "@/components/icons/Flag";
+import { AssetImage } from "@/components/ui/AssetImage";
 import { ExternalLink } from "@/components/ui/ExternalLink";
-import type { Enums } from "@/lib/database.types";
+import { LINK_PLATFORM_LABELS } from "@/lib/cv/labels";
 import type { Language, Link, MobilityItem, Profile } from "@/lib/cv/types";
 import { IconTile } from "./IconTile";
-
-// Typed by the Postgres enum: a new platform fails the typecheck until it gets a label.
-const PLATFORM_LABELS: Record<Enums<"cv_link_platform">, string> = {
-  linkedin: "LinkedIn",
-  github: "GitHub",
-  freecodecamp: "FreeCodeCamp",
-  website: "Site web",
-  other: "Lien",
-};
 
 /** A divider, then a titled list of rows; the contact group has no visible title in the Figma. */
 function SidebarGroup({
@@ -80,6 +72,9 @@ export function PrintSidebar({ profile, links, languages, mobility }: PrintSideb
       <div aria-hidden="true" className="print-halos absolute inset-y-0 left-0 -z-10 w-[184pt]" />
 
       <header>
+        {profile.avatar_url && (
+          <AssetImage src={profile.avatar_url} className="mb-[12pt] size-[48pt] rounded-full" />
+        )}
         <h1 className="font-display text-print-h1 font-medium">{profile.full_name}</h1>
         <p className="mt-[4pt] font-display text-print-h2 font-medium text-accent">
           {profile.headline}
@@ -125,7 +120,7 @@ export function PrintSidebar({ profile, links, languages, mobility }: PrintSideb
             <InfoRow
               key={link.id}
               icon={<DiscIcon name={link.platform} />}
-              label={PLATFORM_LABELS[link.platform]}
+              label={LINK_PLATFORM_LABELS[link.platform]}
               value={<ExternalLink href={link.url}>{link.label}</ExternalLink>}
             />
           ))}

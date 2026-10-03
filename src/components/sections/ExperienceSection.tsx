@@ -1,6 +1,7 @@
 import { CvIcon } from "@/components/icons/CvIcon";
 import { Badge } from "@/components/ui/Badge";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
+import { AssetImage } from "@/components/ui/AssetImage";
 import { Card } from "@/components/ui/Card";
 import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
 import { isOngoing } from "@/lib/cv/format";
@@ -61,9 +62,14 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
             {experiences.map((experience) => (
               <Card key={experience.id} as="li">
                 <article className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <p className="text-text-muted">{experience.role}</p>
-                    <h3 className="title-card">{experience.company}</h3>
+                  <div className="flex items-center gap-4">
+                    {experience.logo_url && (
+                      <AssetImage src={experience.logo_url} className="size-12 rounded-xl" />
+                    )}
+                    <div>
+                      <p className="text-text-muted">{experience.role}</p>
+                      <h3 className="title-card">{experience.company}</h3>
+                    </div>
                   </div>
                   <div className="flex flex-col gap-1 md:items-end">
                     <p className="flex items-center gap-2 text-caption">
@@ -91,9 +97,14 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
             {education.map((entry) => (
               <Card key={entry.id} as="li">
                 <article>
-                  <p className="text-caption text-text-muted">
-                    {entry.school}
-                    {entry.city && `, ${entry.city}`}
+                  <p className="flex items-center gap-3 text-caption text-text-muted">
+                    {entry.logo_url && (
+                      <AssetImage src={entry.logo_url} className="size-10 rounded-lg" />
+                    )}
+                    <span>
+                      {entry.school}
+                      {entry.city && `, ${entry.city}`}
+                    </span>
                   </p>
                   <h3 className="mt-1 title-card">{entry.degree}</h3>
                   {entry.details && <p className="mt-2">{entry.details}</p>}
