@@ -47,7 +47,9 @@ Target layout, built progressively (see `TODO.md`):
 
 ```
 src/
-  app/            routes: / (resume), /print (A4 version), /admin (backoffice)
+  app/            routes: / (resume), /print (A4 version), /admin (backoffice),
+                  plus SEO files (sitemap, robots, llms.txt, Open Graph image)
+  assets/fonts/   static TTF fonts for the generated Open Graph image (OFL)
   components/     React components (sections, scroll, webgl mount, ui)
   lib/            Supabase clients, data queries, Zod schemas, theme tokens
   webgl/          framework-free three.js scene (renderer, shaders)
@@ -67,6 +69,7 @@ The roadmap lives in [`TODO.md`](./TODO.md); development conventions in [`CLAUDE
 - **Shared Supabase project**: this app only owns `cv_*` tables and the `cv-assets` bucket. Row Level Security is enabled on every table.
 - **Embeddable**: `frame-ancestors` allows the elwen.dev portfolio to load the site in an iframe. `/admin` overrides it with `frame-ancestors 'self'` (never framed cross-origin).
 - **Backoffice `/admin`**: sign-in with the portfolio's Supabase account (sign-ups must stay disabled in Supabase Auth). `src/proxy.ts` refreshes the session and redirects anonymous visitors, but it is only a first gate: every page and Server Action re-checks the user with `getUser()` (`src/lib/admin/auth.ts`), then validates its input with the Zod schemas of `src/lib/cv/schemas.ts`, which mirror the SQL constraints. Each write revalidates every public page.
+- **SEO and GEO**: titles, descriptions, Open Graph image, JSON-LD (`src/lib/cv/seo.ts`) and `/llms.txt` (`src/lib/cv/llms.ts`) are all derived from the Supabase content at render time, never hardcoded. `NEXT_PUBLIC_SITE_URL` sets the canonical origin (production URL when unset).
 - **Uploads**: the browser sends images straight to the `cv-assets` bucket through a one-shot signed URL (Server Action bodies are capped at 1 MB); the save action then checks the stored file's magic bytes (PNG, JPEG, WebP, AVIF; never SVG), and replaced or rejected files are removed from the bucket.
 
 ## Deployment
