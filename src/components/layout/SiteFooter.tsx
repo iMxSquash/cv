@@ -1,5 +1,6 @@
 import NextLink from "next/link";
 import { CvIcon } from "@/components/icons/CvIcon";
+import { AssetImage } from "@/components/ui/AssetImage";
 import { ExternalLink } from "@/components/ui/ExternalLink";
 import type { Link, Profile } from "@/lib/cv/types";
 
@@ -20,9 +21,14 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
       data-theme="dark"
       className="section-shell"
     >
-      <h2 id="contact-title" className="title-card">
-        Contact
-      </h2>
+      <div className="flex items-center gap-4">
+        {profile.avatar_url && (
+          <AssetImage src={profile.avatar_url} className="size-14 rounded-full" />
+        )}
+        <h2 id="contact-title" className="title-card">
+          Contact
+        </h2>
+      </div>
       <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
         <li>
           <a href={`mailto:${profile.email}`} className={LINK_CLASS}>

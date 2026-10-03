@@ -4,15 +4,16 @@ import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { Card } from "@/components/ui/Card";
 import { SkillChip } from "@/components/ui/SkillChip";
 import { Constants, type Enums } from "@/lib/database.types";
+import { SKILL_CATEGORY_LABELS } from "@/lib/cv/labels";
 import type { Skill, Tool } from "@/lib/cv/types";
 import { SkillsMotion } from "./SkillsMotion";
 
 type DeckGroup = Enums<"cv_skill_category"> | "tools";
 
-// Typed by the Postgres enum: a new category fails the typecheck until it gets a label and a color.
+// Typed by the Postgres enum: a new category fails the typecheck until it gets a color.
 const GROUPS: Record<DeckGroup, { label: string; color: string }> = {
-  design: { label: "Design", color: "var(--deck-design)" },
-  development: { label: "Développement", color: "var(--deck-development)" },
+  design: { label: SKILL_CATEGORY_LABELS.design, color: "var(--deck-design)" },
+  development: { label: SKILL_CATEGORY_LABELS.development, color: "var(--deck-development)" },
   tools: { label: "Outils", color: "var(--deck-tools)" },
 };
 const GROUP_ORDER: DeckGroup[] = [...Constants.public.Enums.cv_skill_category, "tools"];

@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import type { Profile } from "@/lib/cv/types";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
+import { AssetImage } from "@/components/ui/AssetImage";
 import { HeroMotion } from "./HeroMotion";
 
 export function HeroSection({ profile }: { profile: Profile }) {
@@ -26,6 +27,13 @@ export function HeroSection({ profile }: { profile: Profile }) {
               aria-hidden="true"
               className="hero-gradient-fallback absolute inset-0 -z-10 transition-opacity duration-700 in-data-[webgl=ready]:opacity-0"
             />
+            {profile.avatar_url && (
+              <AssetImage
+                src={profile.avatar_url}
+                // Below the centered top capsule on narrow screens, in the corner from md up.
+                className="absolute top-16 left-4 size-12 rounded-full md:top-8 md:left-8 md:size-16"
+              />
+            )}
             <h1 className="title-display">
               {words.map((word, index) => (
                 <Fragment key={index}>

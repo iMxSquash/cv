@@ -2,21 +2,22 @@ import { CvIcon } from "@/components/icons/CvIcon";
 import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
 import { Constants, type Enums } from "@/lib/database.types";
 import { isOngoing, parseKeywords } from "@/lib/cv/format";
+import { SKILL_CATEGORY_LABELS } from "@/lib/cv/labels";
 import type { Education, Experience, Profile, Skill, Tool } from "@/lib/cv/types";
 import { IconTile } from "./IconTile";
 
-// Typed by the Postgres enum: a new category fails the typecheck until it gets a label and colors.
+// Typed by the Postgres enum: a new category fails the typecheck until it gets colors.
 const SKILL_GROUPS: Record<
   Enums<"cv_skill_category">,
   { label: string; text: string; tint: string }
 > = {
   design: {
-    label: "Design",
+    label: SKILL_CATEGORY_LABELS.design,
     text: "text-(--palette-primary-dark)",
     tint: "bg-(--palette-primary-lighter)",
   },
   development: {
-    label: "Développement",
+    label: SKILL_CATEGORY_LABELS.development,
     text: "text-(--palette-secondary-dark)",
     tint: "bg-(--palette-secondary-lighter)",
   },
@@ -62,6 +63,7 @@ function ExperienceItem({ experience, today }: { experience: Experience; today: 
     >
       <IconTile
         name="briefcase"
+        imageUrl={experience.logo_url}
         className="size-[20pt] rounded-[5pt]"
         iconClassName="size-[10pt]"
       />
@@ -93,7 +95,12 @@ function EducationItem({ entry }: { entry: Education }) {
   return (
     <li className={`flex flex-1 flex-col gap-[4pt] px-[12pt] py-[8pt] ${TILE_CLASS}`}>
       <div className="flex items-center gap-[8pt]">
-        <IconTile name="school" className="size-[24pt] rounded-[4pt]" iconClassName="size-[14pt]" />
+        <IconTile
+          name="school"
+          imageUrl={entry.logo_url}
+          className="size-[24pt] rounded-[4pt]"
+          iconClassName="size-[14pt]"
+        />
         <p className="text-print-caption-1 font-medium">
           {entry.school}
           {entry.city && <span className="block">{entry.city}</span>}

@@ -24,7 +24,7 @@ import {
 
 // Keys stored in Supabase (`icon_key`, `platform`, skill `category`) plus interface icons. The admin
 // picks from these keys: icons are never uploaded (no stored SVG).
-const ICONS: Record<string, Icon> = {
+const ICONS = {
   adobe: IconBrandAdobe,
   briefcase: IconBriefcase,
   car: IconCar,
@@ -44,7 +44,15 @@ const ICONS: Record<string, Icon> = {
   school: IconSchool,
   vscode: IconBrandVscode,
   website: IconWorld,
-};
+} satisfies Record<string, Icon>;
+
+export type IconKey = keyof typeof ICONS;
+
+export const ICON_KEYS = Object.keys(ICONS) as [IconKey, ...IconKey[]];
+
+function isIconKey(name: string): name is IconKey {
+  return Object.hasOwn(ICONS, name);
+}
 
 interface CvIconProps {
   name: string;
@@ -53,6 +61,6 @@ interface CvIconProps {
 
 /** Decorative icon: the text next to it always carries the meaning. */
 export function CvIcon({ name, className = "size-5" }: CvIconProps) {
-  const Component = ICONS[name] ?? IconLink;
+  const Component = isIconKey(name) ? ICONS[name] : IconLink;
   return <Component aria-hidden="true" className={className} stroke={1.75} />;
 }

@@ -1,5 +1,5 @@
 // Flag artwork keeps its official colors: these are not theme tokens.
-const FLAGS: Record<string, React.ReactNode> = {
+const FLAGS = {
   fr: (
     <>
       <rect width="20" height="30" fill="#002654" />
@@ -16,12 +16,20 @@ const FLAGS: Record<string, React.ReactNode> = {
       <path d="M30 0v30M0 15h60" stroke="#c8102e" strokeWidth="6" />
     </>
   ),
-};
+} satisfies Record<string, React.ReactNode>;
+
+type FlagCode = keyof typeof FLAGS;
+
+export const FLAG_CODES = Object.keys(FLAGS) as [FlagCode, ...FlagCode[]];
+
+function isFlagCode(code: string): code is FlagCode {
+  return Object.hasOwn(FLAGS, code);
+}
 
 /** Decorative flag next to the language name; unknown codes render nothing. */
 export function Flag({ code, className = "h-4 w-6" }: { code: string; className?: string }) {
+  if (!isFlagCode(code)) return null;
   const artwork = FLAGS[code];
-  if (!artwork) return null;
   return (
     <svg
       aria-hidden="true"

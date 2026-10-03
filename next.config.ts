@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // The backoffice is never framed by another origin (clickjacking): this
+      // later rule overrides the embed policy above for /admin only.
+      {
+        source: "/admin/:path*",
+        headers: [{ key: "Content-Security-Policy", value: "frame-ancestors 'self'" }],
+      },
     ];
   },
 };

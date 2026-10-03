@@ -95,16 +95,16 @@
 
 ## Phase 8 : Backoffice `/admin` · skill `cv-admin-data`
 
-- [ ] Client serveur `@supabase/ssr` (`src/lib/supabase/server.ts`)
-- [ ] `src/proxy.ts` (matcher `/admin/:path*`) + `requireAdminPage` / `requireAdminAction` (modèle `adobe-apps`)
-- [ ] `/admin/login` (même compte Supabase que le portfolio, erreur générique)
-- [ ] Schémas Zod `src/lib/cv/schemas.ts` alignés sur les contraintes SQL + tests Vitest
-- [ ] Pages : Profil, Expériences, Éducation, Compétences, Tools, Langues, Liens, Mobilité (liste, formulaire, ↑↓, toggle `visible`, suppression confirmée)
-- [ ] Upload avatar/logos : MIME + magic bytes, 5 Mo, nom régénéré, suppression de l'ancien fichier
-- [ ] Uploader l'avatar et les logos (FD Formation, Digital Campus, Lycée Montesquieu) via l'admin (export depuis le Figma), puis les afficher sur `/` et `/print` (à la place des icônes)
-- [ ] `revalidatePath("/")` et `/print` après chaque écriture ; lien « Voir le site »
-- [ ] `/admin` en `noindex`, absent du sitemap
-- [ ] Skill `check-security` (Invariants elwen.dev) déroulée sur l'admin, findings corrigés
+- [x] Client serveur `@supabase/ssr` (`src/lib/supabase/server.ts`)
+- [x] `src/proxy.ts` (matcher `/admin/:path*`) + `requireAdminPage` / `requireAdminAction` (modèle `adobe-apps`)
+- [x] `/admin/login` (même compte Supabase que le portfolio, erreur générique)
+- [x] Schémas Zod `src/lib/cv/schemas.ts` alignés sur les contraintes SQL + tests Vitest (icônes et drapeaux limités aux clés locales)
+- [x] Pages : Profil, Expériences, Éducation, Compétences, Tools, Langues, Liens, Mobilité (liste, formulaire, ↑↓, toggle `visible`, suppression confirmée) ; parcours vérifié avec des lignes de test masquées (création, upload, rejet d'un SVG renommé, remplacement, ↑↓, visibilité, suppression, 700×450, 390 px)
+- [x] Upload avatar/logos : MIME + magic bytes, 5 Mo, nom régénéré, suppression de l'ancien fichier (envoi direct au bucket par URL signée, le corps des Server Actions étant limité à 1 Mo)
+- [ ] Uploader l'avatar et les logos (FD Formation, Digital Campus, Lycée Montesquieu) via l'admin (export depuis le Figma). Affichage prêt : logos sur les cartes de `/` et `/print` (à la place des icônes), avatar en haut à gauche du hero, dans le footer et en tête de la sidebar `/print`
+- [x] `revalidatePath("/", "layout")` après chaque écriture (`/`, `/print`, mentions légales) ; lien « Voir le site »
+- [x] `/admin` en `noindex` (le sitemap arrive en phase 9 : ne pas l'y ajouter) + `frame-ancestors 'self'` sur `/admin`
+- [x] Skill `check-security` (Invariants elwen.dev) déroulée sur l'admin, findings corrigés (réglages Supabase Auth durcis)
 
 ## Phase 9 : SEO & GEO · skill utilisateur `seo-geo-boost`
 
