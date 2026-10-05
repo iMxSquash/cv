@@ -144,8 +144,17 @@
 - [ ] Social preview GitHub 1280×640
 - [ ] Lien vers `cv.elwen.dev` depuis LinkedIn / GitHub profile
 
+## Version anglaise (i18n FR/EN)
+
+- [x] Colonnes `*_en` nullables dans `cv_*` (repli sur le français si vide) et traductions initiales (migration `20261005090000_add_english_translations.sql`)
+- [x] Routage sans lib : `/` en français, `/en` en anglais (le proxy réécrit `/en/...` vers la route sans préfixe et pose l'en-tête `x-locale`) ; admin jamais accessible sous un préfixe
+- [x] Libellés d'interface dans `src/lib/i18n/messages.ts` (typé : une clé manquante dans une langue casse le typecheck), données localisées par `localizeCv`
+- [x] SEO : `lang`, hreflang + canonical par langue, sitemap avec alternates, JSON-LD, llms.txt et image Open Graph par langue
+- [x] Page imprimable, mentions légales, 404 et sélecteur de langue (lien FR/EN dans la capsule, pas de détection ni de redirection automatique)
+- [x] Champs `*_en` dans le backoffice `/admin` (profil et chaque liste traduite), vides = repli sur le français
+- [x] Relire les traductions anglaises (rédigées à partir du texte français)
+
 ## Hors périmètre v1 (à rediscuter plus tard)
 
-- Version anglaise (i18n FR/EN comme la référence) : nécessiterait des colonnes traduites dans `cv_*`
 - Lettre de motivation (le kit Figma en contient une)
 - Section projets (déjà couverte par le portfolio)
