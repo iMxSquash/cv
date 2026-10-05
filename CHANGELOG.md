@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Gradient footer: a drifting arch of layered CSS gradients rises behind a giant name fitted to the page width, the contact block fades up on scroll and links get a slide-through underline. No WebGL, static under reduced motion.
 - English version of the resume at `/en` (home, printable A4 page, legal notice, 404, `llms.txt`, Open Graph image), with nullable `*_en` columns in the `cv_*` tables that fall back to French, a typed message dictionary, hreflang alternates in metadata and sitemap and a FR/EN link in the top capsule. The `/admin` forms edit the English fields next to the French ones.
 - Per-request nonce Content-Security-Policy set by the proxy (scripts via nonce and `strict-dynamic`, images and network limited to the site and Supabase), with unit tests.
 

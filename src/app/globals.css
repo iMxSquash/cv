@@ -249,3 +249,91 @@
     fill-opacity: 1;
   }
 }
+
+/* Slide-through underline: enters from the left on hover, leaves to the right. */
+@utility link-slide {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  background-position: 100% 100%;
+  transition:
+    background-size 0.35s cubic-bezier(0.7, 0, 0.3, 1),
+    background-position 0.35s cubic-bezier(0.7, 0, 0.3, 1);
+  &:hover {
+    background-size: 100% 1px;
+    background-position: 0 100%;
+  }
+}
+
+/*
+ * Footer glow, pure CSS (no render context for a footer): a shallow arch of
+ * layered radial gradients hugging the bottom edge, reaching both corners and
+ * lifting in the middle. `--footer-arch-height` tunes the lift. Only the
+ * decorative name sits on it: small text stays on the flat surface above.
+ */
+@utility footer-stage {
+  --footer-arch-height: 85%;
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3rem, 12vw, 4rem) 1.5rem 0;
+}
+
+@utility footer-glow {
+  position: absolute;
+  inset: 0 -10%;
+  background-image:
+    radial-gradient(
+      ellipse 45% var(--footer-arch-height) at 50% 100%,
+      color-mix(in srgb, var(--palette-info) 55%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 70% calc(var(--footer-arch-height) * 0.8) at 50% 100%,
+      color-mix(in srgb, var(--palette-primary) 85%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 40% calc(var(--footer-arch-height) * 0.55) at 12% 100%,
+      color-mix(in srgb, var(--palette-secondary) 80%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 40% calc(var(--footer-arch-height) * 0.55) at 88% 100%,
+      color-mix(in srgb, var(--palette-secondary) 80%, transparent),
+      transparent
+    );
+  animation: footer-glow-drift 14s ease-in-out infinite alternate;
+}
+
+/* Fitted to the width by FooterMotion; the cqw estimate is the no-JS fallback. */
+@utility footer-name {
+  position: relative;
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.8;
+  padding-bottom: 0.08em;
+  font-size: calc((100cqw - 3rem) / (var(--name-length) * 0.58));
+  /* The letters brighten toward the bottom edge, as if lit by the glow. */
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--palette-primary-lightest) 25%, transparent),
+    var(--palette-primary-lightest)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes footer-glow-drift {
+  from {
+    transform: translate3d(-4%, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+}
