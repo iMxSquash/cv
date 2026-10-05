@@ -1,15 +1,5 @@
-import type { Enums } from "@/lib/database.types";
+import { getMessages } from "@/lib/i18n/messages";
 
-// Typed by the Postgres enums: a new value fails the typecheck until it gets a label.
-export const SKILL_CATEGORY_LABELS: Record<Enums<"cv_skill_category">, string> = {
-  design: "Design",
-  development: "Développement",
-};
-
-export const LINK_PLATFORM_LABELS: Record<Enums<"cv_link_platform">, string> = {
-  linkedin: "LinkedIn",
-  github: "GitHub",
-  freecodecamp: "FreeCodeCamp",
-  website: "Site web",
-  other: "Lien",
-};
+// The backoffice is French only; public pages read the labels of the visitor's locale.
+export const SKILL_CATEGORY_LABELS = getMessages("fr").skills.categories;
+export const LINK_PLATFORM_LABELS = getMessages("fr").linkPlatforms;

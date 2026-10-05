@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { parseKeywords } from "@/lib/cv/format";
 import type { Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { ManifestoMotion } from "./ManifestoMotion";
 
@@ -33,9 +35,9 @@ function RevealWords({ text }: { text: string }) {
   );
 }
 
-export function AboutSection({ profile }: { profile: Profile }) {
-  // Non-breaking spaces keep the French quotation marks on the first and last words.
-  const quote = profile.quote && `« ${profile.quote} »`;
+export function AboutSection({ profile, locale }: { profile: Profile; locale: Locale }) {
+  const t = getMessages(locale);
+  const quote = profile.quote && t.quote(profile.quote);
   return (
     <section id="manifesto" aria-labelledby="manifesto-title" data-theme="light">
       <ManifestoMotion>
@@ -65,7 +67,7 @@ export function AboutSection({ profile }: { profile: Profile }) {
         )}
         <div className="section-shell">
           <h2 id="manifesto-title" className="title-card">
-            À propos
+            {t.about.title}
           </h2>
           <p data-manifesto-about className="mt-4 max-w-3xl">
             {parseKeywords(profile.about).map((segment, index) =>

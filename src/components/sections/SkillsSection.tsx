@@ -4,17 +4,18 @@ import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { Card } from "@/components/ui/Card";
 import { SkillChip } from "@/components/ui/SkillChip";
 import { Constants, type Enums } from "@/lib/database.types";
-import { SKILL_CATEGORY_LABELS } from "@/lib/cv/labels";
 import type { Skill, Tool } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { SkillsMotion } from "./SkillsMotion";
 
 type DeckGroup = Enums<"cv_skill_category"> | "tools";
 
 // Typed by the Postgres enum: a new category fails the typecheck until it gets a color.
-const GROUPS: Record<DeckGroup, { label: string; color: string }> = {
-  design: { label: SKILL_CATEGORY_LABELS.design, color: "var(--deck-design)" },
-  development: { label: SKILL_CATEGORY_LABELS.development, color: "var(--deck-development)" },
-  tools: { label: "Outils", color: "var(--deck-tools)" },
+const GROUP_COLORS: Record<DeckGroup, string> = {
+  design: "var(--deck-design)",
+  development: "var(--deck-development)",
+  tools: "var(--deck-tools)",
 };
 const GROUP_ORDER: DeckGroup[] = [...Constants.public.Enums.cv_skill_category, "tools"];
 
@@ -28,7 +29,7 @@ function DeckCard({ group, children }: { group: DeckGroup; children: ReactNode }
     <li
       data-skills-card
       data-group={group}
-      style={{ "--deck-color": GROUPS[group].color } as CSSProperties}
+      style={{ "--deck-color": GROUP_COLORS[group] } as CSSProperties}
       className={`${DECK_LAYER} pinned-wide:transform-3d`}
     >
       {children}
@@ -40,7 +41,17 @@ function DeckCard({ group, children }: { group: DeckGroup; children: ReactNode }
   );
 }
 
-export function SkillsSection({ skills, tools }: { skills: Skill[]; tools: Tool[] }) {
+export function SkillsSection({
+  skills,
+  tools,
+  locale,
+}: {
+  skills: Skill[];
+  tools: Tool[];
+  locale: Locale;
+}) {
+  const t = getMessages(locale).skills;
+  const groupLabels: Record<DeckGroup, string> = { ...t.categories, tools: t.tools };
   return (
     <section id="skills" aria-labelledby="skills-title" data-theme="light">
       <SkillsMotion>
@@ -50,7 +61,7 @@ export function SkillsSection({ skills, tools }: { skills: Skill[]; tools: Tool[
         >
           <div>
             <h2 id="skills-title" className="title-section">
-              Compétences
+              {t.title}
             </h2>
             {/* Visual only: each list keeps its own heading for assistive technologies. */}
             <p
@@ -64,7 +75,7 @@ export function SkillsSection({ skills, tools }: { skills: Skill[]; tools: Tool[
                   data-group={group}
                   className="col-start-1 row-start-1"
                 >
-                  {GROUPS[group].label}
+                  {groupLabels[group]}
                 </span>
               ))}
             </p>
@@ -76,7 +87,7 @@ export function SkillsSection({ skills, tools }: { skills: Skill[]; tools: Tool[
           >
             {Constants.public.Enums.cv_skill_category.map((category) => (
               <div key={category} className={DECK_LAYER}>
-                <h3 className="title-card pinned-wide:sr-only">{GROUPS[category].label}</h3>
+                <h3 className="title-card pinned-wide:sr-only">{groupLabels[category]}</h3>
                 <ul className={`mt-4 flex flex-wrap gap-3 ${DECK_LAYER}`}>
                   {skills
                     .filter((skill) => skill.category === category)
@@ -94,7 +105,7 @@ export function SkillsSection({ skills, tools }: { skills: Skill[]; tools: Tool[
             ))}
 
             <div className={`md:col-span-2 ${DECK_LAYER}`}>
-              <h3 className="title-card pinned-wide:sr-only">{GROUPS.tools.label}</h3>
+              <h3 className="title-card pinned-wide:sr-only">{groupLabels.tools}</h3>
               <ul className={`mt-4 grid grid-cols-2 gap-4 md:grid-cols-4 ${DECK_LAYER}`}>
                 {tools.map((tool) => (
                   <DeckCard key={tool.id} group="tools">

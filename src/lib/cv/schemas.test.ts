@@ -208,3 +208,23 @@ describe("readFormValues", () => {
     expect(readFormValues(formData)).toEqual({ label: "CSS" });
   });
 });
+
+describe("English translation fields", () => {
+  it("store an empty translation as null so the French text shows", () => {
+    expect(profileSchema.parse({ ...PROFILE, about_en: "" }).about_en).toBeNull();
+  });
+
+  it("read an absent translation as null", () => {
+    expect(profileSchema.parse(PROFILE).availability_title_en).toBeNull();
+  });
+
+  it("trim a translation and keep its keyword markup", () => {
+    expect(
+      profileSchema.parse({ ...PROFILE, about_en: "  I code in **Angular**.  " }).about_en,
+    ).toBe("I code in **Angular**.");
+  });
+
+  it("reject an overlong translation", () => {
+    expect(profileSchema.safeParse({ ...PROFILE, about_en: "a".repeat(2001) }).success).toBe(false);
+  });
+});

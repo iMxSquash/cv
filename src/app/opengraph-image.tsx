@@ -3,12 +3,12 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getProfile } from "@/lib/cv/queries";
 import { OG_PALETTE } from "@/lib/og-palette";
+import { getLocale } from "@/lib/i18n/server";
 import { SITE_URL } from "@/lib/site";
 
-// Same daily refresh as the pages; /admin writes revalidate it immediately.
-export const revalidate = 86400;
-
-export const alt = "Carte de présentation du CV en ligne : nom, poste et disponibilité";
+// The file convention reads `alt` statically, so one text covers both languages.
+export const alt =
+  "Carte de présentation du CV en ligne : nom, poste et disponibilité / Online resume preview card: name, job title and availability";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -27,8 +27,9 @@ const COLORS = {
 const FONTS_DIR = join(process.cwd(), "src/assets/fonts");
 
 export default async function OpengraphImage() {
+  const locale = await getLocale();
   const [profile, outfit, dmSans] = await Promise.all([
-    getProfile(),
+    getProfile(locale),
     readFile(join(FONTS_DIR, "Outfit-SemiBold.ttf")),
     readFile(join(FONTS_DIR, "DMSans-Regular.ttf")),
   ]);

@@ -36,6 +36,12 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
   experiences: ({ row, action }) => (
     <AdminForm action={action}>
       <TextField name="role" label="Poste" defaultValue={row?.role} isRequired />
+      <TextField
+        name="role_en"
+        label="Poste (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.role_en}
+      />
       <TextField name="company" label="Entreprise" defaultValue={row?.company} isRequired />
       <ImageField
         kind="experience"
@@ -62,6 +68,12 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         hint="Ex. Trappes (78) et travail à distance."
         defaultValue={row?.location}
       />
+      <TextField
+        name="location_en"
+        label="Lieu (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.location_en}
+      />
       <TextField name="description" label="Description" rows={4} defaultValue={row?.description} />
       <VisibleField row={row} />
     </AdminForm>
@@ -72,7 +84,19 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
       <TextField name="city" label="Ville" defaultValue={row?.city} />
       <ImageField kind="education" label="Logo de l'école" currentUrl={row?.logo_url ?? null} />
       <TextField name="degree" label="Diplôme" defaultValue={row?.degree} isRequired />
+      <TextField
+        name="degree_en"
+        label="Diplôme (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.degree_en}
+      />
       <TextField name="details" label="Précisions" defaultValue={row?.details} />
+      <TextField
+        name="details_en"
+        label="Précisions (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.details_en}
+      />
       <TextField
         name="start_year"
         label="Année de début"
@@ -121,6 +145,12 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         hint="Ex. UI Design, prototyping."
         defaultValue={row?.purpose}
       />
+      <TextField
+        name="purpose_en"
+        label="Usage (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.purpose_en}
+      />
       <SelectField
         name="icon_key"
         label="Icône"
@@ -134,11 +164,23 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
     <AdminForm action={action}>
       <TextField name="name" label="Langue" defaultValue={row?.name} isRequired />
       <TextField
+        name="name_en"
+        label="Langue (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.name_en}
+      />
+      <TextField
         name="level"
         label="Niveau"
         hint="Ex. B2, langue maternelle."
         defaultValue={row?.level}
         isRequired
+      />
+      <TextField
+        name="level_en"
+        label="Niveau (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.level_en}
       />
       <SelectField
         name="flag_code"
@@ -180,10 +222,22 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
     <AdminForm action={action}>
       <TextField name="label" label="Libellé" defaultValue={row?.label} isRequired />
       <TextField
+        name="label_en"
+        label="Libellé (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.label_en}
+      />
+      <TextField
         name="detail"
         label="Précision"
         hint="Ex. Paris et Île-de-France."
         defaultValue={row?.detail}
+      />
+      <TextField
+        name="detail_en"
+        label="Précision (anglais)"
+        hint="Vide : le texte français est affiché."
+        defaultValue={row?.detail_en}
       />
       <SelectField
         name="icon_key"
@@ -207,7 +261,7 @@ interface RowSummary {
 const ENTITY_SUMMARIES: { [K in EntitySlug]: (row: EntityRow<K>) => RowSummary } = {
   experiences: (row) => ({
     title: `${row.role} · ${row.company}`,
-    detail: <MonthPeriod start={row.start_date} end={row.end_date} />,
+    detail: <MonthPeriod start={row.start_date} end={row.end_date} locale="fr" />,
   }),
   education: (row) => ({
     title: `${row.degree} · ${row.school}`,

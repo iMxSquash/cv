@@ -1,6 +1,8 @@
 import { headers } from "next/headers";
 
 import { InlineScript } from "@/components/ui/InlineScript";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 const LOADER_ID = "loader";
 const SEEN_KEY = "cv:loader-seen";
@@ -24,7 +26,7 @@ const PLAY_SCRIPT = `(function(){try{if(sessionStorage.getItem("${SEEN_KEY}")||m
  * JS bundle. Plays on the first full load of the session only, never without JS
  * or under reduced motion: hidden until the play script sets data-state.
  */
-export async function Loader() {
+export async function Loader({ locale }: { locale: Locale }) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <>
@@ -35,7 +37,7 @@ export async function Loader() {
         className="fixed inset-0 z-60 hidden place-items-center data-[state=play]:grid data-[state=play]:animate-loader-exit"
         suppressHydrationWarning
       >
-        <span className="sr-only">Chargement du CV</span>
+        <span className="sr-only">{getMessages(locale).loading}</span>
         {/* Padded viewBox: the outline stroke straddles the logo's edges. */}
         <svg
           viewBox="-4 -4 286 184"

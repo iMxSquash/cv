@@ -1,17 +1,27 @@
-import { formatMonthYear, hasDistinctStartYear, OPEN_END_LABEL } from "@/lib/cv/format";
+import { formatMonthYear, hasDistinctStartYear } from "@/lib/cv/format";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 /** SQL date "2025-09-01" -> <time dateTime="2025-09">sept. 2025</time> */
-function MonthTime({ date }: { date: string }) {
-  return <time dateTime={date.slice(0, 7)}>{formatMonthYear(date)}</time>;
+function MonthTime({ date, locale }: { date: string; locale: Locale }) {
+  return <time dateTime={date.slice(0, 7)}>{formatMonthYear(date, locale)}</time>;
 }
 
 /** "sept. 2025 – sept. 2026", or "… – aujourd'hui" when the end is open. */
-export function MonthPeriod({ start, end }: { start: string; end: string | null }) {
+export function MonthPeriod({
+  start,
+  end,
+  locale,
+}: {
+  start: string;
+  end: string | null;
+  locale: Locale;
+}) {
   return (
     <>
-      <MonthTime date={start} />
+      <MonthTime date={start} locale={locale} />
       {" – "}
-      {end ? <MonthTime date={end} /> : OPEN_END_LABEL}
+      {end ? <MonthTime date={end} locale={locale} /> : getMessages(locale).openEnd}
     </>
   );
 }

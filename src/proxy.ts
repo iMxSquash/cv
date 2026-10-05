@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { ADMIN_LOGIN_PATH, ADMIN_PATH } from "@/lib/admin/paths";
+import { DEFAULT_LOCALE, LOCALE_HEADER, splitLocalePath } from "@/lib/i18n/config";
 import { buildCsp, createNonce } from "@/lib/security/csp";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
@@ -48,10 +49,17 @@ async function gateAdmin(req: NextRequest, csp: string): Promise<NextResponse> {
  * Sets a per-request nonce CSP: Next reads it from the request headers to
  * stamp its own scripts, and pages read `x-nonce` for their inline ones.
  * Admin requests also go through the session gate.
+ *
+ * Languages: `/` is French and `/en/...` is English. A prefixed URL is
+ * rewritten to its unprefixed route and the locale travels in a request
+ * header, so each page exists once. The admin is French only and never
+ * reachable through a prefix.
  */
 export async function proxy(req: NextRequest): Promise<NextResponse> {
   const nonce = createNonce();
+  const { locale, path } = splitLocalePath(req.nextUrl.pathname);
   const isAdmin = isAdminPath(req.nextUrl.pathname);
+  const isLocalized = locale !== DEFAULT_LOCALE && !isAdminPath(path);
   const csp = buildCsp({
     nonce,
     isDev: process.env.NODE_ENV === "development",
@@ -60,10 +68,14 @@ export async function proxy(req: NextRequest): Promise<NextResponse> {
   });
   req.headers.set(NONCE_HEADER, nonce);
   req.headers.set(CSP_HEADER, csp);
+  // Always overwritten: a client-supplied value must never select a locale.
+  req.headers.set(LOCALE_HEADER, isLocalized ? locale : DEFAULT_LOCALE);
 
   if (isAdmin) return gateAdmin(req, csp);
 
-  const response = NextResponse.next({ request: req });
+  const response = isLocalized
+    ? NextResponse.rewrite(new URL(path, req.url), { request: req })
+    : NextResponse.next({ request: req });
   response.headers.set(CSP_HEADER, csp);
   return response;
 }

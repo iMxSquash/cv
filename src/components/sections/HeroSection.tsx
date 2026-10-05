@@ -1,16 +1,18 @@
 import { Fragment } from "react";
 import type { Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { HeroMotion } from "./HeroMotion";
 
-export function HeroSection({ profile }: { profile: Profile }) {
+export function HeroSection({ profile, locale }: { profile: Profile; locale: Locale }) {
   const words = profile.full_name.split(" ");
   return (
     // Transparent: the WebGL gradient (fixed canvas behind the page) shows through the frame.
     <section
       id="hero"
-      aria-label="Présentation"
+      aria-label={getMessages(locale).hero.label}
       data-theme="dark"
       className="relative bg-transparent"
     >

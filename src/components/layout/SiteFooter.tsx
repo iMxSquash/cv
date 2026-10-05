@@ -4,6 +4,8 @@ import { AssetImage } from "@/components/ui/AssetImage";
 import { ExternalLink } from "@/components/ui/ExternalLink";
 import { formatLongDate } from "@/lib/cv/format";
 import type { Link, Profile } from "@/lib/cv/types";
+import { type Locale, localePath } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 const LINK_CLASS =
   "inline-flex min-h-11 items-center gap-2 font-medium text-accent underline-offset-4 hover:underline";
@@ -12,9 +14,11 @@ interface SiteFooterProps {
   profile: Profile;
   links: Link[];
   today: Date;
+  locale: Locale;
 }
 
-export function SiteFooter({ profile, links, today }: SiteFooterProps) {
+export function SiteFooter({ profile, links, today, locale }: SiteFooterProps) {
+  const t = getMessages(locale).footer;
   return (
     <footer
       id="contact"
@@ -27,7 +31,7 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
           <AssetImage src={profile.avatar_url} className="size-14 rounded-full" />
         )}
         <h2 id="contact-title" className="title-card">
-          Contact
+          {t.contact}
         </h2>
       </div>
       <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
@@ -47,7 +51,7 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
         )}
         {links.map((link) => (
           <li key={link.id}>
-            <ExternalLink href={link.url} className={LINK_CLASS}>
+            <ExternalLink href={link.url} className={LINK_CLASS} locale={locale}>
               <CvIcon name={link.platform} />
               {link.label}
             </ExternalLink>
@@ -61,19 +65,19 @@ export function SiteFooter({ profile, links, today }: SiteFooterProps) {
         </p>
       )}
       <NextLink
-        href="/print"
+        href={localePath(locale, "/print")}
         className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-raised px-5 font-medium text-accent underline-offset-4 shadow-elevation hover:underline"
       >
         <CvIcon name="download" />
-        Télécharger le CV (PDF)
+        {t.downloadPdf}
       </NextLink>
       <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-text-muted/30 pt-6 text-caption text-text-muted">
         <p>
-          © {today.getFullYear()} {profile.full_name} · Mis à jour le{" "}
-          <time dateTime={profile.updated_at}>{formatLongDate(profile.updated_at)}</time>
+          © {today.getFullYear()} {profile.full_name} · {t.updatedOn}{" "}
+          <time dateTime={profile.updated_at}>{formatLongDate(profile.updated_at, locale)}</time>
         </p>
-        <NextLink href="/mentions-legales" className={LINK_CLASS}>
-          Mentions légales
+        <NextLink href={localePath(locale, "/mentions-legales")} className={LINK_CLASS}>
+          {t.legal}
         </NextLink>
       </div>
     </footer>
