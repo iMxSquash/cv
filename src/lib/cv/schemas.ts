@@ -31,6 +31,10 @@ const optionalText = (max = SHORT_TEXT_MAX) =>
     .max(max, tooLong(max))
     .transform((value) => value || null);
 
+/** English translation of a field: optional, and an empty one means "show the French text". */
+const translatedText = (max = SHORT_TEXT_MAX) =>
+  z.preprocess((value) => value ?? "", optionalText(max));
+
 /** An unchecked checkbox is absent from the FormData. */
 const checkbox = z.literal("on").optional().transform(Boolean);
 
@@ -54,6 +58,7 @@ export const profileSchema = z.object({
   quote: optionalText(MEDIUM_TEXT_MAX),
   quote_author: optionalText(),
   about: requiredText(LONG_TEXT_MAX),
+  about_en: translatedText(LONG_TEXT_MAX),
   email: requiredText().regex(EMAIL_PATTERN, "Adresse e-mail invalide."),
   phone: optionalText().refine(
     (value) => value === null || PHONE_PATTERN.test(value),
@@ -61,17 +66,21 @@ export const profileSchema = z.object({
   ),
   location: optionalText(),
   availability_title: optionalText(),
+  availability_title_en: translatedText(),
   availability_detail: optionalText(MEDIUM_TEXT_MAX),
+  availability_detail_en: translatedText(MEDIUM_TEXT_MAX),
   is_available: checkbox,
 });
 
 export const experienceSchema = z
   .object({
     role: requiredText(),
+    role_en: translatedText(),
     company: requiredText(),
     start_date: sqlDate,
     end_date: z.preprocess(emptyToUndefined, sqlDate.optional()).transform((v) => v ?? null),
     location: optionalText(),
+    location_en: translatedText(),
     description: optionalText(LONG_TEXT_MAX),
     visible: checkbox,
   })
@@ -85,7 +94,9 @@ export const educationSchema = z
     school: requiredText(),
     city: optionalText(),
     degree: requiredText(),
+    degree_en: translatedText(),
     details: optionalText(MEDIUM_TEXT_MAX),
+    details_en: translatedText(MEDIUM_TEXT_MAX),
     start_year: z.preprocess(emptyToUndefined, year.optional()).transform((v) => v ?? null),
     end_year: year,
     visible: checkbox,
@@ -118,13 +129,16 @@ export const skillSchema = z.object({
 export const toolSchema = z.object({
   name: requiredText(),
   purpose: optionalText(),
+  purpose_en: translatedText(),
   icon_key: z.enum(ICON_KEYS, { error: "Icône inconnue." }),
   visible: checkbox,
 });
 
 export const languageSchema = z.object({
   name: requiredText(),
+  name_en: translatedText(),
   level: requiredText(),
+  level_en: translatedText(),
   flag_code: z.enum(FLAG_CODES, { error: "Drapeau inconnu." }),
   visible: checkbox,
 });
@@ -141,7 +155,9 @@ export const linkSchema = z.object({
 
 export const mobilitySchema = z.object({
   label: requiredText(),
+  label_en: translatedText(),
   detail: optionalText(),
+  detail_en: translatedText(),
   icon_key: z.enum(ICON_KEYS, { error: "Icône inconnue." }),
   visible: checkbox,
 });

@@ -41,6 +41,13 @@ export default async function ProfilePage() {
           isRequired
         />
         <TextField
+          name="about_en"
+          label="À propos (anglais)"
+          rows={6}
+          hint="Vide : le texte français est affiché. Même syntaxe **mot** pour la mise en avant."
+          defaultValue={profile.about_en}
+        />
+        <TextField
           name="email"
           label="E-mail"
           type="email"
@@ -67,10 +74,22 @@ export default async function ProfilePage() {
           defaultValue={profile.availability_title}
         />
         <TextField
+          name="availability_title_en"
+          label="Disponibilité (anglais)"
+          hint="Vide : le texte français est affiché."
+          defaultValue={profile.availability_title_en}
+        />
+        <TextField
           name="availability_detail"
           label="Précision de disponibilité"
           hint="Ex. Septembre 2026, présentiel ou télétravail."
           defaultValue={profile.availability_detail}
+        />
+        <TextField
+          name="availability_detail_en"
+          label="Précision de disponibilité (anglais)"
+          hint="Vide : le texte français est affiché."
+          defaultValue={profile.availability_detail_en}
         />
         <CheckboxField
           name="is_available"
