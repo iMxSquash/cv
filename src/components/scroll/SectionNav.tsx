@@ -1,4 +1,5 @@
-import { NAV_SECTIONS } from "./sections";
+import type { Messages } from "@/lib/i18n/messages";
+import { NAV_SECTION_IDS } from "./sections";
 
 /** Bar length in px by distance to the active section: active, neighbor, others. */
 const BAR_WIDTHS_PX = [48, 28, 12] as const;
@@ -10,22 +11,28 @@ function getBarScale(index: number, activeIndex: number): number {
 }
 
 /** Side "scroll indicator": one bar per section, the current one stretched. */
-export function SectionNav({ activeIndex }: { activeIndex: number }) {
+export function SectionNav({
+  activeIndex,
+  labels,
+}: {
+  activeIndex: number;
+  labels: Messages["nav"];
+}) {
   return (
     <nav
-      aria-label="Sections"
+      aria-label={labels.sections}
       className="fixed top-1/2 right-1 z-40 hidden -translate-y-1/2 text-(--interface-color) transition-colors duration-300 md:block"
     >
       <ol>
-        {NAV_SECTIONS.map((section, index) => (
-          <li key={section.id}>
+        {NAV_SECTION_IDS.map((id, index) => (
+          <li key={id}>
             <a
-              href={`#${section.id}`}
+              href={`#${id}`}
               aria-current={index === activeIndex ? "location" : undefined}
               className="group relative flex h-11 w-14 items-center justify-end"
             >
               <span className="pointer-events-none absolute right-full mr-2 rounded-full bg-surface px-3 py-1 text-caption whitespace-nowrap opacity-0 shadow-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                {section.label}
+                {labels.sectionLabels[id]}
               </span>
               <span
                 aria-hidden="true"

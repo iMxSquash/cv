@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatLongDate, formatMonthYear, isOngoing, parseKeywords } from "./format";
+import {
+  formatLongDate,
+  formatMonthPeriod,
+  formatMonthYear,
+  isOngoing,
+  parseKeywords,
+} from "./format";
 
 describe("parseKeywords", () => {
   it("splits plain text and **keywords** in order", () => {
@@ -54,17 +60,36 @@ describe("isOngoing", () => {
 
 describe("formatMonthYear", () => {
   it("formats SQL dates in French without timezone shift", () => {
-    expect(formatMonthYear("2025-09-01")).toBe("sept. 2025");
-    expect(formatMonthYear("2024-06-01")).toBe("juin 2024");
+    expect(formatMonthYear("2025-09-01", "fr")).toBe("sept. 2025");
+    expect(formatMonthYear("2024-06-01", "fr")).toBe("juin 2024");
+  });
+
+  it("formats SQL dates in English", () => {
+    expect(formatMonthYear("2024-06-01", "en")).toBe("Jun 2024");
   });
 });
 
 describe("formatLongDate", () => {
   it("formats a timestamp as a French long date", () => {
-    expect(formatLongDate("2026-10-01T14:41:08.780105+00:00")).toBe("1 octobre 2026");
+    expect(formatLongDate("2026-10-01T14:41:08.780105+00:00", "fr")).toBe("1 octobre 2026");
+  });
+
+  it("formats a timestamp as an English long date", () => {
+    expect(formatLongDate("2026-10-01T14:41:08.780105+00:00", "en")).toBe("1 October 2026");
   });
 
   it("uses the Paris day, not the UTC one", () => {
-    expect(formatLongDate("2026-09-30T23:30:00Z")).toBe("1 octobre 2026");
+    expect(formatLongDate("2026-09-30T23:30:00Z", "fr")).toBe("1 octobre 2026");
+  });
+});
+
+describe("formatMonthPeriod", () => {
+  it("ends an open period with the wording of the language", () => {
+    expect(formatMonthPeriod("2025-09-01", null, "fr")).toBe("sept. 2025 – aujourd'hui");
+    expect(formatMonthPeriod("2025-09-01", null, "en")).toBe("Sept 2025 – present");
+  });
+
+  it("joins two dates of a closed period", () => {
+    expect(formatMonthPeriod("2024-06-01", "2025-09-01", "fr")).toBe("juin 2024 – sept. 2025");
   });
 });

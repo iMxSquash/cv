@@ -1,3 +1,12 @@
+import {
+  DEFAULT_LOCALE,
+  LANGUAGE_TAGS,
+  LOCALES,
+  OPEN_GRAPH_LOCALES,
+  type Locale,
+  localePath,
+} from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { isOngoing, parseKeywords } from "./format";
 import type { Education, Experience, Language, Link, Profile, Skill, Tool } from "./types";
 
@@ -21,16 +30,36 @@ export function truncateAtWord(text: string, max: number): string {
   return `${words.replace(/[\s,;:.!?]+$/, "")}…`;
 }
 
-export function buildTitle(profile: Pick<Profile, "full_name" | "headline">): string {
-  return `${profile.full_name}, ${profile.headline} · CV`;
+export function buildTitle(
+  profile: Pick<Profile, "full_name" | "headline">,
+  locale: Locale,
+): string {
+  return `${profile.full_name}, ${profile.headline} · ${getMessages(locale).seo.titleSuffix}`;
 }
 
 /**
  * Open Graph fields shared by every page. Next replaces a parent `openGraph`
  * object instead of merging it, so pages spread this before their own fields.
  */
-export function buildOpenGraphBase(profile: Pick<Profile, "full_name">) {
-  return { type: "profile", locale: "fr_FR", siteName: profile.full_name } as const;
+export function buildOpenGraphBase(profile: Pick<Profile, "full_name">, locale: Locale) {
+  return {
+    type: "profile",
+    locale: OPEN_GRAPH_LOCALES[locale],
+    siteName: profile.full_name,
+  } as const;
+}
+
+/**
+ * Canonical URL and hreflang alternates of a page that exists in every
+ * language. `path` is locale-free ("/", "/mentions-legales"); the default
+ * language is also the `x-default` one.
+ */
+export function buildAlternates(locale: Locale, path: string) {
+  const languages: Record<string, string> = Object.fromEntries(
+    LOCALES.map((candidate) => [LANGUAGE_TAGS[candidate], localePath(candidate, path)]),
+  );
+  languages["x-default"] = localePath(DEFAULT_LOCALE, path);
+  return { canonical: localePath(locale, path), languages };
 }
 
 export function buildDescription(profile: Pick<Profile, "about">): string {
@@ -54,24 +83,25 @@ interface JsonLdSource {
  * schema.org `ProfilePage` whose main entity is the resume owner. Only facts
  * rendered on the page go in here (Google penalizes markup describing hidden content).
  */
-export function buildProfileJsonLd(cv: JsonLdSource, today: Date, siteUrl: string) {
+export function buildProfileJsonLd(cv: JsonLdSource, today: Date, siteUrl: string, locale: Locale) {
+  const pageUrl = `${siteUrl}${localePath(locale, "/")}`;
   const { profile } = cv;
   const currentJob = cv.experiences.find((job) => isOngoing(job.start_date, job.end_date, today));
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "@id": `${siteUrl}/`,
-    url: `${siteUrl}/`,
-    name: buildTitle(profile),
-    inLanguage: "fr-FR",
+    "@id": pageUrl,
+    url: pageUrl,
+    name: buildTitle(profile, locale),
+    inLanguage: LANGUAGE_TAGS[locale],
     dateModified: profile.updated_at,
     mainEntity: {
       "@type": "Person",
-      "@id": `${siteUrl}/#person`,
+      "@id": `${pageUrl}#person`,
       name: profile.full_name,
       jobTitle: profile.headline,
       description: buildDescription(profile),
-      url: `${siteUrl}/`,
+      url: pageUrl,
       email: `mailto:${profile.email}`,
       image: profile.avatar_url ?? undefined,
       homeLocation: profile.location ? { "@type": "Place", name: profile.location } : undefined,

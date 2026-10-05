@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { CapsuleNav } from "./CapsuleNav";
-import { NAV_SECTIONS, type SectionTheme } from "./sections";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
+import { NAV_SECTION_IDS, type SectionTheme } from "./sections";
 import { SectionNav } from "./SectionNav";
 
 interface ActiveSection {
@@ -15,11 +17,11 @@ interface ActiveSection {
  * Fixed interface laid over the sections: tracks the section crossing the
  * middle of the viewport, so the navs highlight it and inherit its theme.
  */
-export function ScrollChrome({ name }: { name: string }) {
+export function ScrollChrome({ name, locale }: { name: string; locale: Locale }) {
   const [active, setActive] = useState<ActiveSection>({ index: 0, theme: "light" });
 
   useGSAP(() => {
-    NAV_SECTIONS.forEach(({ id }, index) => {
+    NAV_SECTION_IDS.forEach((id, index) => {
       const section = document.getElementById(id);
       if (!section) return;
       ScrollTrigger.create({
@@ -38,8 +40,8 @@ export function ScrollChrome({ name }: { name: string }) {
   // nothing; the navs only inherit the theme tokens.
   return (
     <div data-theme={active.theme} className="contents">
-      <CapsuleNav name={name} />
-      <SectionNav activeIndex={active.index} />
+      <CapsuleNav name={name} locale={locale} />
+      <SectionNav activeIndex={active.index} labels={getMessages(locale).nav} />
     </div>
   );
 }

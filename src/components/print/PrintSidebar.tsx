@@ -1,8 +1,9 @@
 import { Flag } from "@/components/icons/Flag";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ExternalLink } from "@/components/ui/ExternalLink";
-import { LINK_PLATFORM_LABELS } from "@/lib/cv/labels";
 import type { Language, Link, MobilityItem, Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { IconTile } from "./IconTile";
 
 /** A divider, then a titled list of rows; the contact group has no visible title in the Figma. */
@@ -64,9 +65,11 @@ interface PrintSidebarProps {
   links: Link[];
   languages: Language[];
   mobility: MobilityItem[];
+  locale: Locale;
 }
 
-export function PrintSidebar({ profile, links, languages, mobility }: PrintSidebarProps) {
+export function PrintSidebar({ profile, links, languages, mobility, locale }: PrintSidebarProps) {
+  const t = getMessages(locale);
   return (
     <aside className="relative isolate flex w-[176pt] shrink-0 flex-col gap-[16pt] p-[24pt]">
       <div aria-hidden="true" className="print-halos absolute inset-y-0 left-0 -z-10 w-[184pt]" />
@@ -99,36 +102,44 @@ export function PrintSidebar({ profile, links, languages, mobility }: PrintSideb
       <SidebarGroup id="print-contact" title="Contact" isTitleHidden>
         <InfoRow
           icon={<DiscIcon name="mail" />}
-          label="Email"
+          label={t.print.email}
           value={<a href={`mailto:${profile.email}`}>{profile.email}</a>}
         />
         {profile.phone && (
           <InfoRow
             icon={<DiscIcon name="phone" />}
-            label="Téléphone"
+            label={t.print.phone}
             value={<a href={`tel:${profile.phone.replaceAll(" ", "")}`}>{profile.phone}</a>}
           />
         )}
         {profile.location && (
-          <InfoRow icon={<DiscIcon name="location" />} label="Adresse" value={profile.location} />
+          <InfoRow
+            icon={<DiscIcon name="location" />}
+            label={t.print.address}
+            value={profile.location}
+          />
         )}
       </SidebarGroup>
 
       {links.length > 0 && (
-        <SidebarGroup id="print-links" title="Réseaux sociaux">
+        <SidebarGroup id="print-links" title={t.print.socials}>
           {links.map((link) => (
             <InfoRow
               key={link.id}
               icon={<DiscIcon name={link.platform} />}
-              label={LINK_PLATFORM_LABELS[link.platform]}
-              value={<ExternalLink href={link.url}>{link.label}</ExternalLink>}
+              label={t.linkPlatforms[link.platform]}
+              value={
+                <ExternalLink href={link.url} locale={locale}>
+                  {link.label}
+                </ExternalLink>
+              }
             />
           ))}
         </SidebarGroup>
       )}
 
       {languages.length > 0 && (
-        <SidebarGroup id="print-languages" title="Langues">
+        <SidebarGroup id="print-languages" title={t.print.languages}>
           {languages.map((language) => (
             <InfoRow
               key={language.id}
@@ -142,7 +153,7 @@ export function PrintSidebar({ profile, links, languages, mobility }: PrintSideb
       )}
 
       {mobility.length > 0 && (
-        <SidebarGroup id="print-mobility" title="Mobilité et disponibilité">
+        <SidebarGroup id="print-mobility" title={t.print.mobility}>
           {mobility.map((item) => (
             <InfoRow
               key={item.id}

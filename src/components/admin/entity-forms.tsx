@@ -261,7 +261,7 @@ interface RowSummary {
 const ENTITY_SUMMARIES: { [K in EntitySlug]: (row: EntityRow<K>) => RowSummary } = {
   experiences: (row) => ({
     title: `${row.role} · ${row.company}`,
-    detail: <MonthPeriod start={row.start_date} end={row.end_date} />,
+    detail: <MonthPeriod start={row.start_date} end={row.end_date} locale="fr" />,
   }),
   education: (row) => ({
     title: `${row.degree} · ${row.school}`,

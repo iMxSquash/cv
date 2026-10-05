@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { buildLlmsTxt } from "./llms";
+import { localizeCv } from "./localize";
 import type { Cv } from "./types";
 
 const ROW = { id: "1", created_at: "2026-01-01T00:00:00Z", sort_order: 0, visible: true };
@@ -11,6 +12,9 @@ const cv: Cv = {
     full_name: "Ada Lovelace",
     headline: "Full-Stack Developer",
     about: "Je code en **TypeScript**.",
+    about_en: "I code in **TypeScript**.",
+    availability_title_en: null,
+    availability_detail_en: null,
     email: "ada@example.dev",
     phone: null,
     location: "Paris, 75001",
@@ -30,6 +34,8 @@ const cv: Cv = {
       start_date: "2025-09-01",
       end_date: null,
       location: "Paris",
+      location_en: "Paris",
+      role_en: "Developer",
       description: null,
       logo_url: null,
     },
@@ -40,21 +46,25 @@ const cv: Cv = {
       school: "Digital Campus",
       city: "Paris",
       degree: "Bachelor",
+      degree_en: "Bachelor degree",
       details: null,
+      details_en: null,
       start_year: 2023,
       end_year: 2026,
       logo_url: null,
     },
   ],
   skills: [{ ...ROW, category: "development", label: "React", details: [] }],
-  tools: [{ ...ROW, name: "Figma", purpose: null, icon_key: "figma" }],
-  languages: [{ ...ROW, name: "Anglais", level: "B2", flag_code: "gb" }],
+  tools: [{ ...ROW, name: "Figma", purpose: null, purpose_en: null, icon_key: "figma" }],
+  languages: [
+    { ...ROW, name: "Anglais", name_en: "English", level: "B2", level_en: null, flag_code: "gb" },
+  ],
   links: [{ ...ROW, platform: "github", label: "ada", url: "https://github.com/ada" }],
   mobility: [],
 };
 
 describe("buildLlmsTxt", () => {
-  const text = buildLlmsTxt(cv, "https://cv.example.dev");
+  const text = buildLlmsTxt(cv, "https://cv.example.dev", "fr");
 
   it("opens with the name as title and the headline as summary", () => {
     expect(
@@ -76,5 +86,20 @@ describe("buildLlmsTxt", () => {
 
   it("skips a skill category without skills", () => {
     expect(text).not.toContain("- Design :");
+  });
+});
+
+describe("buildLlmsTxt in English", () => {
+  const text = buildLlmsTxt(localizeCv(cv, "en"), "https://cv.example.dev", "en");
+
+  it("links the English page with an English update line", () => {
+    expect(text).toContain("Online resume: https://cv.example.dev/en (updated on 1 October 2026).");
+  });
+
+  it("uses the translated entries, headings and English punctuation", () => {
+    expect(text).toContain("## Experience");
+    expect(text).toContain("- Developer, Analytical Engines (Sept 2025 – present, Paris)");
+    expect(text).toContain("- Development: React");
+    expect(text).toContain("- English: B2");
   });
 });

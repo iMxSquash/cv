@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildAlternates,
   buildDescription,
+  buildTitle,
   buildProfileJsonLd,
   serializeJsonLd,
   stripKeywords,
@@ -70,7 +72,7 @@ describe("buildProfileJsonLd", () => {
   };
 
   it("describes the owner as the main entity of a profile page", () => {
-    const jsonLd = buildProfileJsonLd(cv, TODAY, SITE);
+    const jsonLd = buildProfileJsonLd(cv, TODAY, SITE, "fr");
     expect(jsonLd).toMatchObject({
       "@type": "ProfilePage",
       url: `${SITE}/`,
@@ -92,18 +94,71 @@ describe("buildProfileJsonLd", () => {
   });
 
   it("names the employer only while a job is ongoing", () => {
-    expect(buildProfileJsonLd(cv, TODAY, SITE).mainEntity.worksFor).toEqual({
+    expect(buildProfileJsonLd(cv, TODAY, SITE, "fr").mainEntity.worksFor).toEqual({
       "@type": "Organization",
       name: "Actuelle",
     });
     const pastOnly = { ...cv, experiences: [cv.experiences[0]] };
-    expect(buildProfileJsonLd(pastOnly, TODAY, SITE).mainEntity.worksFor).toBeUndefined();
+    expect(buildProfileJsonLd(pastOnly, TODAY, SITE, "fr").mainEntity.worksFor).toBeUndefined();
   });
 
   it("omits empty optional fields from the serialized output", () => {
-    const serialized = serializeJsonLd(buildProfileJsonLd(cv, TODAY, SITE));
+    const serialized = serializeJsonLd(buildProfileJsonLd(cv, TODAY, SITE, "fr"));
     expect(serialized).not.toContain("image");
     expect(serialized).not.toContain("homeLocation");
+  });
+});
+
+describe("buildProfileJsonLd per language", () => {
+  const cv = {
+    profile: {
+      full_name: "Ada Lovelace",
+      headline: "Full-Stack Developer",
+      about: "I code in **TypeScript**.",
+      email: "ada@example.dev",
+      avatar_url: null,
+      location: null,
+      updated_at: "2026-10-01T14:41:08Z",
+    },
+    experiences: [],
+    education: [],
+    skills: [],
+    tools: [],
+    languages: [],
+    links: [],
+  };
+
+  it("points the English page at its own URL and language", () => {
+    expect(
+      buildProfileJsonLd(cv, new Date("2026-10-03T12:00:00Z"), "https://cv.example.dev", "en"),
+    ).toMatchObject({
+      url: "https://cv.example.dev/en",
+      inLanguage: "en-GB",
+      name: "Ada Lovelace, Full-Stack Developer · Resume",
+    });
+  });
+});
+
+describe("buildTitle", () => {
+  it("ends with the word for resume in the page language", () => {
+    const profile = { full_name: "Ada", headline: "Dev" };
+    expect(buildTitle(profile, "fr")).toBe("Ada, Dev · CV");
+    expect(buildTitle(profile, "en")).toBe("Ada, Dev · Resume");
+  });
+});
+
+describe("buildAlternates", () => {
+  it("makes each page canonical to itself and lists every language", () => {
+    expect(buildAlternates("en", "/")).toEqual({
+      canonical: "/en",
+      languages: { "fr-FR": "/", "en-GB": "/en", "x-default": "/" },
+    });
+  });
+
+  it("keeps the path under the language prefix", () => {
+    expect(buildAlternates("fr", "/mentions-legales").languages["en-GB"]).toBe(
+      "/en/mentions-legales",
+    );
   });
 });
 

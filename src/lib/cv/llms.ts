@@ -1,5 +1,6 @@
+import { type Locale, localePath } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { formatLongDate, formatMonthPeriod, formatYearPeriod } from "./format";
-import { LINK_PLATFORM_LABELS, SKILL_CATEGORY_LABELS } from "./labels";
 import { buildDescription, stripKeywords } from "./seo";
 import type { Cv } from "./types";
 
@@ -7,12 +8,13 @@ import type { Cv } from "./types";
  * `/llms.txt` (llmstxt.org): the whole resume as plain Markdown, so answer
  * engines that never run JavaScript can quote it with its source and date.
  */
-export function buildLlmsTxt(cv: Cv, siteUrl: string): string {
+export function buildLlmsTxt(cv: Cv, siteUrl: string, locale: Locale): string {
   const { profile } = cv;
-  const skillsByCategory = Object.entries(SKILL_CATEGORY_LABELS).flatMap(([category, label]) => {
+  const t = getMessages(locale);
+  const skillsByCategory = Object.entries(t.skills.categories).flatMap(([category, label]) => {
     const skills = cv.skills.filter((skill) => skill.category === category);
     return skills.length > 0
-      ? [`- ${label} : ${skills.map((skill) => skill.label).join(", ")}`]
+      ? [`- ${label}${t.llms.colon}${skills.map((skill) => skill.label).join(", ")}`]
       : [];
   });
   const lines = [
@@ -20,40 +22,43 @@ export function buildLlmsTxt(cv: Cv, siteUrl: string): string {
     "",
     `> ${profile.headline}. ${buildDescription(profile)}`,
     "",
-    `CV en ligne : ${siteUrl}/ (mis à jour le ${formatLongDate(profile.updated_at)}).`,
+    t.llms.onlineCv(
+      `${siteUrl}${localePath(locale, "/")}`,
+      formatLongDate(profile.updated_at, locale),
+    ),
     "",
-    "## À propos",
+    `## ${t.llms.about}`,
     "",
     stripKeywords(profile.about),
     "",
-    "## Expériences",
+    `## ${t.llms.experiences}`,
     "",
     ...cv.experiences.map(
       (job) =>
-        `- ${job.role}, ${job.company} (${formatMonthPeriod(job.start_date, job.end_date)}${job.location ? `, ${job.location}` : ""})`,
+        `- ${job.role}, ${job.company} (${formatMonthPeriod(job.start_date, job.end_date, locale)}${job.location ? `, ${job.location}` : ""})`,
     ),
     "",
-    "## Formation",
+    `## ${t.llms.education}`,
     "",
     ...cv.education.map(
       (entry) =>
         `- ${entry.degree}, ${entry.school}${entry.city ? ` (${entry.city})` : ""}, ${formatYearPeriod(entry.start_year, entry.end_year)}`,
     ),
     "",
-    "## Compétences",
+    `## ${t.llms.skills}`,
     "",
     ...skillsByCategory,
-    `- Outils : ${cv.tools.map((tool) => tool.name).join(", ")}`,
+    `- ${t.llms.tools}${t.llms.colon}${cv.tools.map((tool) => tool.name).join(", ")}`,
     "",
-    "## Langues",
+    `## ${t.llms.languages}`,
     "",
-    ...cv.languages.map((language) => `- ${language.name} : ${language.level}`),
+    ...cv.languages.map((language) => `- ${language.name}${t.llms.colon}${language.level}`),
     "",
-    "## Contact",
+    `## ${t.llms.contact}`,
     "",
-    `- E-mail : ${profile.email}`,
-    ...(profile.location ? [`- Localisation : ${profile.location}`] : []),
-    ...cv.links.map((link) => `- [${LINK_PLATFORM_LABELS[link.platform]}](${link.url})`),
+    `- ${t.llms.email}${t.llms.colon}${profile.email}`,
+    ...(profile.location ? [`- ${t.llms.location}${t.llms.colon}${profile.location}`] : []),
+    ...cv.links.map((link) => `- [${t.linkPlatforms[link.platform]}](${link.url})`),
     "",
   ];
   return lines.join("\n");

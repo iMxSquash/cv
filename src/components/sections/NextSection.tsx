@@ -1,15 +1,16 @@
 import { CvIcon } from "@/components/icons/CvIcon";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import type { Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { NextMotion } from "./NextMotion";
-
-const FALLBACK_TITLE = "Me contacter";
 
 /** The sentence travels along this curve (viewBox units); both ends overshoot the frame. */
 const CURVE = "M -100 380 C 200 80, 500 520, 1100 160";
 
-export function NextSection({ profile }: { profile: Profile }) {
-  const title = profile.availability_title ?? FALLBACK_TITLE;
+export function NextSection({ profile, locale }: { profile: Profile; locale: Locale }) {
+  const t = getMessages(locale).next;
+  const title = profile.availability_title ?? t.fallbackTitle;
   return (
     <section
       id="next"
@@ -59,7 +60,7 @@ export function NextSection({ profile }: { profile: Profile }) {
             className="mt-10 inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-display px-6 py-3 font-medium text-surface"
           >
             <CvIcon name="mail" />
-            Écrire un email
+            {t.writeEmail}
           </a>
         </div>
       </NextMotion>

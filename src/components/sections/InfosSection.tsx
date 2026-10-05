@@ -2,19 +2,23 @@ import { CvIcon } from "@/components/icons/CvIcon";
 import { Flag } from "@/components/icons/Flag";
 import { Card } from "@/components/ui/Card";
 import type { Language, MobilityItem, Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { InfosMotion } from "./InfosMotion";
 
 interface InfosSectionProps {
   profile: Profile;
   languages: Language[];
   mobility: MobilityItem[];
+  locale: Locale;
 }
 
-export function InfosSection({ profile, languages, mobility }: InfosSectionProps) {
+export function InfosSection({ profile, languages, mobility, locale }: InfosSectionProps) {
+  const t = getMessages(locale).infos;
   return (
     <section id="infos" aria-labelledby="infos-title" data-theme="dark" className="section-shell">
       <h2 id="infos-title" className="title-section">
-        Infos pratiques
+        {t.title}
       </h2>
       <InfosMotion>
         <div data-infos-grid className="mt-10 grid gap-4 md:grid-cols-3">
@@ -32,7 +36,7 @@ export function InfosSection({ profile, languages, mobility }: InfosSectionProps
             </Card>
           )}
           <Card>
-            <h3 className="title-card">Langues</h3>
+            <h3 className="title-card">{t.languages}</h3>
             <ul className="mt-3 grid gap-2">
               {languages.map((language) => (
                 <li key={language.id} className="flex items-center gap-3">
@@ -45,7 +49,7 @@ export function InfosSection({ profile, languages, mobility }: InfosSectionProps
             </ul>
           </Card>
           <Card className="md:col-span-3">
-            <h3 className="title-card">Mobilité</h3>
+            <h3 className="title-card">{t.mobility}</h3>
             <ul className="mt-3 grid gap-2 md:grid-cols-3">
               {mobility.map((item) => (
                 <li key={item.id} className="flex items-center gap-3">

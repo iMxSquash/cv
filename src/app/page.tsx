@@ -11,29 +11,42 @@ import { SkillsSection } from "@/components/sections/SkillsSection";
 import { WebGLBackground } from "@/components/webgl/WebGLBackground";
 import { getCv, getProfile } from "@/lib/cv/queries";
 import {
+  buildAlternates,
   buildDescription,
   buildOpenGraphBase,
   buildProfileJsonLd,
   buildTitle,
   serializeJsonLd,
 } from "@/lib/cv/seo";
+import { localePath } from "@/lib/i18n/config";
+import { getLocale } from "@/lib/i18n/server";
 import { SITE_URL } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await getProfile();
-  const title = buildTitle(profile);
+  const locale = await getLocale();
+  const profile = await getProfile(locale);
+  const title = buildTitle(profile, locale);
   const description = buildDescription(profile);
+  // Explicit: the file convention would point the English page at the French card.
+  const ogImage = localePath(locale, "/opengraph-image");
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: "/" },
-    openGraph: { ...buildOpenGraphBase(profile), url: "/", title, description },
-    twitter: { card: "summary_large_image", title, description },
+    alternates: buildAlternates(locale, "/"),
+    openGraph: {
+      ...buildOpenGraphBase(profile, locale),
+      url: localePath(locale, "/"),
+      title,
+      description,
+      images: [ogImage],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
 }
 
 export default async function Home() {
-  const cv = await getCv();
+  const locale = await getLocale();
+  const cv = await getCv(locale);
   const today = new Date();
   return (
     <>
@@ -41,21 +54,31 @@ export default async function Home() {
         type="application/ld+json"
         // Escaped by serializeJsonLd: database text can never close the tag.
         dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(buildProfileJsonLd(cv, today, SITE_URL)),
+          __html: serializeJsonLd(buildProfileJsonLd(cv, today, SITE_URL, locale)),
         }}
       />
-      <Loader />
+      <Loader locale={locale} />
       <WebGLBackground />
-      <ScrollChrome name={cv.profile.full_name} />
+      <ScrollChrome name={cv.profile.full_name} locale={locale} />
       <main id="content">
-        <HeroSection profile={cv.profile} />
-        <AboutSection profile={cv.profile} />
-        <ExperienceSection experiences={cv.experiences} education={cv.education} today={today} />
-        <SkillsSection skills={cv.skills} tools={cv.tools} />
-        <InfosSection profile={cv.profile} languages={cv.languages} mobility={cv.mobility} />
-        <NextSection profile={cv.profile} />
+        <HeroSection profile={cv.profile} locale={locale} />
+        <AboutSection profile={cv.profile} locale={locale} />
+        <ExperienceSection
+          experiences={cv.experiences}
+          education={cv.education}
+          today={today}
+          locale={locale}
+        />
+        <SkillsSection skills={cv.skills} tools={cv.tools} locale={locale} />
+        <InfosSection
+          profile={cv.profile}
+          languages={cv.languages}
+          mobility={cv.mobility}
+          locale={locale}
+        />
+        <NextSection profile={cv.profile} locale={locale} />
       </main>
-      <SiteFooter profile={cv.profile} links={cv.links} today={today} />
+      <SiteFooter profile={cv.profile} links={cv.links} today={today} locale={locale} />
     </>
   );
 }

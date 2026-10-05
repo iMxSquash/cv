@@ -2,22 +2,18 @@ import { CvIcon } from "@/components/icons/CvIcon";
 import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
 import { Constants, type Enums } from "@/lib/database.types";
 import { isOngoing, parseKeywords } from "@/lib/cv/format";
-import { SKILL_CATEGORY_LABELS } from "@/lib/cv/labels";
 import type { Education, Experience, Profile, Skill, Tool } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { IconTile } from "./IconTile";
 
 // Typed by the Postgres enum: a new category fails the typecheck until it gets colors.
-const SKILL_GROUPS: Record<
-  Enums<"cv_skill_category">,
-  { label: string; text: string; tint: string }
-> = {
+const SKILL_GROUPS: Record<Enums<"cv_skill_category">, { text: string; tint: string }> = {
   design: {
-    label: SKILL_CATEGORY_LABELS.design,
     text: "text-(--palette-primary-dark)",
     tint: "bg-(--palette-primary-lighter)",
   },
   development: {
-    label: SKILL_CATEGORY_LABELS.development,
     text: "text-(--palette-secondary-dark)",
     tint: "bg-(--palette-secondary-lighter)",
   },
@@ -55,7 +51,15 @@ function TimelineSection({
   );
 }
 
-function ExperienceItem({ experience, today }: { experience: Experience; today: Date }) {
+function ExperienceItem({
+  experience,
+  today,
+  locale,
+}: {
+  experience: Experience;
+  today: Date;
+  locale: Locale;
+}) {
   const isCurrent = isOngoing(experience.start_date, experience.end_date, today);
   return (
     <li
@@ -74,10 +78,12 @@ function ExperienceItem({ experience, today }: { experience: Experience; today: 
       <div className="flex shrink-0 flex-col items-end gap-[4pt]">
         <p className="flex items-center gap-[4pt] text-print-caption-1 text-text-muted">
           {isCurrent && (
-            <span className="rounded-[2pt] bg-badge px-[2pt] text-badge-text">Actuel</span>
+            <span className="rounded-[2pt] bg-badge px-[2pt] text-badge-text">
+              {getMessages(locale).experiences.current}
+            </span>
           )}
           <span>
-            <MonthPeriod start={experience.start_date} end={experience.end_date} />
+            <MonthPeriod start={experience.start_date} end={experience.end_date} locale={locale} />
           </span>
         </p>
         {experience.location && (
@@ -119,9 +125,11 @@ function EducationItem({ entry }: { entry: Education }) {
 
 function SkillGroup({
   category,
+  label,
   skills,
 }: {
   category: Enums<"cv_skill_category">;
+  label: string;
   skills: Skill[];
 }) {
   const group = SKILL_GROUPS[category];
@@ -133,7 +141,7 @@ function SkillGroup({
         >
           <CvIcon name={category} className="size-[8pt]" />
         </span>
-        {group.label}
+        {label}
       </h3>
       <ul className="mt-[8pt] flex flex-wrap gap-[4pt]">
         {skills.map((skill) => (
@@ -161,6 +169,7 @@ interface PrintContentProps {
   skills: Skill[];
   tools: Tool[];
   today: Date;
+  locale: Locale;
 }
 
 export function PrintContent({
@@ -170,10 +179,12 @@ export function PrintContent({
   skills,
   tools,
   today,
+  locale,
 }: PrintContentProps) {
+  const t = getMessages(locale);
   return (
     <div className="min-w-0 flex-1 py-[32pt] pr-[24pt]">
-      <TimelineSection id="print-about" title="À propos">
+      <TimelineSection id="print-about" title={t.about.title}>
         <p className={`p-[12pt] text-print-body-1 font-medium ${TILE_CLASS}`}>
           {parseKeywords(profile.about).map((segment, index) =>
             segment.isKeyword ? (
@@ -187,15 +198,20 @@ export function PrintContent({
         </p>
       </TimelineSection>
 
-      <TimelineSection id="print-experiences" title="Expériences">
+      <TimelineSection id="print-experiences" title={t.experiences.title}>
         <ol className="grid gap-[4pt]">
           {experiences.map((experience) => (
-            <ExperienceItem key={experience.id} experience={experience} today={today} />
+            <ExperienceItem
+              key={experience.id}
+              experience={experience}
+              today={today}
+              locale={locale}
+            />
           ))}
         </ol>
       </TimelineSection>
 
-      <TimelineSection id="print-education" title="Éducation">
+      <TimelineSection id="print-education" title={t.experiences.education}>
         <ol className="flex gap-[4pt]">
           {education.map((entry) => (
             <EducationItem key={entry.id} entry={entry} />
@@ -203,19 +219,20 @@ export function PrintContent({
         </ol>
       </TimelineSection>
 
-      <TimelineSection id="print-skills" title="Compétences">
+      <TimelineSection id="print-skills" title={t.skills.title}>
         <div className="flex gap-[12pt]">
           {Constants.public.Enums.cv_skill_category.map((category) => (
             <SkillGroup
               key={category}
               category={category}
+              label={t.skills.categories[category]}
               skills={skills.filter((skill) => skill.category === category)}
             />
           ))}
         </div>
       </TimelineSection>
 
-      <TimelineSection id="print-tools" title="Tools" isLast>
+      <TimelineSection id="print-tools" title={t.print.tools} isLast>
         <ul className="flex gap-[4pt]">
           {tools.map((tool) => (
             <li

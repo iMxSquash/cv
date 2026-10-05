@@ -1,6 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
+import { localizeCv, localizeProfile } from "@/lib/cv/localize";
 import type { Cv, Profile } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
 import { createPublicClient } from "@/lib/supabase/public";
 
 /** Tag of every cached resume read: `/admin` writes invalidate it (`revalidateCv`). */
@@ -10,11 +12,8 @@ export const CV_CACHE_TAG = "cv";
 // HTML. The daily expiry is a safety net for rows edited outside `/admin`.
 const CACHE_OPTIONS = { tags: [CV_CACHE_TAG], revalidate: 86400 };
 
-/**
- * Loads the profile alone, for metadata and pages that do not render the resume.
- * Cached per render: layout, page and their metadata share one query.
- */
-export const getProfile = cache(
+/** Raw profile row, every language: cached per render so layout, page and metadata share one query. */
+const getRawProfile = cache(
   unstable_cache(
     async (): Promise<Profile> => {
       try {
@@ -34,7 +33,7 @@ export const getProfile = cache(
 );
 
 /** Loads the whole resume in parallel; every list is ordered by `sort_order`. Cached per render. */
-export const getCv = cache(
+const getRawCv = cache(
   unstable_cache(
     async (): Promise<Cv> => {
       const supabase = createPublicClient();
@@ -73,3 +72,14 @@ export const getCv = cache(
     CACHE_OPTIONS,
   ),
 );
+
+/** The profile alone, for metadata and pages that do not render the resume. */
+export async function getProfile(locale: Locale): Promise<Profile> {
+  const profile = await getRawProfile();
+  return localizeProfile(profile, locale);
+}
+
+/** The whole resume in `locale`; text without a translation stays in French. */
+export async function getCv(locale: Locale): Promise<Cv> {
+  return localizeCv(await getRawCv(), locale);
+}

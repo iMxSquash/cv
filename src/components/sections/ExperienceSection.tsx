@@ -7,6 +7,8 @@ import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
 import { isOngoing } from "@/lib/cv/format";
 import { buildTrajectory } from "@/lib/cv/trajectory";
 import type { Education, Experience } from "@/lib/cv/types";
+import type { Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { ExperienceMotion } from "./ExperienceMotion";
 
 const VISUAL_CLASS =
@@ -17,7 +19,7 @@ const VISUAL_CLASS =
  * It only restates the cards below, so it is decorative: hidden from assistive
  * technologies, and not rendered at all when nothing is pinned.
  */
-function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "today">) {
+function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "today" | "locale">) {
   const steps = buildTrajectory(experiences, education);
   if (steps.length === 0) return null;
   return (
@@ -47,16 +49,23 @@ interface ExperienceSectionProps {
   experiences: Experience[];
   education: Education[];
   today: Date;
+  locale: Locale;
 }
 
-export function ExperienceSection({ experiences, education, today }: ExperienceSectionProps) {
+export function ExperienceSection({
+  experiences,
+  education,
+  today,
+  locale,
+}: ExperienceSectionProps) {
+  const t = getMessages(locale).experiences;
   return (
     <section id="experiences" aria-labelledby="experiences-title" data-theme="dark">
       <ExperienceMotion>
         <Trajectory experiences={experiences} education={education} />
         <div className="section-shell">
           <h2 id="experiences-title" className="title-section">
-            Expériences
+            {t.title}
           </h2>
           <ol data-experience-cards className="mt-10 grid gap-4">
             {experiences.map((experience) => (
@@ -74,10 +83,14 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
                   <div className="flex flex-col gap-1 md:items-end">
                     <p className="flex items-center gap-2 text-caption">
                       {isOngoing(experience.start_date, experience.end_date, today) && (
-                        <Badge>Actuel</Badge>
+                        <Badge>{t.current}</Badge>
                       )}
                       <span>
-                        <MonthPeriod start={experience.start_date} end={experience.end_date} />
+                        <MonthPeriod
+                          start={experience.start_date}
+                          end={experience.end_date}
+                          locale={locale}
+                        />
                       </span>
                     </p>
                     {experience.location && (
@@ -92,7 +105,7 @@ export function ExperienceSection({ experiences, education, today }: ExperienceS
             ))}
           </ol>
 
-          <h2 className="mt-20 title-section">Éducation</h2>
+          <h2 className="mt-20 title-section">{t.education}</h2>
           <ol data-experience-cards className="mt-10 grid gap-4 md:grid-cols-2">
             {education.map((entry) => (
               <Card key={entry.id} as="li">
