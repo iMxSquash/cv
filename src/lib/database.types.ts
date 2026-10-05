@@ -58,7 +58,9 @@ export type Database = {
           city: string | null;
           created_at: string;
           degree: string;
+          degree_en: string | null;
           details: string | null;
+          details_en: string | null;
           end_year: number;
           id: string;
           logo_url: string | null;
@@ -71,7 +73,9 @@ export type Database = {
           city?: string | null;
           created_at?: string;
           degree: string;
+          degree_en?: string | null;
           details?: string | null;
+          details_en?: string | null;
           end_year: number;
           id?: string;
           logo_url?: string | null;
@@ -84,7 +88,9 @@ export type Database = {
           city?: string | null;
           created_at?: string;
           degree?: string;
+          degree_en?: string | null;
           details?: string | null;
+          details_en?: string | null;
           end_year?: number;
           id?: string;
           logo_url?: string | null;
@@ -103,8 +109,10 @@ export type Database = {
           end_date: string | null;
           id: string;
           location: string | null;
+          location_en: string | null;
           logo_url: string | null;
           role: string;
+          role_en: string | null;
           sort_order: number;
           start_date: string;
           visible: boolean;
@@ -116,8 +124,10 @@ export type Database = {
           end_date?: string | null;
           id?: string;
           location?: string | null;
+          location_en?: string | null;
           logo_url?: string | null;
           role: string;
+          role_en?: string | null;
           sort_order?: number;
           start_date: string;
           visible?: boolean;
@@ -129,8 +139,10 @@ export type Database = {
           end_date?: string | null;
           id?: string;
           location?: string | null;
+          location_en?: string | null;
           logo_url?: string | null;
           role?: string;
+          role_en?: string | null;
           sort_order?: number;
           start_date?: string;
           visible?: boolean;
@@ -143,7 +155,9 @@ export type Database = {
           flag_code: string;
           id: string;
           level: string;
+          level_en: string | null;
           name: string;
+          name_en: string | null;
           sort_order: number;
           visible: boolean;
         };
@@ -152,7 +166,9 @@ export type Database = {
           flag_code: string;
           id?: string;
           level: string;
+          level_en?: string | null;
           name: string;
+          name_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -161,7 +177,9 @@ export type Database = {
           flag_code?: string;
           id?: string;
           level?: string;
+          level_en?: string | null;
           name?: string;
+          name_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -201,27 +219,33 @@ export type Database = {
         Row: {
           created_at: string;
           detail: string | null;
+          detail_en: string | null;
           icon_key: string;
           id: string;
           label: string;
+          label_en: string | null;
           sort_order: number;
           visible: boolean;
         };
         Insert: {
           created_at?: string;
           detail?: string | null;
+          detail_en?: string | null;
           icon_key: string;
           id?: string;
           label: string;
+          label_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
         Update: {
           created_at?: string;
           detail?: string | null;
+          detail_en?: string | null;
           icon_key?: string;
           id?: string;
           label?: string;
+          label_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -230,8 +254,11 @@ export type Database = {
       cv_profile: {
         Row: {
           about: string;
+          about_en: string | null;
           availability_detail: string | null;
+          availability_detail_en: string | null;
           availability_title: string | null;
+          availability_title_en: string | null;
           avatar_url: string | null;
           email: string;
           full_name: string;
@@ -246,8 +273,11 @@ export type Database = {
         };
         Insert: {
           about: string;
+          about_en?: string | null;
           availability_detail?: string | null;
+          availability_detail_en?: string | null;
           availability_title?: string | null;
+          availability_title_en?: string | null;
           avatar_url?: string | null;
           email: string;
           full_name: string;
@@ -262,8 +292,11 @@ export type Database = {
         };
         Update: {
           about?: string;
+          about_en?: string | null;
           availability_detail?: string | null;
+          availability_detail_en?: string | null;
           availability_title?: string | null;
+          availability_title_en?: string | null;
           avatar_url?: string | null;
           email?: string;
           full_name?: string;
@@ -315,6 +348,7 @@ export type Database = {
           id: string;
           name: string;
           purpose: string | null;
+          purpose_en: string | null;
           sort_order: number;
           visible: boolean;
         };
@@ -324,6 +358,7 @@ export type Database = {
           id?: string;
           name: string;
           purpose?: string | null;
+          purpose_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -333,6 +368,7 @@ export type Database = {
           id?: string;
           name?: string;
           purpose?: string | null;
+          purpose_en?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
