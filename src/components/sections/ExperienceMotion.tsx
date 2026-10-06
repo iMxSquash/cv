@@ -11,6 +11,13 @@ const VISUAL_OFFSET_PERCENT = 150;
 /** Vertical drift of the side panels over the whole journey, in % of their height. */
 const VISUAL_DRIFT_PERCENT = 30;
 
+/**
+ * The panels are centered by `top-1/2` and a -50% translation, which GSAP owns
+ * once it animates them (it resets the CSS `translate` property): the drift is
+ * offset from it.
+ */
+const CENTERED_PERCENT = -50;
+
 /** Side panels: index 0 (left) moves outwards to the left and drifts up, the right one mirrors it. */
 const mirrored = (value: number) => (index: number) => (index === 0 ? -value : value);
 
@@ -27,8 +34,11 @@ function animateJourney(pin: Element): void {
     .fromTo(visuals, { xPercent: offscreen }, { xPercent: 0, duration: STEP.in }, 0)
     .fromTo(
       visuals,
-      { yPercent: mirrored(-VISUAL_DRIFT_PERCENT) },
-      { yPercent: mirrored(VISUAL_DRIFT_PERCENT), duration: journeyEnd + STEP.out },
+      { yPercent: (index: number) => CENTERED_PERCENT + mirrored(-VISUAL_DRIFT_PERCENT)(index) },
+      {
+        yPercent: (index: number) => CENTERED_PERCENT + mirrored(VISUAL_DRIFT_PERCENT)(index),
+        duration: journeyEnd + STEP.out,
+      },
       0,
     )
     .to(visuals, { xPercent: offscreen, duration: STEP.out }, journeyEnd);
