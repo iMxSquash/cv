@@ -1,6 +1,6 @@
-import { CvIcon } from "@/components/icons/CvIcon";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
-import type { Profile } from "@/lib/cv/types";
+import type { Link, Profile } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { NextMotion } from "./NextMotion";
@@ -8,7 +8,14 @@ import { NextMotion } from "./NextMotion";
 /** The sentence travels along this curve (viewBox units); both ends overshoot the frame. */
 const CURVE = "M -100 380 C 200 80, 500 520, 1100 160";
 
-export function NextSection({ profile, locale }: { profile: Profile; locale: Locale }) {
+interface NextSectionProps {
+  profile: Profile;
+  links: Link[];
+  today: Date;
+  locale: Locale;
+}
+
+export function NextSection({ profile, links, today, locale }: NextSectionProps) {
   const t = getMessages(locale).next;
   const title = profile.availability_title ?? t.fallbackTitle;
   return (
@@ -16,13 +23,13 @@ export function NextSection({ profile, locale }: { profile: Profile; locale: Loc
       id="next"
       aria-labelledby="next-title"
       data-theme="dark"
-      // Pinned with WebGL running, the canvas paints the stage: the dark surface plus the orb.
-      className="pinned:in-data-[webgl=ready]:bg-transparent"
+      // Pinned with WebGL running, the canvas paints the stage: the dark surface plus the orb. flow-root keeps the footer margin inside.
+      className="flow-root pinned:in-data-[webgl=ready]:bg-transparent"
     >
       <NextMotion>
         <PinnedStage
-          screens={3}
-          mobileScreens={2}
+          screens={5}
+          mobileScreens={4.5}
           stageClassName="pinned:grid pinned:place-items-center"
         >
           <h2 id="next-title" className="section-shell pb-0 title-display pinned:sr-only">
@@ -49,20 +56,8 @@ export function NextSection({ profile, locale }: { profile: Profile; locale: Loc
               </textPath>
             </text>
           </svg>
+          <SiteFooter profile={profile} links={links} today={today} locale={locale} />
         </PinnedStage>
-        {/* Opaque again below the pin: the canvas only shows behind the stage. */}
-        <div data-theme="dark" className="section-shell pt-6">
-          {profile.availability_detail && (
-            <p className="max-w-2xl text-text-muted">{profile.availability_detail}</p>
-          )}
-          <a
-            href={`mailto:${profile.email}`}
-            className="mt-10 inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-display px-6 py-3 font-medium text-surface"
-          >
-            <CvIcon name="mail" />
-            {t.writeEmail}
-          </a>
-        </div>
       </NextMotion>
     </section>
   );
