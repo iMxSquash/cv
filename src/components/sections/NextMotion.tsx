@@ -1,9 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
+import {
+  claimOrb,
+  holdOrbOnScreen,
+  placeOrb,
+  restingOrbRadius,
+} from "@/components/scroll/orbDirector";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
 import { findPin, gsap, ScrollTrigger } from "@/lib/gsap";
-import { ORB_SCALE, scrollProgress } from "@/webgl/scrollProgress";
 
 /** Gap between the end of the sentence and the orb trailing it, in viewBox units. */
 const ORB_GAP = 50;
@@ -27,7 +32,7 @@ const progressBetween = (value: number, from: number, to: number) =>
 
 /**
  * Closing choreography: the title advances along a curve until it settles,
- * the WebGL orb trailing it like a full stop. Then the sentence lifts out of
+ * the WebGL orb (arriving from the section above) trailing it like a full stop. Then the sentence lifts out of
  * the way while the orb drops to the center of the footer card, which opens
  * as a circle growing from that point. Without motion the title stays a plain
  * heading, there is no orb and the footer simply follows in the flow.
@@ -44,7 +49,6 @@ export function NextMotion({ children }: { children: ReactNode }) {
     if (!pin || !stage || !svg || !path || !text || !textPath || !footer) return;
 
     const length = path.getTotalLength();
-    const { orb } = scrollProgress;
     const curvePoint = new DOMPoint();
     // Measured with the font loaded, on every refresh.
     let textLength = 0;
@@ -52,7 +56,11 @@ export function NextMotion({ children }: { children: ReactNode }) {
     let closing = 0;
     let travel = 0;
     let offset = length;
-    let isStageOnScreen = false;
+    // Where the orb goes, in CSS px; locked while it grows into the card.
+    let orbX = 0;
+    let orbY = 0;
+    let orbRadius = 0;
+    let isOrbLocked = false;
     let writtenOffset = Number.NaN;
     let writtenLift = Number.NaN;
 
@@ -78,8 +86,8 @@ export function NextMotion({ children }: { children: ReactNode }) {
         x = gsap.utils.interpolate(x, box.left + box.width / 2, travel);
         y = gsap.utils.interpolate(y, box.top + box.height / 2, travel);
       }
-      orb.x = (x / window.innerWidth) * 2 - 1;
-      orb.y = 1 - (y / window.innerHeight) * 2;
+      orbX = x;
+      orbY = y;
       if (offset !== writtenOffset) {
         writtenOffset = offset;
         textPath.setAttribute("startOffset", String(offset));
@@ -109,13 +117,14 @@ export function NextMotion({ children }: { children: ReactNode }) {
     const openCard = (progress: number) => {
       reveal = progress;
       const box = footer.getBoundingClientRect();
-      const restingRadius = ORB_SCALE * Math.min(window.innerWidth, window.innerHeight);
+      const restingRadius = restingOrbRadius();
       const radius = gsap.utils.interpolate(
         restingRadius,
         Math.hypot(box.width / 2, box.height / 2) * COVER_MARGIN,
         reveal,
       );
-      orb.radiusPx = reveal > 0 ? radius : null;
+      orbRadius = radius;
+      isOrbLocked = reveal > 0;
       footer.style.clipPath = `circle(${radius}px at 50% 50%)`;
       footer.style.visibility = reveal > 0 ? "visible" : "hidden";
       footer.style.pointerEvents = reveal > INTERACTIVE_FROM ? "auto" : "none";
@@ -146,24 +155,21 @@ export function NextMotion({ children }: { children: ReactNode }) {
       },
       onUpdate: (self) => update(self.progress),
     });
-    ScrollTrigger.create({
-      trigger: pin,
-      start: "top bottom",
-      end: "bottom top",
-      onToggle: (self) => {
-        isStageOnScreen = self.isActive;
-        orb.isVisible = isStageOnScreen;
-      },
-      onUpdate: place,
+    // Follows the stage while it scrolls in and out, beyond the pin itself.
+    ScrollTrigger.create({ trigger: pin, start: "top bottom", end: "bottom top", onUpdate: place });
+    const releaseOrb = claimOrb({ trigger: pin, start: "top center" }, (orb) => {
+      // Locked, it covers the card: exactly at its center, however wide.
+      if (isOrbLocked) placeOrb(orb, orbX, orbY, orbRadius);
+      else holdOrbOnScreen(orb, orbX, orbY, orbRadius);
+      orb.isLocked = isOrbLocked;
     });
     return () => {
-      orb.isVisible = false;
+      releaseOrb();
       footer.style.clipPath = "";
       footer.style.visibility = "";
       footer.style.pointerEvents = "";
       gsap.ticker.remove(syncCanvasClip);
       if (canvas) canvas.style.clipPath = "";
-      orb.radiusPx = null;
       gsap.set(text, { clearProps: "transform" });
     };
   });

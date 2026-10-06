@@ -4,22 +4,49 @@ import type { Profile } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
+import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import { ManifestoMotion } from "./ManifestoMotion";
 
-/** One span per letter, grouped by word so the static layout only wraps between words. */
+/**
+ * One span per letter, grouped by word so the static layout only wraps between
+ * words. The first word is where the orb bursts open before the rest of the
+ * line comes in; its opening quote mark is flagged apart, to come later. The
+ * last full stop is where the orb shows up again, rippling with the letters.
+ */
 function KineticLetters({ text }: { text: string }) {
-  return text.split(" ").map((word, wordIndex) => (
-    <Fragment key={wordIndex}>
-      {wordIndex > 0 && " "}
-      <span className="inline-block whitespace-nowrap">
-        {Array.from(word, (letter, letterIndex) => (
-          <span key={letterIndex} data-manifesto-letter className="inline-block">
-            {letter}
-          </span>
-        ))}
-      </span>
-    </Fragment>
-  ));
+  // Indexed by code point, like the letters.
+  const characters = Array.from(text);
+  const periodIndex = characters.lastIndexOf(".");
+  const wordStart = Math.max(
+    characters.findIndex((character) => /[\p{L}\p{N}]/u.test(character)),
+    0,
+  );
+  let offset = 0;
+  return text.split(" ").map((word, wordIndex) => {
+    const letters = Array.from(word);
+    const wordOffset = offset;
+    offset += letters.length + 1;
+    return (
+      <Fragment key={wordIndex}>
+        {wordIndex > 0 && " "}
+        <span
+          data-manifesto-first-word={wordIndex === 0 ? "" : undefined}
+          className="inline-block whitespace-nowrap"
+        >
+          {letters.map((letter, letterIndex) => (
+            <span
+              key={letterIndex}
+              data-manifesto-letter
+              data-manifesto-opening={wordOffset + letterIndex < wordStart ? "" : undefined}
+              className="inline-block"
+            >
+              {wordOffset + letterIndex === periodIndex ? <OrbAnchor isFollowed={false} /> : letter}
+            </span>
+          ))}
+        </span>
+      </Fragment>
+    );
+  });
 }
 
 /** One span per word, revealed one after the other on scroll. */
@@ -39,18 +66,12 @@ export function AboutSection({ profile, locale }: { profile: Profile; locale: Lo
   const t = getMessages(locale);
   const quote = profile.quote && t.quote(profile.quote);
   return (
-    // The fixed canvas still shows below the shrinking hero frame: a band of page surface covers it.
-    <section
-      id="manifesto"
-      aria-labelledby="manifesto-title"
-      data-theme="light"
-      className="relative isolate before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-dvh before:bg-surface"
-    >
+    <section id="manifesto" aria-labelledby="manifesto-title" data-theme="light">
       <ManifestoMotion>
         {quote && (
           <PinnedStage
-            screens={4}
-            mobileScreens={2.5}
+            screens={6}
+            mobileScreens={4}
             stageClassName="pinned:flex pinned:flex-col pinned:justify-center"
           >
             <figure className="section-shell pb-0">
@@ -64,14 +85,17 @@ export function AboutSection({ profile, locale }: { profile: Profile; locale: Lo
                 </span>
               </blockquote>
               {profile.quote_author && (
-                <figcaption className="mt-4 text-text-muted pinned:absolute pinned:bottom-16">
+                <figcaption
+                  data-manifesto-author
+                  className="mt-4 text-text-muted pinned:absolute pinned:bottom-16"
+                >
                   {profile.quote_author}
                 </figcaption>
               )}
             </figure>
           </PinnedStage>
         )}
-        <div className="section-shell">
+        <div data-manifesto-about-block className="section-shell">
           <h2 id="manifesto-title" className="title-card">
             {t.about.title}
           </h2>

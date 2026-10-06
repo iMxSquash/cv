@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { CvIcon } from "@/components/icons/CvIcon";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { Card } from "@/components/ui/Card";
+import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import { SkillChip } from "@/components/ui/SkillChip";
 import { Constants, type Enums } from "@/lib/database.types";
 import type { Skill, Tool } from "@/lib/cv/types";
@@ -62,6 +63,7 @@ export function SkillsSection({
           <div>
             <h2 id="skills-title" className="title-section">
               {t.title}
+              <OrbAnchor isFollowed={false} />
             </h2>
             {/* Visual only: each list keeps its own heading for assistive technologies. */}
             <p
@@ -86,7 +88,7 @@ export function SkillsSection({
             className="mt-10 grid gap-10 md:grid-cols-2 pinned-wide:relative pinned-wide:mt-0 pinned-wide:block pinned-wide:aspect-[3/4] pinned-wide:w-[clamp(12rem,32vmin,18rem)] pinned-wide:justify-self-center"
           >
             {Constants.public.Enums.cv_skill_category.map((category) => (
-              <div key={category} className={DECK_LAYER}>
+              <div key={category} data-skills-block data-group={category} className={DECK_LAYER}>
                 <h3 className="title-card pinned-wide:sr-only">{groupLabels[category]}</h3>
                 <ul className={`mt-4 flex flex-wrap gap-3 ${DECK_LAYER}`}>
                   {skills
@@ -104,7 +106,7 @@ export function SkillsSection({
               </div>
             ))}
 
-            <div className={`md:col-span-2 ${DECK_LAYER}`}>
+            <div data-skills-block data-group="tools" className={`md:col-span-2 ${DECK_LAYER}`}>
               <h3 className="title-card pinned-wide:sr-only">{groupLabels.tools}</h3>
               <ul className={`mt-4 grid grid-cols-2 gap-4 md:grid-cols-4 ${DECK_LAYER}`}>
                 {tools.map((tool) => (

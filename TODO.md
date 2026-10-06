@@ -155,6 +155,18 @@
 - [x] Champs `*_en` dans le backoffice `/admin` (profil et chaque liste traduite), vides = repli sur le français
 - [x] Relire les traductions anglaises (rédigées à partir du texte français)
 
+## Fil rouge : l'orbe protagoniste (réf. `design/source/`, non versionnée)
+
+> Un seul personnage, l'orbe WebGL, traverse toute la page et se transforme d'une section à l'autre (dégradé de la charte, fonds crème/sombre inchangés). Une PR par étape.
+
+- [x] Moteur : `orbDirector` (la dernière revendication passée au scroll détient l'orbe, pose écrite à chaque frame sur `gsap.ticker`), `OrbAnchor` (point final en dégradé, remplacé par l'orbe en mouvement + WebGL), orbe retenue au bord de l'écran entre deux ancres ; canvas transparent et gradient du hero découpé au cadre (plus d'ombre ni de bande de surface)
+- [x] Hero : le monogramme centré se contracte en orbe ; titres Expériences, Formation, Compétences, Infos ; Next : passage de relais vers la phrase courbe puis la carte du footer
+- [x] Orbe en metaballs 2D (8 formes, cercles ou rectangles arrondis qui fusionnent ; ombrage de sphère exact pour un cercle seul) à la place de la sphère 3D
+- [x] Manifesto (pin 6 vh, 4 vh sous 900 px) : l'orbe se divise en 2, 4 puis 8, les gouttes se rassemblent en tournant puis l'orbe gonfle jusqu'à couvrir tout l'écran et une doublure circulaire la creuse depuis son centre jusqu'à la faire disparaître, le mot apparaissant dans ce même cercle ; le reste de la ligne arrive de la droite à vitesse constante et l'embarque (guillemet ouvrant et auteur apparaissent à son arrivée, le premier mot n'ondule qu'une fois embarqué) ; l'orbe ne réapparaît qu'en point final de la citation, puis descend à droite du texte « À propos »
+- [x] Expériences (pin 9 vh, 5,5 vh sous 900 px) : l'orbe glisse au centre de l'écran puis s'étire en barre pleine largeur qui se sépare en deux pour devenir les panneaux latéraux de la trajectoire, alignés et centrés, qui s'écartent ensuite (gauche vers le haut, droite vers le bas ; panneaux CSS masqués quand la WebGL tourne), plus de point final sur les étapes
+- [x] Compétences : l'orbe (point final du titre) éclate en un nuage de points (three.js `Points`, positions calculées dans le vertex shader) qui prend la forme de la catégorie affichée : grille (Design), nappe ondulante en perspective (Développement), tore (Outils), puis se rassemble dans l'orbe ; catégorie suivie par la pile de cartes à partir de 900 px, par la liste au centre de l'écran en dessous
+- [x] Infos (pin 2,5 vh, 2 vh sous 900 px) : trois anneaux de texte SVG (langues, mobilité, disponibilité, copie décorative `aria-hidden`) qui s'ouvrent puis tournent en sens alternés autour de l'orbe avant de s'élargir hors champ ; l'orbe redevient ensuite le point final du titre
+
 ## Hors périmètre v1 (à rediscuter plus tard)
 
 - Lettre de motivation (le kit Figma en contient une)

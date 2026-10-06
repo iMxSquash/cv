@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { claimOrb, holdOrbOnScreen, measureAnchor } from "@/components/scroll/orbDirector";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
-import { findPin, gsap, MOTION_OK_WIDE, pinnedScrub } from "@/lib/gsap";
+import { findPin, gsap, MOTION_OK, MOTION_OK_WIDE, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
+import { scrollProgress } from "@/webgl/scrollProgress";
 
 /** Timeline units per card: it flips face up, then leaves for the next one. */
 const CARD = { flip: 0.4, pause: 0.5, leave: 0.3 };
@@ -12,13 +14,70 @@ const PERSPECTIVE = 1200;
 const VISIBLE_DEPTH = 3;
 /** Slight tilt of each card in the deck, in degrees, so the pile reads as a pile. */
 const DECK_TILTS = [-3, 2, -1, 3, -2];
+/** Narrow screens: the deck is a plain grid, the cloud follows the block crossing the middle of the viewport. */
+const MOTION_OK_NARROW = `${MOTION_OK} and (max-width: 899px)`;
+/** Pin progress between which the orb is burst into the cloud; outside, it is the title's full stop. */
+const SPREAD = [0.03, 0.95] as const;
+
+interface Formation {
+  /** 1 grid, 2 wave, 3 torus: the order of the skill groups in the page. */
+  shape: number;
+  isSpread: boolean;
+}
+
+/**
+ * The orb, full stop of the title, bursts into a cloud of dots that takes the
+ * form of the skill group on screen (grid, wave, torus), then gathers back.
+ */
+function claimSkillsOrb(pin: Element, anchor: Element, formation: () => Formation): () => void {
+  return claimOrb({ trigger: pin, start: "top center" }, (orb) => {
+    const { shape, isSpread } = formation();
+    const stop = measureAnchor(anchor);
+    // Burst, the orb shrinks away into its cloud.
+    holdOrbOnScreen(orb, stop.x, stop.y, isSpread ? 0 : stop.radius);
+    const { particles } = scrollProgress;
+    particles.originX = stop.x;
+    particles.originY = stop.y;
+    particles.shape = shape;
+    particles.gather = isSpread ? 0 : 1;
+  });
+}
+
+/** Formation of each skill group, by its order in the page. */
+function shapeOfGroups(element: HTMLElement): Map<string | undefined, number> {
+  const blocks = gsap.utils.toArray<HTMLElement>("[data-skills-block]", element);
+  return new Map(blocks.map((block, index) => [block.dataset.group, index + 1]));
+}
 
 /**
  * Skills choreography (from 900 px wide): a face-down deck where each card
  * flips over, then flies off to reveal the next one, while the subtitle follows
- * the group of the card on top. Smaller screens and reduced motion keep the grid.
+ * the group of the card on top, and so does the orb's cloud of dots. Smaller
+ * screens keep the grid, the cloud following the list in the middle of the
+ * viewport; reduced motion keeps the grid alone.
  */
 export function SkillsMotion({ children }: { children: ReactNode }) {
+  const narrowRoot = useScrollMotion((element) => {
+    const pin = findPin(element);
+    const anchor = element.querySelector("#skills-title [data-orb-anchor]");
+    if (!pin || !anchor) return;
+    const blocks = gsap.utils.toArray<HTMLElement>("[data-skills-block]", element);
+    const shapes = shapeOfGroups(element);
+    const lists = ScrollTrigger.create({
+      trigger: element.querySelector("[data-skills-deck]") ?? pin,
+      start: "top center",
+      end: "bottom center",
+    });
+    return claimSkillsOrb(pin, anchor, () => {
+      const middle = window.innerHeight / 2;
+      const current = blocks.findLast((block) => block.getBoundingClientRect().top <= middle);
+      return {
+        shape: shapes.get((current ?? blocks[0])?.dataset.group) ?? 1,
+        isSpread: lists.isActive,
+      };
+    });
+  }, MOTION_OK_NARROW);
+
   const root = useScrollMotion((element) => {
     const pin = findPin(element);
     const cards = gsap.utils.toArray<HTMLElement>("[data-skills-card]");
@@ -68,7 +127,24 @@ export function SkillsMotion({ children }: { children: ReactNode }) {
           );
       }
     });
+
+    const anchor = element.querySelector("#skills-title [data-orb-anchor]");
+    if (!anchor) return;
+    const shapes = shapeOfGroups(element);
+    return claimSkillsOrb(pin, anchor, () => {
+      const onTop =
+        cards[gsap.utils.clamp(0, cards.length - 1, Math.floor(timeline.time() / cardLength))];
+      const progress = timeline.scrollTrigger?.progress ?? 0;
+      return {
+        shape: shapes.get(onTop.dataset.group) ?? 1,
+        isSpread: progress > SPREAD[0] && progress < SPREAD[1],
+      };
+    });
   }, MOTION_OK_WIDE);
 
-  return <div ref={root}>{children}</div>;
+  return (
+    <div ref={narrowRoot}>
+      <div ref={root}>{children}</div>
+    </div>
+  );
 }

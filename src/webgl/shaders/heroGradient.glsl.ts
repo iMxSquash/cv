@@ -64,6 +64,8 @@ float snoise(vec3 v) {
  * Mesh gradient: four color blobs drifting over a dark base, in a noise-warped
  * space. Colors arrive in linear space; the luminance clamp keeps the hero text
  * readable over every frame (see MAX_GRADIENT_LUMINANCE in HeroGradient.ts).
+ * Only the hero frame is painted (uFrame, in drawing buffer pixels, rounded by
+ * uFrameRadius): the canvas stays transparent around it, so the orb can roam the page.
  */
 export const heroGradientFragment = /* glsl */ `
 uniform float uTime;
@@ -72,6 +74,8 @@ uniform vec2 uPointer;
 uniform vec3 uBase;
 uniform vec3 uColors[4];
 uniform float uMaxLuminance;
+uniform vec4 uFrame;
+uniform float uFrameRadius;
 
 varying vec2 vUv;
 
@@ -81,7 +85,19 @@ float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+// Signed distance to a rounded box centered on the origin (Inigo Quilez).
+float roundedBoxDistance(vec2 p, vec2 halfSize, float radius) {
+  vec2 q = abs(p) - halfSize + radius;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+}
+
 void main() {
+  // One pixel of antialiasing along the frame edge; nothing to compute outside it.
+  vec2 frameCenter = (uFrame.xy + uFrame.zw) * 0.5;
+  vec2 frameHalfSize = (uFrame.zw - uFrame.xy) * 0.5;
+  float coverage = clamp(0.5 - roundedBoxDistance(gl_FragCoord.xy - frameCenter, frameHalfSize, uFrameRadius), 0.0, 1.0);
+  if (coverage == 0.0) discard;
+
   float aspect = uResolution.x / uResolution.y;
   vec2 p = (vUv - 0.5) * vec2(aspect, 1.0);
   float t = uTime * 0.04;
@@ -105,5 +121,6 @@ void main() {
 
   // Dither after sRGB encoding, where banding shows: +-1.5/255 stays within the contrast margin.
   gl_FragColor.rgb += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * (3.0 / 255.0);
+  gl_FragColor.a = coverage;
 }
 `;
