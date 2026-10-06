@@ -73,6 +73,24 @@
   --interface-color: var(--palette-primary-lightest);
 }
 
+/*
+ * Page-wide theme (usePageTheme): GSAP morphs the tokens on <html>, so the
+ * sections paint nothing and take the root tokens instead of their own.
+ * `data-theme-solid` opts out: the hero frame content stays dark over the canvas.
+ * Outside any @layer: the theme blocks above are unlayered, a layered rule would lose to them.
+ */
+html[data-theme-scrub] main [data-theme]:not([data-theme-solid]) {
+  --surface: inherit;
+  --surface-raised: inherit;
+  --text: inherit;
+  --text-muted: inherit;
+  --accent-text: inherit;
+  --accent-display: inherit;
+  --focus-ring: inherit;
+  --interface-color: inherit;
+  background-color: transparent;
+}
+
 @theme inline {
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);

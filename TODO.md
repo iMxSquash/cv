@@ -63,7 +63,7 @@
 - [x] `ScrollTrigger.refresh()` après `document.fonts.ready` et images du hero ; `ignoreMobileResize`
 - [x] Nav latérale « scroll indicator » (barres 12/28/48 px, `aria-current`, ancres via Lenis, hash conservé)
 - [x] Capsule nav en haut (masquée au scroll vers le bas, visible vers le haut)
-- [x] Bascule de thème crème/sombre au passage des sections
+- [x] Bascule de thème crème/sombre au passage des sections : fond unique sur `<html>` dont les tokens se fondent via GSAP (réf. annnimate « background color »), sections peintes individuellement en reduced motion
 - [x] Vérifier : aucun ScrollTrigger orphelin après fast refresh / navigation
 
 ## Phase 5 : Scène WebGL · skill `cv-webgl-scene`
