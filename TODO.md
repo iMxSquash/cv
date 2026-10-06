@@ -164,7 +164,7 @@
 - [x] Orbe en metaballs 2D (8 formes, cercles ou rectangles arrondis qui fusionnent ; ombrage de sphère exact pour un cercle seul) à la place de la sphère 3D
 - [x] Manifesto (pin 6 vh, 4 vh sous 900 px) : l'orbe se divise en 2, 4 puis 8, les gouttes se rassemblent en tournant puis l'orbe gonfle jusqu'à couvrir tout l'écran et une doublure circulaire la creuse depuis son centre jusqu'à la faire disparaître, le mot apparaissant dans ce même cercle ; le reste de la ligne arrive de la droite à vitesse constante et l'embarque (guillemet ouvrant et auteur apparaissent à son arrivée, le premier mot n'ondule qu'une fois embarqué) ; l'orbe ne réapparaît qu'en point final de la citation, puis descend à droite du texte « À propos »
 - [x] Expériences (pin 9 vh, 5,5 vh sous 900 px) : l'orbe glisse au centre de l'écran puis s'étire en barre pleine largeur qui se sépare en deux pour devenir les panneaux latéraux de la trajectoire, alignés et centrés, qui s'écartent ensuite (gauche vers le haut, droite vers le bas ; panneaux CSS masqués quand la WebGL tourne), plus de point final sur les étapes
-- [ ] Compétences : nuage de particules qui se réorganise par catégorie (grille, vague, tore)
+- [x] Compétences : l'orbe (point final du titre) éclate en un nuage de points (three.js `Points`, positions calculées dans le vertex shader) qui prend la forme de la catégorie affichée : grille (Design), nappe ondulante en perspective (Développement), tore (Outils), puis se rassemble dans l'orbe ; catégorie suivie par la pile de cartes à partir de 900 px, par la liste au centre de l'écran en dessous
 - [ ] Infos : anneaux de texte (langues, mobilité, disponibilité) qui tournent autour de l'orbe
 
 ## Hors périmètre v1 (à rediscuter plus tard)

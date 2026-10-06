@@ -35,6 +35,8 @@ const drive = () => {
   orb.isLocked = false;
   orb.panel = 0;
   orb.hole.radius = 0;
+  // The dot cloud stays inside the orb unless the pose spreads it.
+  scrollProgress.particles.gather = 1;
   claim?.pose(orb);
 };
 

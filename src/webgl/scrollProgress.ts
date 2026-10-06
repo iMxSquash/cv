@@ -55,9 +55,17 @@ export const scrollProgress = {
       corner: 0,
     })),
   },
+  /**
+   * The orb burst into a cloud of dots (skills section). `origin` is where it
+   * bursts from and gathers back to (CSS px), `shape` the formation (1 grid,
+   * 2 wave, 3 torus), `gather` 1 while it is all inside the orb, 0 once spread.
+   * The scene eases towards these values.
+   */
+  particles: { originX: 0, originY: 0, shape: 1, gather: 1 },
 };
 
 export type OrbState = typeof scrollProgress.orb;
+export type ParticlesState = typeof scrollProgress.particles;
 
 /** Orb radius at rest, as a share of the smaller viewport side. */
 export const ORB_SCALE = 0.07;

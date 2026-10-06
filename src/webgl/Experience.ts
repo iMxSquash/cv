@@ -12,6 +12,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { readPalette } from "./palette";
 import { HeroGradient } from "./scenes/HeroGradient";
 import { Monogram } from "./scenes/Monogram";
+import { Particles } from "./scenes/Particles";
 import { Blob } from "./scenes/Blob";
 import { scrollProgress } from "./scrollProgress";
 import { createSharedUniforms } from "./uniforms";
@@ -47,6 +48,7 @@ export class Experience {
   private readonly gradient: HeroGradient;
   private readonly monogram: Monogram;
   private readonly blob: Blob;
+  private readonly particles: Particles;
   private readonly environment: WebGLRenderTarget;
   private readonly resizeObserver: ResizeObserver;
   private resizeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -90,7 +92,8 @@ export class Experience {
       (error: unknown) => console.error("[webgl] Monogram failed to load", error),
     );
     this.blob = new Blob(palette, this.uniforms);
-    this.scene.add(this.gradient.mesh, this.monogram.group, this.blob.mesh);
+    this.particles = new Particles(palette, this.uniforms, isCoarse);
+    this.scene.add(this.gradient.mesh, this.monogram.group, this.blob.mesh, this.particles.points);
     this.renderer.setClearColor(0x000000, 0);
     this.camera.position.z = CAMERA_DISTANCE;
 
@@ -131,6 +134,7 @@ export class Experience {
     this.gradient.dispose();
     this.monogram.dispose();
     this.blob.dispose();
+    this.particles.dispose();
     // A render target texture is only freed through its render target.
     this.environment.dispose();
     this.renderer.dispose();
@@ -139,7 +143,8 @@ export class Experience {
   }
 
   private readonly tick = (time: number, deltaMs: number) => {
-    const hasContent = this.isHeroOnScreen || scrollProgress.orb.isVisible;
+    const hasContent =
+      this.isHeroOnScreen || scrollProgress.orb.isVisible || this.particles.isVisible;
     this.setCanvasVisible(hasContent);
     if (!hasContent || document.hidden) return;
     this.renderFrame(time, deltaMs / 1000);
@@ -176,6 +181,7 @@ export class Experience {
     } else {
       this.blob.hide();
     }
+    this.particles.update(deltaSeconds, scrollProgress.particles, this.renderer.getPixelRatio());
     this.renderer.render(this.scene, this.camera);
     if (this.hasRendered) return;
     this.hasRendered = true;
@@ -192,6 +198,7 @@ export class Experience {
     this.camera.updateProjectionMatrix();
     const viewHeight = 2 * CAMERA_DISTANCE * Math.tan(MathUtils.degToRad(CAMERA_FOV / 2));
     this.monogram.layout(viewHeight * this.camera.aspect, viewHeight);
+    this.particles.layout(viewHeight * this.camera.aspect, viewHeight, width, height);
   }
 
   private readonly onResize = () => {
