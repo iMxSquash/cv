@@ -1,6 +1,7 @@
 import { Mesh, ShaderMaterial, SphereGeometry, Vector3 } from "three";
 import type { Palette } from "../palette";
 import { orbFragment, orbVertex } from "../shaders/orb.glsl";
+import { ORB_SCALE } from "../scrollProgress";
 import type { SharedUniforms } from "../uniforms";
 
 /** How fast the orb catches up with its target (1/s). */
@@ -12,6 +13,10 @@ export class Orb {
   private readonly target = new Vector3();
   private viewWidth = 1;
   private viewHeight = 1;
+  private canvasHeight = 1;
+  private cameraDistance = 1;
+  private restingScale = 1;
+  private isGrowing = false;
 
   constructor(palette: Palette, uniforms: SharedUniforms) {
     const material = new ShaderMaterial({
@@ -26,16 +31,43 @@ export class Orb {
   }
 
   /** Sizes the orb from the visible world size at z = 0. */
-  layout(viewWidth: number, viewHeight: number): void {
+  layout(
+    viewWidth: number,
+    viewHeight: number,
+    canvasHeight: number,
+    cameraDistance: number,
+  ): void {
     this.viewWidth = viewWidth;
     this.viewHeight = viewHeight;
-    this.mesh.scale.setScalar(Math.min(viewWidth, viewHeight) * 0.07);
+    this.canvasHeight = canvasHeight;
+    this.cameraDistance = cameraDistance;
+    this.restingScale = Math.min(viewWidth, viewHeight) * ORB_SCALE;
+    this.mesh.scale.setScalar(this.restingScale);
+  }
+
+  /** Grows the orb until its silhouette has this radius on screen, or back to its resting size (null). */
+  setRadiusPixels(radiusPx: number | null): void {
+    this.isGrowing = radiusPx !== null;
+    if (radiusPx === null) {
+      this.mesh.scale.setScalar(this.restingScale);
+      return;
+    }
+    // The silhouette of a sphere is the tangent cone from the camera: a sphere of radius r looks as wide as
+    // w = r d / sqrt(d² - r²) at the distance d of the orb plane, hence r = w d / sqrt(d² + w²).
+    const width = (radiusPx / this.canvasHeight) * this.viewHeight;
+    this.mesh.scale.setScalar(
+      (width * this.cameraDistance) / Math.hypot(this.cameraDistance, width),
+    );
   }
 
   /** Moves towards `x`, `y` in normalized device coordinates (-1..1, y up). */
   update(deltaSeconds: number, x: number, y: number): void {
     this.target.set((x * this.viewWidth) / 2, (y * this.viewHeight) / 2, 0);
-    this.mesh.position.lerp(this.target, 1 - Math.exp(-deltaSeconds * FOLLOW_SPEED));
+    // Growing into the footer card, it must sit exactly where the card's own mask is centered.
+    this.mesh.position.lerp(
+      this.target,
+      this.isGrowing ? 1 : 1 - Math.exp(-deltaSeconds * FOLLOW_SPEED),
+    );
   }
 
   dispose(): void {

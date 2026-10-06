@@ -166,7 +166,10 @@ export class Experience {
     }
     const { orb } = scrollProgress;
     this.orb.mesh.visible = orb.isVisible;
-    if (orb.isVisible) this.orb.update(deltaSeconds, orb.x, orb.y);
+    if (orb.isVisible) {
+      this.orb.update(deltaSeconds, orb.x, orb.y);
+      this.orb.setRadiusPixels(orb.radiusPx);
+    }
     this.renderer.render(this.scene, this.camera);
     if (this.hasRendered) return;
     this.hasRendered = true;
@@ -182,7 +185,7 @@ export class Experience {
     this.camera.updateProjectionMatrix();
     const viewHeight = 2 * CAMERA_DISTANCE * Math.tan(MathUtils.degToRad(CAMERA_FOV / 2));
     this.monogram.layout(viewHeight * this.camera.aspect, viewHeight);
-    this.orb.layout(viewHeight * this.camera.aspect, viewHeight);
+    this.orb.layout(viewHeight * this.camera.aspect, viewHeight, height, CAMERA_DISTANCE);
   }
 
   private readonly onResize = () => {

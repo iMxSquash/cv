@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Loader } from "@/components/layout/Loader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ScrollChrome } from "@/components/scroll/ScrollChrome";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
@@ -76,9 +75,8 @@ export default async function Home() {
           mobility={cv.mobility}
           locale={locale}
         />
-        <NextSection profile={cv.profile} locale={locale} />
+        <NextSection profile={cv.profile} links={cv.links} today={today} locale={locale} />
       </main>
-      <SiteFooter profile={cv.profile} links={cv.links} today={today} locale={locale} />
     </>
   );
 }

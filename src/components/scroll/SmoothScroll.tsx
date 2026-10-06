@@ -14,6 +14,11 @@ function whenLoaded(): Promise<unknown> {
   return Promise.all([document.fonts.ready, pageLoad]);
 }
 
+/** A target pinned over a scene (the footer) only exists once the page is scrolled to its end. */
+function scrollToAnchor(lenis: Lenis, target: HTMLElement, options?: { immediate: boolean }): void {
+  lenis.scrollTo(target.hasAttribute("data-scroll-end") ? lenis.limit : target, options);
+}
+
 /**
  * Same-page anchors scroll through Lenis, keep the hash in the URL and move
  * focus to the target, as a native anchor jump would.
@@ -27,7 +32,7 @@ function handleAnchorClicks(lenis: Lenis): () => void {
     if (!isPlainClick || !anchor || !target) return;
     event.preventDefault();
     window.history.pushState(null, "", anchor.hash);
-    lenis.scrollTo(target);
+    scrollToAnchor(lenis, target);
     if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   };
@@ -66,7 +71,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       if (!isMounted) return;
       ScrollTrigger.refresh();
       // The browser jumped to the URL hash before pins existed: land on it again.
-      if (lenis && window.location.hash) lenis.scrollTo(window.location.hash, { immediate: true });
+      const hashTarget =
+        window.location.hash && document.getElementById(window.location.hash.slice(1));
+      if (lenis && hashTarget) scrollToAnchor(lenis, hashTarget, { immediate: true });
     });
 
     // The matchMedia is reverted by the useGSAP context.
