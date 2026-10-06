@@ -12,8 +12,9 @@ import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { ExperienceMotion } from "./ExperienceMotion";
 
+// With WebGL running, the orb itself stretches into these panels and draws them: the CSS ones step aside.
 const VISUAL_CLASS =
-  "gradient-panel absolute top-1/2 h-[45vmin] w-[clamp(2.5rem,12vmin,11rem)] -translate-y-1/2 rounded-[clamp(1rem,3vmin,2rem)]";
+  "gradient-panel absolute top-1/2 h-[45vmin] w-[clamp(2.5rem,12vmin,11rem)] -translate-y-1/2 rounded-[clamp(1rem,3vmin,2rem)] in-data-[webgl=ready]:invisible";
 
 /**
  * The journey told one step at a time, centered between two gradient panels.
@@ -25,7 +26,7 @@ function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "to
   if (steps.length === 0) return null;
   return (
     <div aria-hidden="true" className="hidden pinned:block">
-      <PinnedStage screens={8} mobileScreens={5} stageClassName="grid place-items-center px-6">
+      <PinnedStage screens={9} mobileScreens={5.5} stageClassName="grid place-items-center px-6">
         <div data-trajectory-visual className={`${VISUAL_CLASS} left-[3vw]`} />
         <div
           data-trajectory-visual
