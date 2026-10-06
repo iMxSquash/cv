@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { NAV_SECTION_IDS, type SectionTheme } from "./sections";
 import { SectionNav } from "./SectionNav";
+import { usePageTheme } from "./usePageTheme";
 
 interface ActiveSection {
   index: number;
@@ -19,6 +20,8 @@ interface ActiveSection {
  */
 export function ScrollChrome({ name, locale }: { name: string; locale: Locale }) {
   const [active, setActive] = useState<ActiveSection>({ index: 0, theme: "light" });
+
+  usePageTheme();
 
   useGSAP(() => {
     NAV_SECTION_IDS.forEach((id, index) => {

@@ -8,9 +8,12 @@ import { scrollProgress } from "@/webgl/scrollProgress";
 /** How far each half of the name travels outwards, in % of its own width. */
 const WORD_SPREAD_PERCENT = 60;
 
+/** The frame shrinks to this scale over the pin, leaving the page surface around it. */
+const FRAME_END_SCALE = 0.92;
+
 /**
  * Hero choreography. While the pinned stage scrolls by, the name splits
- * apart and fades while the WebGL monogram grows to the center. In flow,
+ * apart and fades while the frame shrinks and the WebGL monogram grows to the center. In flow,
  * without any motion, under reduced motion.
  */
 export function HeroMotion({ children }: { children: ReactNode }) {
@@ -29,6 +32,7 @@ export function HeroMotion({ children }: { children: ReactNode }) {
           },
         },
       })
+      .to("[data-hero-frame]", { scale: FRAME_END_SCALE, duration: 1 }, 0)
       .to("[data-hero-headline]", { yPercent: 60, opacity: 0, duration: 0.3 }, 0)
       .to(
         words,
