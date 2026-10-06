@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The WebGL orb becomes the page's protagonist, drawn as 2D metaballs that split and merge like drops: the hero monogram collapses into it, it lands on the section titles as their full stop, waiting at the screen edge between two of them, then trails the closing sentence and opens the footer card. Gradient dots stand in for it without motion or WebGL.
 - The hero gradient is clipped to its rounded frame on a transparent canvas: the page surface shows around it, with no covering shadow or band.
 - Gradient footer: a drifting arch of layered CSS gradients rises behind a giant name fitted to the page width, the contact block fades up on scroll and links get a slide-through underline. No WebGL, static under reduced motion.
 - English version of the resume at `/en` (home, printable A4 page, legal notice, 404, `llms.txt`, Open Graph image), with nullable `*_en` columns in the `cv_*` tables that fall back to French, a typed message dictionary, hreflang alternates in metadata and sitemap and a FR/EN link in the top capsule. The `/admin` forms edit the English fields next to the French ones.

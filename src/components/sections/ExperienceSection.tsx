@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { Card } from "@/components/ui/Card";
+import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
 import { isOngoing } from "@/lib/cv/format";
 import { buildTrajectory } from "@/lib/cv/trajectory";
@@ -66,6 +67,7 @@ export function ExperienceSection({
         <div className="section-shell">
           <h2 id="experiences-title" className="title-section">
             {t.title}
+            <OrbAnchor />
           </h2>
           <ol data-experience-cards className="mt-10 grid gap-4">
             {experiences.map((experience) => (
@@ -105,7 +107,10 @@ export function ExperienceSection({
             ))}
           </ol>
 
-          <h2 className="mt-20 title-section">{t.education}</h2>
+          <h2 className="mt-20 title-section">
+            {t.education}
+            <OrbAnchor />
+          </h2>
           <ol data-experience-cards className="mt-10 grid gap-4 md:grid-cols-2">
             {education.map((entry) => (
               <Card key={entry.id} as="li">

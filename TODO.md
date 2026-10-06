@@ -155,6 +155,18 @@
 - [x] Champs `*_en` dans le backoffice `/admin` (profil et chaque liste traduite), vides = repli sur le français
 - [x] Relire les traductions anglaises (rédigées à partir du texte français)
 
+## Fil rouge : l'orbe protagoniste (réf. `design/source/`, non versionnée)
+
+> Un seul personnage, l'orbe WebGL, traverse toute la page et se transforme d'une section à l'autre (dégradé de la charte, fonds crème/sombre inchangés). Une PR par étape.
+
+- [x] Moteur : `orbDirector` (la dernière revendication passée au scroll détient l'orbe, pose écrite à chaque frame sur `gsap.ticker`), `OrbAnchor` (point final en dégradé, remplacé par l'orbe en mouvement + WebGL), orbe retenue au bord de l'écran entre deux ancres ; canvas transparent et gradient du hero découpé au cadre (plus d'ombre ni de bande de surface)
+- [x] Hero : le monogramme centré se contracte en orbe ; titres Expériences, Formation, Compétences, Infos ; Next : passage de relais vers la phrase courbe puis la carte du footer
+- [x] Orbe en metaballs 2D (8 formes, cercles ou rectangles arrondis qui fusionnent ; ombrage de sphère exact pour un cercle seul) à la place de la sphère 3D
+- [ ] Manifesto : l'orbe se divise puis révèle la citation
+- [ ] Expériences : l'orbe devient les panneaux de la trajectoire
+- [ ] Compétences : nuage de particules qui se réorganise par catégorie (grille, vague, tore)
+- [ ] Infos : anneaux de texte (langues, mobilité, disponibilité) qui tournent autour de l'orbe
+
 ## Hors périmètre v1 (à rediscuter plus tard)
 
 - Lettre de motivation (le kit Figma en contient une)

@@ -11,6 +11,7 @@ import {
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import type { Palette } from "../palette";
+import { HERO_COLLAPSE } from "../scrollProgress";
 
 /** Exported from design/3d/monogram.blend: 1 unit wide, facing +Z. */
 const MODEL_URL = "/models/monogram.glb";
@@ -20,7 +21,8 @@ const FOLLOW_SPEED = 4;
 
 /**
  * The portfolio's "EC" logo in 3D, turning towards the pointer. Rests beside
- * the hero text, then grows towards the center as the hero is scrolled.
+ * the hero text, grows towards the center as the hero is scrolled, then
+ * shrinks away while the orb grows out of it (HERO_COLLAPSE).
  */
 export class Monogram {
   readonly group = new Group();
@@ -30,7 +32,8 @@ export class Monogram {
   private readonly restPosition = new Vector3();
   private restSize = 1;
   private centerSize = 1;
-  private progress = 0;
+  private centering = 0;
+  private collapse = 0;
   private mesh: Mesh | null = null;
   private isDisposed = false;
 
@@ -86,10 +89,16 @@ export class Monogram {
     this.applyProgress();
   }
 
-  /** Hero scroll progress, 0 (at rest) to 1 (centered). */
+  /** Hero scroll progress, 0 (at rest) to 1 (collapsed into the orb). */
   setProgress(progress: number): void {
-    this.progress = MathUtils.smoothstep(progress, 0, 1);
+    this.centering = MathUtils.smoothstep(progress, 0, HERO_COLLAPSE.from);
+    this.collapse = MathUtils.smoothstep(progress, HERO_COLLAPSE.from, HERO_COLLAPSE.to);
     this.applyProgress();
+  }
+
+  /** Fully shrunk into the orb: nothing left to draw. */
+  get isCollapsed(): boolean {
+    return this.collapse === 1;
   }
 
   /** `pointer` in normalized device coordinates (-1..1, y up). */
@@ -101,8 +110,9 @@ export class Monogram {
   }
 
   private applyProgress(): void {
-    this.pivot.scale.setScalar(MathUtils.lerp(this.restSize, this.centerSize, this.progress));
-    this.pivot.position.copy(this.restPosition).multiplyScalar(1 - this.progress);
+    const size = MathUtils.lerp(this.restSize, this.centerSize, this.centering);
+    this.pivot.scale.setScalar(size * (1 - this.collapse));
+    this.pivot.position.copy(this.restPosition).multiplyScalar(1 - this.centering);
   }
 
   dispose(): void {

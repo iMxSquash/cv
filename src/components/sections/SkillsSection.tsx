@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { CvIcon } from "@/components/icons/CvIcon";
 import { PinnedStage } from "@/components/scroll/PinnedStage";
 import { Card } from "@/components/ui/Card";
+import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import { SkillChip } from "@/components/ui/SkillChip";
 import { Constants, type Enums } from "@/lib/database.types";
 import type { Skill, Tool } from "@/lib/cv/types";
@@ -62,6 +63,7 @@ export function SkillsSection({
           <div>
             <h2 id="skills-title" className="title-section">
               {t.title}
+              <OrbAnchor />
             </h2>
             {/* Visual only: each list keeps its own heading for assistive technologies. */}
             <p

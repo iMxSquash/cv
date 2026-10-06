@@ -1,6 +1,7 @@
 import { CvIcon } from "@/components/icons/CvIcon";
 import { Flag } from "@/components/icons/Flag";
 import { Card } from "@/components/ui/Card";
+import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import type { Language, MobilityItem, Profile } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -19,6 +20,7 @@ export function InfosSection({ profile, languages, mobility, locale }: InfosSect
     <section id="infos" aria-labelledby="infos-title" data-theme="dark" className="section-shell">
       <h2 id="infos-title" className="title-section">
         {t.title}
+        <OrbAnchor />
       </h2>
       <InfosMotion>
         <div data-infos-grid className="mt-10 grid gap-4 md:grid-cols-3">

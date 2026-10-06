@@ -236,6 +236,11 @@ html[data-theme-scrub] main [data-theme]:not([data-theme-solid]) {
   );
 }
 
+/* Stand-in for the orb on a full stop (OrbAnchor) where the WebGL orb is not running. */
+@utility orb-dot {
+  background-image: linear-gradient(155deg, var(--palette-primary), var(--palette-secondary));
+}
+
 /* Decorative gradient panels of the experiences journey. */
 @utility gradient-panel {
   background-image: linear-gradient(

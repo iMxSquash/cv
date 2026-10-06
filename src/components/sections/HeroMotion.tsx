@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { claimOrb, placeOrb, restingOrbRadius } from "@/components/scroll/orbDirector";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
 import { findPin, gsap, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
-import { scrollProgress } from "@/webgl/scrollProgress";
+import { HERO_COLLAPSE, scrollProgress } from "@/webgl/scrollProgress";
 
 /** How far each half of the name travels outwards, in % of its own width. */
 const WORD_SPREAD_PERCENT = 60;
@@ -13,7 +14,8 @@ const FRAME_END_SCALE = 0.92;
 
 /**
  * Hero choreography. While the pinned stage scrolls by, the name splits
- * apart and fades while the frame shrinks and the WebGL monogram grows to the center. In flow,
+ * apart and fades while the frame shrinks and the WebGL monogram grows to the
+ * center, then collapses into the orb that will travel down the page. In flow,
  * without any motion, under reduced motion.
  */
 export function HeroMotion({ children }: { children: ReactNode }) {
@@ -44,7 +46,7 @@ export function HeroMotion({ children }: { children: ReactNode }) {
         },
         0,
       )
-      // Holds the centered monogram alone on screen until the pin releases.
+      // Holds the orb alone on screen until the pin releases.
       .set({}, {}, 1);
 
     // The gradient only paints the frame. Created after the timeline: it reads the frame once scaled.
@@ -67,7 +69,23 @@ export function HeroMotion({ children }: { children: ReactNode }) {
       onUpdate: measureFrame,
     });
 
+    // The orb grows at the center while the monogram shrinks into it, then floats there until the next section takes it.
+    const releaseOrb = claimOrb({ trigger: pin, start: "top top" }, (orb) => {
+      const growth = gsap.utils.clamp(
+        0,
+        1,
+        gsap.utils.normalize(HERO_COLLAPSE.from, HERO_COLLAPSE.to, scrollProgress.hero),
+      );
+      orb.isVisible = growth > 0;
+      // Smoothstep, the monogram's own easing.
+      const size = growth * growth * (3 - 2 * growth);
+      // In step with the monogram while it collapses.
+      orb.isLocked = scrollProgress.hero < 1;
+      placeOrb(orb, window.innerWidth / 2, window.innerHeight / 2, size * restingOrbRadius());
+    });
+
     return () => {
+      releaseOrb();
       scrollProgress.hero = 0;
       scrollProgress.heroFrame = null;
     };
