@@ -23,7 +23,7 @@ export function NextSection({ profile, links, today, locale }: NextSectionProps)
       id="next"
       aria-labelledby="next-title"
       data-theme="dark"
-      // Pinned with WebGL running, the canvas paints the stage: the dark surface plus the orb. flow-root keeps the footer margin inside.
+      // Pinned with WebGL running, the transparent canvas behind shows the orb over the page surface. flow-root keeps the footer margin inside.
       className="flow-root pinned:in-data-[webgl=ready]:bg-transparent"
     >
       <NextMotion>

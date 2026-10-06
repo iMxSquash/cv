@@ -39,13 +39,7 @@ export function AboutSection({ profile, locale }: { profile: Profile; locale: Lo
   const t = getMessages(locale);
   const quote = profile.quote && t.quote(profile.quote);
   return (
-    // The fixed canvas still shows below the shrinking hero frame: a band of page surface covers it.
-    <section
-      id="manifesto"
-      aria-labelledby="manifesto-title"
-      data-theme="light"
-      className="relative isolate before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-dvh before:bg-surface"
-    >
+    <section id="manifesto" aria-labelledby="manifesto-title" data-theme="light">
       <ManifestoMotion>
         {quote && (
           <PinnedStage

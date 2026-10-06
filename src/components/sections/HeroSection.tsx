@@ -23,10 +23,10 @@ export function HeroSection({ profile, locale }: { profile: Profile; locale: Loc
           // Always clipped: the frame's spread shadow must not spill over the next section.
           stageClassName="flex min-h-dvh flex-col overflow-hidden p-2 md:p-4"
         >
-          {/* The huge spread shadow paints the page surface around the rounded frame, over the canvas. */}
+          {/* Without motion, the canvas gradient fills the screen: the huge spread shadow paints the page surface around the frame. With motion, the gradient is clipped to the frame and the shadow would hide the orb. */}
           <div
             data-hero-frame
-            className="flex flex-1 flex-col overflow-hidden rounded-[clamp(1rem,3vmin,2rem)] shadow-[0_0_0_100vmax_var(--surface)]"
+            className="flex flex-1 flex-col overflow-hidden rounded-[clamp(1rem,3vmin,2rem)] shadow-[0_0_0_100vmax_var(--surface)] pinned:in-data-[webgl=ready]:shadow-none"
           >
             <div
               data-theme="dark"

@@ -50,6 +50,7 @@ export class Experience {
   private readonly environment: WebGLRenderTarget;
   private readonly resizeObserver: ResizeObserver;
   private resizeTimer: ReturnType<typeof setTimeout> | undefined;
+  private canvasHeight = 1;
   private isHeroOnScreen = true;
   private isCanvasVisible = true;
   private hasRendered = false;
@@ -65,7 +66,8 @@ export class Experience {
       this.renderer = new WebGLRenderer({
         canvas,
         antialias: false,
-        alpha: false,
+        // Transparent around the hero frame: the page surface shows through.
+        alpha: true,
         powerPreference: "high-performance",
       });
     } catch (error) {
@@ -89,8 +91,7 @@ export class Experience {
     );
     this.orb = new Orb(palette, this.uniforms);
     this.scene.add(this.gradient.mesh, this.monogram.group, this.orb.mesh);
-    // Behind the orb, where the gradient is hidden: the dark section surface it stands for.
-    this.renderer.setClearColor(palette.primaryDarkest);
+    this.renderer.setClearColor(0x000000, 0);
     this.camera.position.z = CAMERA_DISTANCE;
 
     // Baked once: a neutral studio the monogram reflects, cheaper than more lights.
@@ -161,6 +162,11 @@ export class Experience {
     this.gradient.mesh.visible = this.isHeroOnScreen;
     this.monogram.group.visible = this.isHeroOnScreen;
     if (this.isHeroOnScreen) {
+      this.gradient.setFrame(
+        scrollProgress.heroFrame,
+        this.canvasHeight,
+        this.renderer.getPixelRatio(),
+      );
       this.monogram.setProgress(scrollProgress.hero);
       this.monogram.update(deltaSeconds, this.uniforms.uPointer.value);
     }
@@ -179,6 +185,7 @@ export class Experience {
   private resize(): void {
     const { clientWidth: width, clientHeight: height } = this.canvas;
     if (width === 0 || height === 0) return;
+    this.canvasHeight = height;
     this.renderer.setSize(width, height, false);
     this.renderer.getDrawingBufferSize(this.uniforms.uResolution.value);
     this.camera.aspect = width / height;

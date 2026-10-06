@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
-import { findPin, gsap, pinnedScrub } from "@/lib/gsap";
+import { findPin, gsap, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
 import { scrollProgress } from "@/webgl/scrollProgress";
 
 /** How far each half of the name travels outwards, in % of its own width. */
@@ -19,7 +19,8 @@ const FRAME_END_SCALE = 0.92;
 export function HeroMotion({ children }: { children: ReactNode }) {
   const root = useScrollMotion((element) => {
     const pin = findPin(element);
-    if (!pin) return;
+    const frame = element.querySelector<HTMLElement>("[data-hero-frame]");
+    if (!pin || !frame) return;
     const words = gsap.utils.toArray<HTMLElement>("[data-hero-word]");
     const half = (words.length - 1) / 2;
     gsap
@@ -32,7 +33,7 @@ export function HeroMotion({ children }: { children: ReactNode }) {
           },
         },
       })
-      .to("[data-hero-frame]", { scale: FRAME_END_SCALE, duration: 1 }, 0)
+      .to(frame, { scale: FRAME_END_SCALE, duration: 1 }, 0)
       .to("[data-hero-headline]", { yPercent: 60, opacity: 0, duration: 0.3 }, 0)
       .to(
         words,
@@ -45,8 +46,30 @@ export function HeroMotion({ children }: { children: ReactNode }) {
       )
       // Holds the centered monogram alone on screen until the pin releases.
       .set({}, {}, 1);
+
+    // The gradient only paints the frame. Created after the timeline: it reads the frame once scaled.
+    const measureFrame = () => {
+      const box = frame.getBoundingClientRect();
+      const scale = frame.offsetWidth > 0 ? box.width / frame.offsetWidth : 1;
+      scrollProgress.heroFrame = {
+        left: box.left,
+        top: box.top,
+        right: box.right,
+        bottom: box.bottom,
+        radius: parseFloat(getComputedStyle(frame).borderTopLeftRadius) * scale,
+      };
+    };
+    ScrollTrigger.create({
+      trigger: element,
+      start: "top bottom",
+      end: "bottom top",
+      onRefresh: measureFrame,
+      onUpdate: measureFrame,
+    });
+
     return () => {
       scrollProgress.hero = 0;
+      scrollProgress.heroFrame = null;
     };
   });
 
