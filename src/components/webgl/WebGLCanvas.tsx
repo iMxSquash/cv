@@ -40,12 +40,14 @@ export default function WebGLCanvas() {
         console.warn("[webgl] WebGL 2 unavailable, keeping the CSS fallback", error);
         return;
       }
-      ScrollTrigger.create({
+      const heroTrigger = ScrollTrigger.create({
         trigger: "#hero",
         start: "top bottom",
         end: "bottom top",
         onToggle: (self) => experience?.setHeroOnScreen(self.isActive),
       });
+      // The scene starts on the hero: a page opened further down (hash) never toggles the trigger.
+      experience.setHeroOnScreen(heroTrigger.isActive);
       return teardown;
     });
   });
@@ -53,6 +55,7 @@ export default function WebGLCanvas() {
   return (
     <div
       ref={container}
+      data-webgl-canvas
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 size-full opacity-0 transition-opacity duration-700 in-data-[webgl=ready]:opacity-100"
     />
