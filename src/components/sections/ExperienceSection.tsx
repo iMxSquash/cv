@@ -5,7 +5,7 @@ import { AssetImage } from "@/components/ui/AssetImage";
 import { Card } from "@/components/ui/Card";
 import { OrbAnchor } from "@/components/ui/OrbAnchor";
 import { MonthPeriod, YearPeriod } from "@/components/ui/Period";
-import { isOngoing } from "@/lib/cv/format";
+import { formatYearPeriod, isOngoing } from "@/lib/cv/format";
 import { buildTrajectory } from "@/lib/cv/trajectory";
 import type { Education, Experience } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
@@ -21,8 +21,9 @@ const VISUAL_CLASS =
  * It only restates the cards below, so it is decorative: hidden from assistive
  * technologies, and not rendered at all when nothing is pinned.
  */
-function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "today" | "locale">) {
+function Trajectory({ experiences, education, locale }: Omit<ExperienceSectionProps, "today">) {
   const steps = buildTrajectory(experiences, education);
+  const openEnd = getMessages(locale).openEnd;
   if (steps.length === 0) return null;
   return (
     <div aria-hidden="true" className="hidden pinned:block">
@@ -38,8 +39,13 @@ function Trajectory({ experiences, education }: Omit<ExperienceSectionProps, "to
             data-trajectory-step
             className="col-start-1 row-start-1 max-w-[min(64vw,52rem)] text-center"
           >
-            <span className="mb-4 block font-medium text-accent">{step.year}</span>
+            <span className="mb-4 block font-medium text-accent">
+              {step.end === null
+                ? `${step.start} – ${openEnd}`
+                : formatYearPeriod(step.start, step.end)}
+            </span>
             <span className="block title-section text-balance">{step.label}.</span>
+            <span className="mt-4 block text-text-muted">{step.organizations.join(" · ")}</span>
           </p>
         ))}
       </PinnedStage>
@@ -64,7 +70,7 @@ export function ExperienceSection({
   return (
     <section id="experiences" aria-labelledby="experiences-title" data-theme="dark">
       <ExperienceMotion>
-        <Trajectory experiences={experiences} education={education} />
+        <Trajectory experiences={experiences} education={education} locale={locale} />
         <div className="section-shell">
           <h2 id="experiences-title" className="title-section">
             {t.title}

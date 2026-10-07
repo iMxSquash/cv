@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 import { buildTrajectory } from "./trajectory";
 
 describe("buildTrajectory", () => {
-  const experience = (role: string, start_date: string, end_date: string | null = null) => ({
-    role,
-    start_date,
-    end_date,
-  });
+  const experience = (
+    role: string,
+    start_date: string,
+    end_date: string | null = null,
+    company = "Acme",
+  ) => ({ role, company, start_date, end_date });
   const education = (degree: string, start_year: number | null, end_year: number) => ({
     degree,
+    school: "École",
     start_year,
     end_year,
   });
@@ -24,15 +26,15 @@ describe("buildTrajectory", () => {
         [education("Bachelor", 2023, 2026)],
       ),
     ).toEqual([
-      { year: 2024, label: "Développeur" },
-      { year: 2023, label: "Bachelor" },
-      { year: 2020, label: "Graphiste" },
+      { label: "Développeur", start: 2024, end: 2025, organizations: ["Acme"] },
+      { label: "Bachelor", start: 2023, end: 2026, organizations: ["École"] },
+      { label: "Graphiste", start: 2020, end: null, organizations: ["Acme"] },
     ]);
   });
 
-  it("dates a degree without a start year by its end year", () => {
+  it("keeps a degree without a start year dated by its end year", () => {
     expect(buildTrajectory([], [education("Baccalauréat", null, 2023)])).toEqual([
-      { year: 2023, label: "Baccalauréat" },
+      { label: "Baccalauréat", start: null, end: 2023, organizations: ["École"] },
     ]);
   });
 
@@ -45,16 +47,35 @@ describe("buildTrajectory", () => {
     ).toEqual(["Alternance", "Bachelor", "Baccalauréat"]);
   });
 
-  it("keeps a repeated role once, at its first year", () => {
+  it("spans a repeated role over all its entries and names each company, most recent first", () => {
     expect(
       buildTrajectory(
         [
-          experience("Développeur", "2025-09-01"),
-          experience("Développeur", "2024-06-01", "2025-09-01"),
+          experience("Développeur", "2025-09-01", "2028-09-01", "FD Formation"),
+          experience("Développeur", "2024-06-01", "2025-09-01", "EStack"),
         ],
         [],
       ),
-    ).toEqual([{ year: 2024, label: "Développeur" }]);
+    ).toEqual([
+      {
+        label: "Développeur",
+        start: 2024,
+        end: 2028,
+        organizations: ["FD Formation", "EStack"],
+      },
+    ]);
+  });
+
+  it("keeps a repeated role open while one of its entries is ongoing", () => {
+    expect(
+      buildTrajectory(
+        [
+          experience("Développeur", "2024-06-01", "2025-09-01"),
+          experience("Développeur", "2025-09-01"),
+        ],
+        [],
+      )[0]?.end,
+    ).toBeNull();
   });
 
   it("returns no step without any entry", () => {
