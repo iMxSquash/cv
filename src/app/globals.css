@@ -159,6 +159,15 @@ html[data-theme-scrub] main [data-theme]:not([data-theme-solid]) {
     color: var(--text);
   }
 
+  /* Navigation lives in the section nav: the native scrollbar is hidden on every device. */
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
   :focus-visible {
     outline: 3px solid var(--focus-ring);
     outline-offset: 3px;

@@ -61,7 +61,7 @@
 
 - [x] `SmoothScroll` : Lenis unique piloté par `gsap.ticker`, désactivé en reduced motion, ancres `#id` interceptées par un écouteur délégué (pas de contexte React)
 - [x] `ScrollTrigger.refresh()` après `document.fonts.ready` et images du hero ; `ignoreMobileResize`
-- [x] Nav latérale « scroll indicator » (barres 12/28/48 px, `aria-current`, ancres via Lenis, hash conservé)
+- [x] Nav « scroll indicator » en haut à droite (barre active remplie selon la progression de sa section, barre active et voisines agrandies, effet dock accentué au survol, `aria-current`, ancres via Lenis, hash conservé), scrollbar native masquée
 - [x] Capsule nav en haut (masquée au scroll vers le bas, visible vers le haut)
 - [x] Bascule de thème crème/sombre au passage des sections : fond unique sur `<html>` dont les tokens se fondent via GSAP (réf. annnimate « background color »), sections peintes individuellement en reduced motion
 - [x] Vérifier : aucun ScrollTrigger orphelin après fast refresh / navigation
