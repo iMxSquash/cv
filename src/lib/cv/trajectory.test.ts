@@ -14,7 +14,7 @@ describe("buildTrajectory", () => {
     end_year,
   });
 
-  it("merges experiences and education from the oldest step", () => {
+  it("merges experiences and education from the most recent step", () => {
     expect(
       buildTrajectory(
         [
@@ -24,9 +24,9 @@ describe("buildTrajectory", () => {
         [education("Bachelor", 2023, 2026)],
       ),
     ).toEqual([
-      { year: 2020, label: "Graphiste" },
-      { year: 2023, label: "Bachelor" },
       { year: 2024, label: "Développeur" },
+      { year: 2023, label: "Bachelor" },
+      { year: 2020, label: "Graphiste" },
     ]);
   });
 
@@ -36,13 +36,13 @@ describe("buildTrajectory", () => {
     ]);
   });
 
-  it("orders steps starting the same year by end, an ongoing one last", () => {
+  it("orders steps starting the same year by end, an ongoing one first", () => {
     expect(
       buildTrajectory(
         [experience("Alternance", "2023-09-01")],
         [education("Bachelor", 2023, 2026), education("Baccalauréat", null, 2023)],
       ).map((step) => step.label),
-    ).toEqual(["Baccalauréat", "Bachelor", "Alternance"]);
+    ).toEqual(["Alternance", "Bachelor", "Baccalauréat"]);
   });
 
   it("keeps a repeated role once, at its first year", () => {
