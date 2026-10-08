@@ -1,3 +1,5 @@
+import { filmGrain, meshGradient, simplexNoise3d } from "./meshGradient.glsl";
+
 // The plane ignores the camera: it covers the whole viewport, the shapes are found per pixel.
 export const blobVertex = /* glsl */ `
 void main() {
@@ -10,22 +12,28 @@ void main() {
  * distance and s its corner radius, so the field is 1 on its outline and the
  * shapes melt into one another where their fields add up. For a lone circle the
  * field is r² / distance², hence z = sqrt(1 - 1 / field) is exactly the height
- * of a sphere: the blob is shaded like the glassy orb it replaces. `uPanel`
- * fades that look into the flat gradient of the experiences panels (CSS
- * gradient-panel): top to bottom, flipped on odd shapes as they move to the
- * right half of the screen (the right panel), blended by field where shapes meet.
+ * of a sphere, which gives the surface normal. The orb is painted with the
+ * hero's mesh gradient (navy base, mint bands, periwinkle halo) and a static
+ * film grain. The experiences panels are this same orb split in two.
  * `uHole` (center, radius) cuts a circle out of the blob.
  */
 export const blobFragment = /* glsl */ `
 #define SHAPES 8
 
+// Window onto the hero's mesh gradient: zoom (smaller is bigger) and where it looks.
+const float ORB_ZOOM = 0.22;
+const vec2 ORB_OFFSET = vec2(-0.3, 0.12);
+
 uniform float uTime;
-uniform vec2 uResolution;
 uniform vec3 uColors[3];
+uniform vec3 uBase;
 uniform vec4 uShapes[SHAPES];
 uniform float uCorners[SHAPES];
-uniform float uPanel;
 uniform vec3 uHole;
+
+${simplexNoise3d}
+${meshGradient}
+${filmGrain}
 
 // Signed distance to a rounded box centered on the origin (Inigo Quilez).
 float roundedBoxDistance(vec2 p, vec2 halfSize, float radius) {
@@ -48,22 +56,20 @@ float field(vec2 p) {
   return sum;
 }
 
-vec3 panelGradient(float t) {
-  return t < 0.55
-    ? mix(uColors[0], uColors[1], t / 0.55)
-    : mix(uColors[1], uColors[2], (t - 0.55) / 0.45);
-}
-
-vec3 panelColor(vec2 p) {
+vec3 auroraColor(vec2 p) {
+  float flowTime = uTime * 0.05;
   vec3 sum = vec3(0.0);
   float weight = 0.0;
   for (int i = 0; i < SHAPES; i++) {
     float f = shapeField(i, p);
-    if (f == 0.0) continue;
+    // A faraway shape weighs under 1% of the blend: not worth two noise calls.
+    if (f < 0.01) continue;
     vec4 shape = uShapes[i];
-    float t = clamp((shape.y + shape.w - p.y) / max(2.0 * shape.w, 1.0), 0.0, 1.0);
-    float flip = i % 2 == 1 ? smoothstep(0.0, 0.25 * uResolution.x, shape.x - 0.5 * uResolution.x) : 0.0;
-    sum += panelGradient(mix(t, 1.0 - t, flip)) * f;
+    // The same mesh gradient as the hero background, seen through the shape. Sized on its short side, zoomed in
+    // and shifted: a round orb or a tall panel both show big, bright bands instead of the navy between them.
+    float size = max(min(shape.z, shape.w), 1.0);
+    vec2 local = (p - shape.xy) / size * ORB_ZOOM + ORB_OFFSET;
+    sum += meshGradient(local, 1.0, flowTime) * f;
     weight += f;
   }
   return sum / max(weight, 1e-4);
@@ -80,16 +86,11 @@ void main() {
   if (uHole.z > 0.0) coverage *= clamp(length(p - uHole.xy) - uHole.z + 0.5, 0.0, 1.0);
   if (coverage == 0.0) discard;
 
-  float inside = max(f, 1.0);
-  vec3 normal = vec3(-gradient / slope * sqrt(1.0 / inside), sqrt(1.0 - 1.0 / inside));
-  float fresnel = pow(1.0 - normal.z, 2.5);
-  float swirl = 0.5 + 0.5 * sin(normal.y * 3.0 + normal.x * 2.0 + uTime * 0.6);
-  vec3 body = mix(uColors[0], uColors[1], swirl);
-  vec3 color = body * (0.7 + 0.5 * fresnel) + uColors[2] * pow(fresnel, 3.0);
-  if (uPanel > 0.0) color = mix(color, panelColor(p), uPanel);
+  vec3 color = auroraColor(p);
 
   gl_FragColor = vec4(color, 1.0);
   #include <colorspace_fragment>
+  gl_FragColor.rgb += filmGrain(gl_FragCoord.xy);
   gl_FragColor.a = coverage;
 }
 `;

@@ -43,4 +43,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Theme moves to a navy, mint and periwinkle palette with a soft off-white instead of pure white. The hero background and the orb share one fluid mesh gradient with a static film grain and no luminance cap; the experiences side panels are the orb split in two with that same gradient (no dedicated panel gradient). The top capsule sits lower.
 - Pages are rendered per request (required by the nonce CSP); the resume reads are cached with the `cv` tag and dropped by every `/admin` write, with a daily expiry as a safety net. The "Actuel" badge is now always current.

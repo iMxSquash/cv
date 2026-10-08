@@ -23,8 +23,6 @@ const FORM = 2.5;
  */
 const CENTER_END = 0.25;
 const BAR_END = 0.55;
-/** Within FORM (0..1): the orb's glassy look gives way to the panels' flat gradient. */
-const PANEL_LOOK = [0.35, 0.85] as const;
 /** How far off screen the side panels wait, in % of their width. */
 const VISUAL_OFFSET_PERCENT = 150;
 /** Vertical drift of the side panels once formed, in % of their height: they start level and centered, then part ways. */
@@ -132,7 +130,6 @@ function stretchOrbIntoPanels(
     const isForming = form < 1;
     const leftBox = panelBox(left, isForming);
     const rightBox = panelBox(right, isForming);
-    orb.panel = formEase(between(form, PANEL_LOOK));
     const [first, second, ...others] = orb.shapes;
     if (form >= BAR_END) {
       for (const shape of others) setShape(shape, leftBox.x, leftBox.y, 0, 0, 0);
