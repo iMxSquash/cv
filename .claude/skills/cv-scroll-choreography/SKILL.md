@@ -25,6 +25,10 @@ Barre de nav latérale (pattern `scroll-indicator`) : une barre par section, la 
 
 Transitions de thème : quand une section franchit le milieu de l'écran (ScrollTrigger `onToggle`, dans `ScrollChrome`), son `data-theme` est recopié sur l'UI fixe (nav latérale, capsule), qui hérite ainsi de tous les tokens du thème (`--interface-color`, `--surface`, `--focus-ring`…) et transitionne en CSS. Le curseur (s'il arrive) suit le même principe.
 
+## Transition de page en vague
+
+Un clic sur un lien `#section` (nav, hors section courante) joue `PageTransition` au lieu du scroll animé de Lenis. `SmoothScroll` appelle `runPageTransition` (`transitionRunner.ts`, registre comme `orbDirector`), qui lui prête `lock` / `jump` / `unlock` (Lenis `stop`, `scrollTo` immédiat forcé, `start`). Séquence (une seule timeline GSAP) : l'orbe sort de l'écran par le coin bas droit (`sendOrbTo` vers un point hors champ, formes en retard échelonné, effet liquide) ; une vague naît de ce point hors champ, rien n'apparaît avant elle. Elle est faite du dégradé de l'orbe lui-même : au départ, la scène dessine l'orbe gonflée en un cercle géant (`scrollProgress.coverRequest`, `Experience.captureCover`, taille de dégradé `uGradientSize`) et la copie dans un canvas 2D de l'overlay, que `clip-path: path()` (`waveShape.ts`) découpe en vague ; le saut de scroll se fait sous le recouvrement et l'orbe est téléportée hors champ en haut à gauche (`teleportOrbTo`) ; le nom de la section s'écrit ; la deuxième vague (`path(evenodd)`, rectangle moins le disque ondulé) révèle la section, et l'orbe est relâchée (`releaseOrb`) quand la vague approche du coin haut gauche. L'overlay est `aria-hidden`, la cible reçoit le focus ; pas de transition en reduced motion. Les clics pendant la transition sont ignorés (`isPageTransitionRunning`).
+
 ## Setup (une seule fois, dans `src/components/scroll/SmoothScroll.tsx`)
 
 ```tsx

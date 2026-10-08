@@ -30,6 +30,8 @@ uniform vec3 uBase;
 uniform vec4 uShapes[SHAPES];
 uniform float uCorners[SHAPES];
 uniform vec3 uHole;
+// When above 0, size the gradient on this instead of each shape's own size (page transition cover).
+uniform float uGradientSize;
 
 ${simplexNoise3d}
 ${meshGradient}
@@ -67,7 +69,7 @@ vec3 auroraColor(vec2 p) {
     vec4 shape = uShapes[i];
     // The same mesh gradient as the hero background, seen through the shape. Sized on its short side, zoomed in
     // and shifted: a round orb or a tall panel both show big, bright bands instead of the navy between them.
-    float size = max(min(shape.z, shape.w), 1.0);
+    float size = uGradientSize > 0.0 ? uGradientSize : max(min(shape.z, shape.w), 1.0);
     vec2 local = (p - shape.xy) / size * ORB_ZOOM + ORB_OFFSET;
     sum += meshGradient(local, 1.0, flowTime) * f;
     weight += f;

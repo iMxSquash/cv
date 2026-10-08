@@ -167,6 +167,8 @@
 - [x] Compétences : l'orbe (point final du titre) éclate en un nuage de points (three.js `Points`, positions calculées dans le vertex shader) qui prend la forme de la catégorie affichée : grille (Design), nappe ondulante en perspective (Développement), tore (Outils), puis se rassemble dans l'orbe ; catégorie suivie par la pile de cartes à partir de 900 px, par la liste au centre de l'écran en dessous
 - [x] Infos (pin 2,5 vh, 2 vh sous 900 px) : trois anneaux de texte SVG (langues, mobilité, disponibilité, copie décorative `aria-hidden`) qui s'ouvrent puis tournent en sens alternés autour de l'orbe avant de s'élargir hors champ ; l'orbe redevient ensuite le point final du titre
 
+- [x] Transition de page en vague (`PageTransition`) : au clic sur un lien de section, l'orbe sort de l'écran en liquide par le coin bas droit (formes qui se suivent à des vitesses décroissantes, `orbDirector.sendOrbTo`), une vague née hors champ et faite de son propre dégradé (même shader et même grain : la scène en prend un instantané, `coverRequest`, copié dans un canvas 2D clippé par `clip-path: path()` au bord ondulé, `waveShape.ts`) recouvre la page, le nom de la section s'écrit en grand, le saut de scroll se fait sous le recouvrement, puis une deuxième vague balaie le recouvrement du coin bas droit vers le haut gauche et l'orbe revient du coin haut gauche (`teleportOrbTo` puis `releaseOrb`). Ni en reduced motion, ni vers la section courante ; clics ignorés pendant la transition
+
 ## Hors périmètre v1 (à rediscuter plus tard)
 
 - Lettre de motivation (le kit Figma en contient une)
