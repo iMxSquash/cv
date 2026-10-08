@@ -27,7 +27,6 @@ export class Blob {
   /** Eased shapes in CSS px: center x, y, half width, half height. */
   private readonly boxes = Array.from({ length: BLOB_SHAPES }, () => new Vector4());
   private readonly corners = new Float32Array(BLOB_SHAPES);
-  private panel = 0;
   /** Eased hole in CSS px: center x, y, radius. */
   private readonly hole = new Vector3();
   private isShown = false;
@@ -38,11 +37,10 @@ export class Blob {
       fragmentShader: blobFragment,
       uniforms: {
         uTime: uniforms.uTime,
-        uResolution: uniforms.uResolution,
         uColors: { value: [palette.primary, palette.secondary, palette.info] },
+        uBase: { value: palette.primaryDarkest },
         uShapes: { value: Array.from({ length: BLOB_SHAPES }, () => new Vector4()) },
         uCorners: { value: new Float32Array(BLOB_SHAPES) },
-        uPanel: { value: 0 },
         uHole: { value: new Vector3() },
       },
       depthTest: false,
@@ -67,7 +65,7 @@ export class Blob {
     const ease = orb.isLocked || !this.isShown ? 1 : 1 - Math.exp(-deltaSeconds * FOLLOW_SPEED);
     this.isShown = true;
     this.mesh.visible = true;
-    const { uShapes, uCorners, uPanel, uHole } = this.mesh.material.uniforms;
+    const { uShapes, uCorners, uHole } = this.mesh.material.uniforms;
     orb.shapes.forEach((shape, index) => {
       const box = this.boxes[index];
       box.x += (shape.x - box.x) * ease;
@@ -84,8 +82,6 @@ export class Blob {
       );
       uCorners.value[index] = this.corners[index] * pixelRatio;
     });
-    this.panel += (orb.panel - this.panel) * ease;
-    uPanel.value = this.panel;
     const { hole } = this;
     hole.x += (orb.hole.x - hole.x) * ease;
     hole.y += (orb.hole.y - hole.y) * ease;

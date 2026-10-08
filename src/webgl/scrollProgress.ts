@@ -37,15 +37,13 @@ export const scrollProgress = {
    * The orb, the page's single protagonist (src/components/scroll/orbDirector.ts
    * hands it from section to section). Its shapes melt into one another like
    * drops (metaballs), so moving them apart splits it and bringing them
-   * together merges it. `panel` (0..1) turns its glassy look into the flat
-   * gradient of the experiences panels. `hole` carves a circle out of it (CSS
+   * together merges it. `hole` carves a circle out of it (CSS
    * px, radius 0 for none). The scene eases towards these values, unless
    * `isLocked` pins it exactly there.
    */
   orb: {
     isVisible: false,
     isLocked: false,
-    panel: 0,
     hole: { x: 0, y: 0, radius: 0 },
     shapes: Array.from({ length: BLOB_SHAPES }, (): BlobShape => ({
       x: 0,

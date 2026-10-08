@@ -14,28 +14,29 @@
  * variables, never raw hex values. Contrast ratios: see the cv-design-system skill.
  */
 :root {
-  --palette-primary: #9251f7;
-  --palette-primary-dark: #5531a7;
-  --palette-primary-darkest: #170f2e;
-  --palette-primary-lighter: #efe2f9;
-  --palette-primary-lightest: #f8f2fc;
-  /* Not in Figma: primary lightened for small accent text on dark (9.16:1 on darkest). */
-  --palette-primary-light: #c9a8fb;
-  --palette-secondary: #516cf7;
-  --palette-secondary-light: #95aafb;
-  --palette-secondary-lighter: #e1e7fe;
-  /* Not in Figma: secondary darkened for small text on light surfaces (6.20:1 on gray-lightest-2). */
-  --palette-secondary-dark: #3a4fd0;
-  --palette-info: #22c3f1;
+  --palette-primary: #4cc9a4;
+  --palette-primary-dark: #0e6555;
+  --palette-primary-darkest: #050b1f;
+  --palette-primary-lighter: #d6f3ea;
+  /* Never pure white: a soft, slightly cool off-white. */
+  --palette-primary-lightest: #f1f4f2;
+  /* Not in Figma: primary lightened for small accent text on dark (10.74:1 on darkest). */
+  --palette-primary-light: #6fd0c8;
+  --palette-secondary: #6f7fc4;
+  --palette-secondary-light: #a9b5e6;
+  --palette-secondary-lighter: #e1e6f7;
+  /* Not in Figma: secondary darkened for small text on light surfaces (7.42:1 on gray-lightest-2). */
+  --palette-secondary-dark: #3e4c93;
+  --palette-info: #6fd0c8;
   --palette-success: #4ac06f;
-  --palette-gray-darker: #2e2e48;
-  --palette-gray-dark: #47516b;
-  --palette-gray: #79819a;
-  --palette-gray-light: #acb1c3;
-  --palette-gray-lightest: #e2e6ee;
-  --palette-gray-lightest-2: #f7f9fc;
-  /* Not in Figma: card surface on dark sections (14.81:1 with lightest text). */
-  --palette-surface-dark-raised: #231942;
+  --palette-gray-darker: #0f1730;
+  --palette-gray-dark: #444e6b;
+  --palette-gray: #7a829c;
+  --palette-gray-light: #aeb5c9;
+  --palette-gray-lightest: #dfe4ec;
+  --palette-gray-lightest-2: #f6f8fa;
+  /* Not in Figma: card surface on dark sections (15.46:1 with lightest text). */
+  --palette-surface-dark-raised: #101a38;
   --palette-linkedin: #0077b5;
 }
 /* The palette mirrors the whole Figma file on purpose: secondary/info feed the WebGL gradient. */
@@ -53,7 +54,8 @@
   --text: var(--palette-gray-darker);
   --text-muted: var(--palette-gray-dark);
   --accent-text: var(--palette-primary-dark);
-  --accent-display: var(--palette-primary);
+  /* Primary is too light for display text on the light surface: same dark shade as the small accent text. */
+  --accent-display: var(--accent-text);
   --focus-ring: var(--palette-primary-dark);
   --interface-color: var(--palette-primary-darkest);
   /* Category accents of the skills deck (decorative bands, never behind text). */
@@ -209,26 +211,21 @@ html[data-theme-scrub] main [data-theme]:not([data-theme-solid]) {
 
 /*
  * Static stand-in for the WebGL hero gradient (no JS, no WebGL 2, before the
- * canvas is ready). Each color is scaled in linear light to a luminance of
- * ~0.11, the cap the shader applies, so the hero text keeps its contrast.
+ * canvas is ready): mint glow on the right over the navy base, kept dark on the
+ * left where the hero text sits.
  */
 @utility hero-gradient-fallback {
   background-color: var(--palette-primary-darkest);
   background-image:
     radial-gradient(
-      circle at 20% 25%,
-      color-mix(in srgb-linear, var(--palette-primary) 58%, black),
-      transparent 55%
+      ellipse 60% 45% at 85% 12%,
+      color-mix(in srgb-linear, var(--palette-primary) 55%, var(--palette-primary-darkest)),
+      transparent 70%
     ),
     radial-gradient(
-      circle at 80% 30%,
-      color-mix(in srgb-linear, var(--palette-secondary) 57%, black),
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 65% 85%,
-      color-mix(in srgb-linear, var(--palette-info) 24%, black),
-      transparent 45%
+      ellipse 45% 40% at 95% 85%,
+      color-mix(in srgb-linear, var(--palette-secondary) 45%, var(--palette-primary-darkest)),
+      transparent 70%
     );
 }
 

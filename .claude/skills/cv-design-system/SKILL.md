@@ -7,6 +7,10 @@ description: Design system du CV (cv.elwen.dev) issu de la maquette Figma « Sup
 
 Source : Figma `0xFIzZIyxruyvJlxDVLimS`, node `316:11498` (CV A4). Relire la maquette via le MCP Figma (`get_screenshot`, `get_design_context`) en cas de doute sur un détail.
 
+## Écart assumé avec le Figma : palette « aurore » (web)
+
+Bleu nuit, menthe et périwinkle, reprise du fluid mesh gradient preset 5 (tedious-illuminate-877120.framer.app). Valeurs de `globals.css` (source de vérité, `/print`, l'image OG et le gradient du hero suivent) : `Primary/Default` #4CC9A4 (menthe, 1.86:1 sur ivoire : jamais en texte sur clair, en thème clair `--accent-display` prend `Primary/Dark`), `Primary/Dark` #0E6555 (6.30:1 sur ivoire), `Primary/Darkest` #050B1F (fond sombre et base du hero), `Primary/Lighter` #D6F3EA, `Primary/Lightest` #F1F4F2 (jamais de blanc pur), `--palette-primary-light` #6FD0C8 (10.74:1 sur sombre), `Secondary/Default` #6F7FC4 (périwinkle, halo du hero), `--palette-secondary-dark` #3E4C93 (7.42:1), `Status/Info` #6FD0C8 (frange cyan), gris teintés bleu nuit. `Status/Success` reste vert. Le tableau ci-dessous garde les valeurs Figma d'origine : recalculer toute paire avant usage.
+
 ## Tokens Figma (valeurs exactes extraites)
 
 | Token Figma         | Valeur                                                                 | Usage web                                          |
