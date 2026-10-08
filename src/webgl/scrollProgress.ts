@@ -20,6 +20,20 @@ export interface BlobShape {
 export const BLOB_SHAPES = 8;
 
 /**
+ * Asks the scene for a snapshot of the orb swollen to a circle (center and
+ * radius in CSS px, possibly off screen), drawn into a 2D `canvas`. The page
+ * transition clips it into waves: the wave is made of the orb's own look.
+ */
+export interface CoverRequest {
+  canvas: HTMLCanvasElement;
+  x: number;
+  y: number;
+  radius: number;
+  /** Size the gradient is scaled to, in CSS px: the orb's own radius gives its look, a larger one stretches it. */
+  gradientSize: number;
+}
+
+/**
  * Scroll state of the sections the scene reacts to. Written by the sections'
  * own ScrollTriggers, read by the scene every frame: the scene never reads the
  * scroll position itself. Free of three.js imports, so sections can write it
@@ -60,6 +74,8 @@ export const scrollProgress = {
    * The scene eases towards these values.
    */
   particles: { originX: 0, originY: 0, shape: 1, gather: 1 },
+  /** Pending orb snapshot for the page transition; the scene serves it on its next frame and clears it. */
+  coverRequest: null as CoverRequest | null,
 };
 
 export type OrbState = typeof scrollProgress.orb;

@@ -10,7 +10,7 @@ import {
   Vector4,
 } from "three";
 import type { Palette } from "../palette";
-import { BLOB_SHAPES, type OrbState } from "../scrollProgress";
+import { BLOB_SHAPES, type CoverRequest, type OrbState } from "../scrollProgress";
 import { blobFragment, blobVertex } from "../shaders/blob.glsl";
 import type { SharedUniforms } from "../uniforms";
 
@@ -42,6 +42,7 @@ export class Blob {
         uShapes: { value: Array.from({ length: BLOB_SHAPES }, () => new Vector4()) },
         uCorners: { value: new Float32Array(BLOB_SHAPES) },
         uHole: { value: new Vector3() },
+        uGradientSize: { value: 0 },
       },
       depthTest: false,
       depthWrite: false,
@@ -65,7 +66,8 @@ export class Blob {
     const ease = orb.isLocked || !this.isShown ? 1 : 1 - Math.exp(-deltaSeconds * FOLLOW_SPEED);
     this.isShown = true;
     this.mesh.visible = true;
-    const { uShapes, uCorners, uHole } = this.mesh.material.uniforms;
+    const { uShapes, uCorners, uHole, uGradientSize } = this.mesh.material.uniforms;
+    uGradientSize.value = 0;
     orb.shapes.forEach((shape, index) => {
       const box = this.boxes[index];
       box.x += (shape.x - box.x) * ease;
@@ -87,6 +89,23 @@ export class Blob {
     hole.y += (orb.hole.y - hole.y) * ease;
     hole.z += (orb.hole.radius - hole.z) * ease;
     uHole.value.set(hole.x * pixelRatio, (canvasHeight - hole.y) * pixelRatio, hole.z * pixelRatio);
+  }
+
+  /**
+   * Poses the uniforms as one giant circle, the orb's gradient swollen to it,
+   * and shows the mesh. The next `update` poses the real orb again.
+   */
+  poseCover(request: CoverRequest, canvasHeight: number, pixelRatio: number): void {
+    const { uShapes, uCorners, uHole, uGradientSize } = this.mesh.material.uniforms;
+    const radius = request.radius * pixelRatio;
+    uGradientSize.value = request.gradientSize * pixelRatio;
+    uShapes.value.forEach((shape: Vector4, index: number) => {
+      const size = index === 0 ? radius : 0;
+      shape.set(request.x * pixelRatio, (canvasHeight - request.y) * pixelRatio, size, size);
+      uCorners.value[index] = size;
+    });
+    uHole.value.set(0, 0, 0);
+    this.mesh.visible = true;
   }
 
   hide(): void {

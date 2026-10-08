@@ -4,6 +4,7 @@ import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import type { ReactNode } from "react";
 import { gsap, MOTION_OK, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { isPageTransitionRunning, runPageTransition } from "./transitionRunner";
 
 /** Resolves once late layout shifts (web fonts, images) have landed. */
 function whenLoaded(): Promise<unknown> {
@@ -15,7 +16,11 @@ function whenLoaded(): Promise<unknown> {
 }
 
 /** A target pinned over a scene (the footer) only exists once the page is scrolled to its end. */
-function scrollToAnchor(lenis: Lenis, target: HTMLElement, options?: { immediate: boolean }): void {
+function scrollToAnchor(
+  lenis: Lenis,
+  target: HTMLElement,
+  options?: Parameters<Lenis["scrollTo"]>[1],
+): void {
   lenis.scrollTo(target.hasAttribute("data-scroll-end") ? lenis.limit : target, options);
 }
 
@@ -31,8 +36,15 @@ function handleAnchorClicks(lenis: Lenis): () => void {
     const target = anchor && document.getElementById(anchor.hash.slice(1));
     if (!isPlainClick || !anchor || !target) return;
     event.preventDefault();
+    if (isPageTransitionRunning()) return;
     window.history.pushState(null, "", anchor.hash);
-    scrollToAnchor(lenis, target);
+    // Section changes play the wave transition, which jumps while the page is covered.
+    const isTransitioning = runPageTransition(target, {
+      lock: () => lenis.stop(),
+      jump: () => scrollToAnchor(lenis, target, { immediate: true, force: true }),
+      unlock: () => lenis.start(),
+    });
+    if (!isTransitioning) scrollToAnchor(lenis, target);
     if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   };

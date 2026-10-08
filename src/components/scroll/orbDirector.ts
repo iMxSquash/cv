@@ -1,5 +1,11 @@
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { type BlobShape, ORB_SCALE, type OrbState, scrollProgress } from "@/webgl/scrollProgress";
+import {
+  BLOB_SHAPES,
+  type BlobShape,
+  ORB_SCALE,
+  type OrbState,
+  scrollProgress,
+} from "@/webgl/scrollProgress";
 
 /** Writes where the orb should be this frame (see `placeOrb`, `setShape`). */
 export type OrbPose = (orb: OrbState) => void;
@@ -15,7 +21,31 @@ interface OrbClaim {
  */
 const EDGE_GAP = 8;
 
+/**
+ * While the orb flows (page transition), shape `index` chases its target at a
+ * speed from the first (fast, the head) to the last (slow, the tail), in 1/s.
+ * The lag spreads the metaballs along the way: the orb stretches like a liquid.
+ */
+const FLOW_SPEED_HEAD = 16;
+const FLOW_SPEED_TAIL = 5;
+/** Under this distance in px every shape is considered arrived. */
+const FLOW_SETTLED_PX = 0.5;
+
 const claims = new Set<OrbClaim>();
+
+/** Where the page transition sends the orb, null when the sections pose it. */
+let flowTarget: { x: number; y: number } | null = null;
+/** The orb jumps (no easing at all) wherever the transition teleports it. */
+let isTeleporting = false;
+/** The shapes as the flow has eased them so far; the scene eases again on top. */
+const flowShapes: BlobShape[] = Array.from({ length: BLOB_SHAPES }, () => ({
+  x: 0,
+  y: 0,
+  halfWidth: 0,
+  halfHeight: 0,
+  corner: 0,
+}));
+let isFlowing = false;
 
 /** The claim whose start was passed last wins: the scroll position alone decides who holds the orb. */
 function findCurrentClaim(): OrbClaim | null {
@@ -28,16 +58,50 @@ function findCurrentClaim(): OrbClaim | null {
   return current;
 }
 
-const drive = () => {
+const drive = (_time: number, deltaMs: number) => {
   const { orb } = scrollProgress;
   const claim = findCurrentClaim();
-  orb.isVisible = claim !== null;
-  orb.isLocked = false;
+  orb.isVisible = claim !== null || flowTarget !== null;
+  orb.isLocked = isTeleporting;
   orb.hole.radius = 0;
   // The dot cloud stays inside the orb unless the pose spreads it.
   scrollProgress.particles.gather = 1;
-  claim?.pose(orb);
+  if (flowTarget) {
+    placeOrb(orb, flowTarget.x, flowTarget.y, restingOrbRadius());
+  } else {
+    claim?.pose(orb);
+  }
+  if (isFlowing) flow(orb, deltaMs / 1000);
 };
+
+function copyShape(from: BlobShape, to: BlobShape): void {
+  setShape(to, from.x, from.y, from.halfWidth, from.halfHeight, from.corner);
+}
+
+/** Eases the flow shapes towards the posed ones, each at its own speed, and poses the result. */
+function flow(orb: OrbState, deltaSeconds: number): void {
+  let largestGap = 0;
+  orb.shapes.forEach((shape, index) => {
+    const eased = flowShapes[index];
+    if (isTeleporting) {
+      copyShape(shape, eased);
+      return;
+    }
+    const speed = gsap.utils.interpolate(
+      FLOW_SPEED_HEAD,
+      FLOW_SPEED_TAIL,
+      index / (BLOB_SHAPES - 1),
+    );
+    const ease = 1 - Math.exp(-deltaSeconds * speed);
+    for (const key of ["x", "y", "halfWidth", "halfHeight", "corner"] as const) {
+      largestGap = Math.max(largestGap, Math.abs(shape[key] - eased[key]));
+      eased[key] += (shape[key] - eased[key]) * ease;
+    }
+    copyShape(eased, shape);
+  });
+  // Once released and arrived, the sections' poses are exact again.
+  if (!flowTarget && (!orb.isVisible || largestGap < FLOW_SETTLED_PX)) isFlowing = false;
+}
 
 /**
  * Hands the orb to `pose` once the scroll passes `start` of `trigger`, until a
@@ -54,10 +118,45 @@ export function claimOrb(
   return () => {
     claim.trigger.kill();
     claims.delete(claim);
-    if (claims.size > 0) return;
+    if (claims.size > 0 || flowTarget) return;
     gsap.ticker.remove(drive);
     scrollProgress.orb.isVisible = false;
   };
+}
+
+/**
+ * Page transition: sends the orb flowing to a point of the viewport (CSS px),
+ * overriding the sections' poses. Starts from where the orb is, or from the
+ * point itself when it was not on screen.
+ */
+export function sendOrbTo(x: number, y: number): void {
+  const { orb } = scrollProgress;
+  if (!isFlowing) {
+    if (!orb.isVisible) placeOrb(orb, x, y, restingOrbRadius());
+    orb.shapes.forEach((shape, index) => copyShape(shape, flowShapes[index]));
+  }
+  flowTarget = { x, y };
+  isTeleporting = false;
+  isFlowing = true;
+  gsap.ticker.add(drive);
+}
+
+/** Page transition: moves the orb to a point in one jump, unseen (the overlay covers the page). */
+export function teleportOrbTo(x: number, y: number): void {
+  flowTarget = { x, y };
+  isTeleporting = true;
+  isFlowing = true;
+  gsap.ticker.add(drive);
+}
+
+/** Page transition over: the orb flows from where it is to the pose of the section it lands on. */
+export function releaseOrb(): void {
+  flowTarget = null;
+  isTeleporting = false;
+  if (claims.size > 0) return;
+  gsap.ticker.remove(drive);
+  isFlowing = false;
+  scrollProgress.orb.isVisible = false;
 }
 
 /** Radius of the orb at rest, in CSS px. */

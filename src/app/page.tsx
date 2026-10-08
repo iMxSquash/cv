@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Loader } from "@/components/layout/Loader";
+import { PageTransition } from "@/components/scroll/PageTransition";
 import { ScrollChrome } from "@/components/scroll/ScrollChrome";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
@@ -18,6 +19,7 @@ import {
   serializeJsonLd,
 } from "@/lib/cv/seo";
 import { localePath } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 import { getLocale } from "@/lib/i18n/server";
 import { SITE_URL } from "@/lib/site";
 
@@ -59,6 +61,7 @@ export default async function Home() {
       <Loader locale={locale} />
       <WebGLBackground />
       <ScrollChrome name={cv.profile.full_name} locale={locale} />
+      <PageTransition labels={getMessages(locale).nav.sectionLabels} />
       <main id="content">
         <HeroSection profile={cv.profile} locale={locale} />
         <AboutSection profile={cv.profile} locale={locale} />

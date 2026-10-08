@@ -14,7 +14,7 @@ import { HeroGradient } from "./scenes/HeroGradient";
 import { Monogram } from "./scenes/Monogram";
 import { Particles } from "./scenes/Particles";
 import { Blob } from "./scenes/Blob";
-import { scrollProgress } from "./scrollProgress";
+import { type CoverRequest, scrollProgress } from "./scrollProgress";
 import { createSharedUniforms } from "./uniforms";
 
 const CAMERA_FOV = 35;
@@ -143,12 +143,36 @@ export class Experience {
   }
 
   private readonly tick = (time: number, deltaMs: number) => {
+    const { coverRequest } = scrollProgress;
+    if (coverRequest && !document.hidden) {
+      scrollProgress.coverRequest = null;
+      this.captureCover(coverRequest);
+    }
     const hasContent =
       this.isHeroOnScreen || scrollProgress.orb.isVisible || this.particles.isVisible;
     this.setCanvasVisible(hasContent);
     if (!hasContent || document.hidden) return;
     this.renderFrame(time, deltaMs / 1000);
   };
+
+  /**
+   * Draws the orb's gradient swollen to the requested circle, alone, and
+   * copies it into the request's 2D canvas. Done within one task: the
+   * compositor only ever sees the frame drawn afterwards.
+   */
+  private captureCover(request: CoverRequest): void {
+    const hidden = [this.gradient.mesh, this.monogram.group, this.particles.points];
+    const wasVisible = [...hidden.map((object) => object.visible), this.blob.mesh.visible];
+    hidden.forEach((object) => (object.visible = false));
+    this.blob.poseCover(request, this.canvasHeight, this.renderer.getPixelRatio());
+    this.renderer.render(this.scene, this.camera);
+    const { width, height } = this.canvas;
+    // Sizing the canvas also clears it.
+    request.canvas.width = width;
+    request.canvas.height = height;
+    request.canvas.getContext("2d")?.drawImage(this.canvas, 0, 0);
+    [...hidden, this.blob.mesh].forEach((object, index) => (object.visible = wasVisible[index]));
+  }
 
   /** Hidden while nothing is drawn, so the page surface shows instead of the clear color. */
   private setCanvasVisible(isVisible: boolean): void {

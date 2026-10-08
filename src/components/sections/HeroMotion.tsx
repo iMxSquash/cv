@@ -61,12 +61,17 @@ export function HeroMotion({ children }: { children: ReactNode }) {
         radius: parseFloat(getComputedStyle(frame).borderTopLeftRadius) * scale,
       };
     };
+    // Measured on the ticker, after the scrubbed timeline has rendered: a jump to the hero (anchor
+    // click) is a single scroll update, and measuring from it would read the frame before it grows back.
     ScrollTrigger.create({
       trigger: element,
       start: "top bottom",
       end: "bottom top",
       onRefresh: measureFrame,
-      onUpdate: measureFrame,
+      onToggle: (self) => {
+        if (self.isActive) gsap.ticker.add(measureFrame);
+        else gsap.ticker.remove(measureFrame);
+      },
     });
 
     // The orb grows at the center while the monogram shrinks into it, then floats there until the next section takes it.
@@ -85,6 +90,7 @@ export function HeroMotion({ children }: { children: ReactNode }) {
     });
 
     return () => {
+      gsap.ticker.remove(measureFrame);
       releaseOrb();
       scrollProgress.hero = 0;
       scrollProgress.heroFrame = null;
