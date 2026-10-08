@@ -31,7 +31,7 @@ export function CapsuleNav({ name, locale }: { name: string; locale: Locale }) {
   return (
     <header
       ref={root}
-      className="fixed inset-x-0 top-3 z-40 mx-auto w-fit rounded-full bg-surface/80 p-1 text-(--interface-color) shadow-sm backdrop-blur-md transition-[translate,background-color,color] duration-300 data-hidden:not-focus-within:-translate-y-[calc(100%+1rem)]"
+      className="fixed inset-x-0 top-6 z-40 mx-auto w-fit rounded-full bg-surface/80 p-1 text-(--interface-color) shadow-sm backdrop-blur-md transition-[translate,background-color,color] duration-300 data-hidden:not-focus-within:-translate-y-[calc(100%+1.5rem)]"
     >
       <nav aria-label={t.nav.main} className="flex items-center gap-1">
         <a href="#hero" className={`${LINK_CLASS} font-display`}>
