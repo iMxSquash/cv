@@ -1,18 +1,18 @@
 import {
   CustomBlending,
   DataTexture,
-  LinearFilter,
   Mesh,
   OneFactor,
   OneMinusSrcAlphaFactor,
   PlaneGeometry,
   ShaderMaterial,
   SrcAlphaFactor,
-  Texture,
+  Vector2,
   Vector3,
   Vector4,
 } from "three";
 import type { Palette } from "../palette";
+import { createLogoTextures, type LogoTextures } from "../logoTexture";
 import { BLOB_SHAPES, type CoverRequest, type OrbState } from "../scrollProgress";
 import { blobFragment, blobVertex } from "../shaders/blob.glsl";
 import type { SharedUniforms } from "../uniforms";
@@ -35,9 +35,8 @@ export class Blob {
   private isShown = false;
   /** Transparent 1x1 stand-in while no logo is posed. */
   private readonly emptyLogo = new DataTexture(new Uint8Array(4), 1, 1);
-  /** One texture per logo image: stepping back to a logo does not upload it again. */
-  private readonly logoTextures = new Map<HTMLImageElement, Texture>();
-  private logoImage: HTMLImageElement | null = null;
+  /** One distance field per logo image (null when it cannot be read): stepping back to a logo costs nothing. */
+  private readonly logoTextures = new Map<HTMLImageElement, LogoTextures | null>();
 
   constructor(palette: Palette, uniforms: SharedUniforms) {
     const material = new ShaderMaterial({
@@ -51,9 +50,17 @@ export class Blob {
         uCorners: { value: new Float32Array(BLOB_SHAPES) },
         uHole: { value: new Vector3() },
         uGradientSize: { value: 0 },
-        uLogo: { value: this.emptyLogo },
+        uLogoActive: { value: 0 },
         uLogoMix: { value: 0 },
-        uLogoBox: { value: new Vector4() },
+        uLogoBox: { value: new Vector3() },
+        uHasFrom: { value: 0 },
+        uFieldFrom: { value: this.emptyLogo },
+        uImageFrom: { value: this.emptyLogo },
+        uFitFrom: { value: new Vector2(1, 1) },
+        uHasTo: { value: 0 },
+        uFieldTo: { value: this.emptyLogo },
+        uImageTo: { value: this.emptyLogo },
+        uFitTo: { value: new Vector2(1, 1) },
       },
       depthTest: false,
       depthWrite: false,
@@ -104,32 +111,49 @@ export class Blob {
     this.updateLogo(orb.logo, canvasHeight, pixelRatio);
   }
 
+  private readLogo(image: HTMLImageElement): LogoTextures | null {
+    try {
+      return createLogoTextures(image);
+    } catch (error) {
+      console.error(`Cannot read the logo ${image.src} (CORS or canvas): ${String(error)}`);
+      return null;
+    }
+  }
+
   /** Uploads the posed logo (once per image) and places its box, in drawing buffer pixels. */
+  private texturesOf(image: HTMLImageElement | null): LogoTextures | null {
+    if (!image) return null;
+    let textures = this.logoTextures.get(image);
+    if (textures === undefined) {
+      textures = this.readLogo(image);
+      this.logoTextures.set(image, textures);
+    }
+    return textures;
+  }
+
+  /** Poses the two shapes the orb morphs between, and where (drawing buffer pixels). */
   private updateLogo(logo: OrbState["logo"], canvasHeight: number, pixelRatio: number): void {
-    const { uLogo, uLogoMix, uLogoBox } = this.mesh.material.uniforms;
-    if (!logo.image) {
-      uLogoMix.value = 0;
-      return;
-    }
-    if (this.logoImage !== logo.image) {
-      this.logoImage = logo.image;
-      let texture = this.logoTextures.get(logo.image);
-      if (!texture) {
-        texture = new Texture(logo.image);
-        texture.minFilter = LinearFilter;
-        texture.generateMipmaps = false;
-        texture.needsUpdate = true;
-        this.logoTextures.set(logo.image, texture);
-      }
-      uLogo.value = texture;
-    }
+    const { uLogoActive, uLogoMix, uLogoBox } = this.mesh.material.uniforms;
+    const from = this.texturesOf(logo.from);
+    const to = this.texturesOf(logo.to);
+    this.poseShape("From", from);
+    this.poseShape("To", to);
+    uLogoActive.value = from || to ? 1 : 0;
     uLogoMix.value = logo.mix;
     uLogoBox.value.set(
       logo.x * pixelRatio,
       (canvasHeight - logo.y) * pixelRatio,
-      logo.halfWidth * pixelRatio,
-      logo.halfHeight * pixelRatio,
+      logo.halfSize * pixelRatio,
     );
+  }
+
+  private poseShape(side: "From" | "To", textures: LogoTextures | null): void {
+    const uniforms = this.mesh.material.uniforms;
+    uniforms[`uHas${side}`].value = textures ? 1 : 0;
+    if (!textures) return;
+    uniforms[`uField${side}`].value = textures.field;
+    uniforms[`uImage${side}`].value = textures.image;
+    uniforms[`uFit${side}`].value.copy(textures.fit);
   }
 
   /**
@@ -146,7 +170,7 @@ export class Blob {
       uCorners.value[index] = size;
     });
     uHole.value.set(0, 0, 0);
-    this.mesh.material.uniforms.uLogoMix.value = 0;
+    this.mesh.material.uniforms.uLogoActive.value = 0;
     this.mesh.visible = true;
   }
 
@@ -157,7 +181,7 @@ export class Blob {
 
   dispose(): void {
     this.emptyLogo.dispose();
-    this.logoTextures.forEach((texture) => texture.dispose());
+    this.logoTextures.forEach((textures) => textures?.dispose());
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
   }

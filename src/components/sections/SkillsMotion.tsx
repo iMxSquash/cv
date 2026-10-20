@@ -10,6 +10,7 @@ import {
 import { useScrollMotion } from "@/components/scroll/useScrollMotion";
 import { getLenis } from "@/components/scroll/lenisInstance";
 import { findPin, gsap, MOTION_OK_NARROW, MOTION_OK_WIDE, ScrollTrigger } from "@/lib/gsap";
+import { LOGO_CONTENT_SHARE } from "@/webgl/logoField";
 import { scrollProgress } from "@/webgl/scrollProgress";
 import { WHEEL_STEP_DEG } from "./skillsWheel";
 
@@ -17,8 +18,10 @@ import { WHEEL_STEP_DEG } from "./skillsWheel";
 const FADE_PER_STEP = 0.3;
 /** Extra scale of the item on the center line. */
 const FOCUS_ZOOM = 0.2;
-/** The orb relaxes to its round shape (seconds per unit of morph), then takes the next logo. */
-const MORPH = { release: 0.25, take: 0.7 };
+/** Share of the orb's diameter a logo spans once the orb has taken its shape. */
+const LOGO_FIT = 0.9;
+/** One morph of the orb, from its shape to the next (a logo, or the round orb for an item without one). */
+const MORPH = { duration: 0.8, ease: "power2.inOut" };
 /**
  * Ratchet: every `scrollPerStep` px scrolled is one click (a new gesture, after `idleMs` of stillness or a
  * change of direction, clicks at once), the wheel catching up with the last click in `duration` s.
@@ -28,6 +31,8 @@ const RATCHET = { scrollPerStep: 250, idleMs: 150, duration: 0.25, ease: "power3
 const LINE_PX = 16;
 /** Viewport heights before the pin from which the ratchet is in charge: the first click leads to the first step. */
 const ENTRY_SCREENS = 0.1;
+/** Scroll (px) past either end of the wheel from which the orb gets its round shape back. */
+const RELEASE_PX = 40;
 /** A touch swipe longer than this (px) is a gesture. */
 const SWIPE_PX = 40;
 /** Under this distance, in steps, from a step the page counts as resting on it. */
@@ -92,22 +97,55 @@ export function SkillsMotion({ children }: { children: ReactNode }) {
     const { logo } = scrollProgress.orb;
     const lastStep = items.length - 1;
     let shown = -1;
-    let morph: gsap.core.Timeline | null = null;
-    let aspect = 1;
+    let morph: gsap.core.Tween | null = null;
+    // Undefined when no shape is waiting for the running morph to end.
+    let queued: HTMLImageElement | null | undefined;
 
-    const showLogo = (step: number) => {
+    const logoOf = (step: number) => {
       const url = items[step].dataset.logoUrl;
       const image = url ? images.get(url) : undefined;
-      const next = image?.complete && image.naturalWidth > 0 ? image : null;
-      morph?.kill();
-      morph = gsap.timeline();
-      if (logo.mix > 0)
-        morph.to(logo, { mix: 0, duration: MORPH.release * logo.mix, ease: "power2.in" });
-      morph.call(() => {
-        logo.image = next;
-        if (next) aspect = next.naturalWidth / next.naturalHeight;
+      return image?.complete && image.naturalWidth > 0 ? image : null;
+    };
+
+    // A morph is never interrupted: the orb goes on from its shape to the last one asked for, shape to shape.
+    const runQueuedMorph = () => {
+      if (queued === undefined) return;
+      const next = queued;
+      queued = undefined;
+      if (next === logo.to) return;
+      logo.from = logo.to;
+      logo.to = next;
+      logo.mix = 0;
+      morph = gsap.to(logo, {
+        mix: 1,
+        duration: MORPH.duration,
+        ease: MORPH.ease,
+        onComplete: () => {
+          morph = null;
+          // At rest only one shape is left; none at all hands the orb back to the plain metaball field.
+          logo.from = logo.to;
+          runQueuedMorph();
+        },
       });
-      if (next) morph.to(logo, { mix: 1, duration: MORPH.take, ease: "power3.out" });
+    };
+    // The orb belongs to this section only while it is on screen: elsewhere it is posed by the other sections, and
+    // a logo state left on it would draw their shapes as the one circle of the logo's box.
+    let isEngaged = false;
+    const morphTo = (image: HTMLImageElement | null) => {
+      queued = image;
+      if (!morph) runQueuedMorph();
+    };
+    /** The orb takes the logo of `step`, or its round shape while the section is off screen. */
+    const showLogo = (step: number) => morphTo(isEngaged ? logoOf(step) : null);
+    /** Leaving upward, the sections above pose the orb at once: no time to morph back. */
+    const resetOrb = () => {
+      isEngaged = false;
+      morph?.kill();
+      morph = null;
+      queued = undefined;
+      logo.from = null;
+      logo.to = null;
+      logo.mix = 0;
     };
 
     const images = preloadLogos(items, () => {
@@ -261,6 +299,22 @@ export function SkillsMotion({ children }: { children: ReactNode }) {
       },
     });
     setNativeScroll(trigger.isActive);
+
+    // Just past either end of the wheel, the orb takes its round shape back; coming back, the logo in front.
+    const engage = (isOn: boolean) => {
+      isEngaged = isOn;
+      showLogo(shown);
+    };
+    const release = ScrollTrigger.create({
+      start: () => trigger.start - RELEASE_PX,
+      end: () => trigger.end + RELEASE_PX,
+      onEnter: () => engage(true),
+      onEnterBack: () => engage(true),
+      onLeave: () => engage(false),
+      onLeaveBack: resetOrb,
+    });
+    if (release.isActive) engage(true);
+
     // Capture phase on the window: ahead of Lenis's own wheel listener.
     window.addEventListener("wheel", onWheel, { capture: true, passive: false });
     window.addEventListener("keydown", onKeyDown);
@@ -270,11 +324,10 @@ export function SkillsMotion({ children }: { children: ReactNode }) {
     const stopOrb = claimOrb({ trigger: pin, start: "top center" }, (orb) => {
       const box = measureAnchor(blob);
       holdOrbOnScreen(orb, box.x, box.y, box.radius);
-      // The logo is drawn in the blob's box, fitted by its aspect ratio.
+      // The logo's field is drawn in a square around the orb, sized so that the logo spans `LOGO_FIT` of it.
       logo.x = box.x;
       logo.y = box.y;
-      logo.halfWidth = aspect >= 1 ? box.radius : box.radius * aspect;
-      logo.halfHeight = aspect >= 1 ? box.radius / aspect : box.radius;
+      logo.halfSize = (box.radius * LOGO_FIT) / LOGO_CONTENT_SHARE;
     });
 
     return () => {
@@ -286,11 +339,9 @@ export function SkillsMotion({ children }: { children: ReactNode }) {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
+      release.kill();
       trigger.kill();
-      morph?.kill();
-      gsap.killTweensOf(logo);
-      logo.image = null;
-      logo.mix = 0;
+      resetOrb();
       gsap.set(wheel, { clearProps: "transform" });
     };
   }, MOTION_OK_WIDE);

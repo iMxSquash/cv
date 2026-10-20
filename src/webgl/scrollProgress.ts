@@ -60,18 +60,18 @@ export const scrollProgress = {
     isLocked: false,
     hole: { x: 0, y: 0, radius: 0 },
     /**
-     * A flat logo the orb is moulded into (skills section): its alpha channel
-     * becomes the outline. `mix` 0 keeps the round orb, 1 the logo, drawn in the
-     * box centered on `x`, `y` (CSS px). The scene eases none of it: the
-     * section tweens `mix` itself.
+     * The orb morphing between two shapes (skills section), each a flat logo or, when null, the round orb:
+     * a logo's alpha channel becomes a distance field and the outline moves continuously from the `from`
+     * shape to the `to` one (`mix` 0 is `from`, 1 is `to`). A logo's field spans the square of half side
+     * `halfSize` centered on `x`, `y` (CSS px). The scene eases none of it: the section tweens `mix` itself.
      */
     logo: {
-      image: null as HTMLImageElement | null,
+      from: null as HTMLImageElement | null,
+      to: null as HTMLImageElement | null,
       mix: 0,
       x: 0,
       y: 0,
-      halfWidth: 0,
-      halfHeight: 0,
+      halfSize: 0,
     },
     shapes: Array.from({ length: BLOB_SHAPES }, (): BlobShape => ({
       x: 0,
