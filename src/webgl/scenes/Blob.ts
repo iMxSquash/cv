@@ -1,11 +1,14 @@
 import {
   CustomBlending,
+  DataTexture,
+  LinearFilter,
   Mesh,
   OneFactor,
   OneMinusSrcAlphaFactor,
   PlaneGeometry,
   ShaderMaterial,
   SrcAlphaFactor,
+  Texture,
   Vector3,
   Vector4,
 } from "three";
@@ -30,6 +33,11 @@ export class Blob {
   /** Eased hole in CSS px: center x, y, radius. */
   private readonly hole = new Vector3();
   private isShown = false;
+  /** Transparent 1x1 stand-in while no logo is posed. */
+  private readonly emptyLogo = new DataTexture(new Uint8Array(4), 1, 1);
+  /** One texture per logo image: stepping back to a logo does not upload it again. */
+  private readonly logoTextures = new Map<HTMLImageElement, Texture>();
+  private logoImage: HTMLImageElement | null = null;
 
   constructor(palette: Palette, uniforms: SharedUniforms) {
     const material = new ShaderMaterial({
@@ -43,6 +51,9 @@ export class Blob {
         uCorners: { value: new Float32Array(BLOB_SHAPES) },
         uHole: { value: new Vector3() },
         uGradientSize: { value: 0 },
+        uLogo: { value: this.emptyLogo },
+        uLogoMix: { value: 0 },
+        uLogoBox: { value: new Vector4() },
       },
       depthTest: false,
       depthWrite: false,
@@ -53,6 +64,7 @@ export class Blob {
       blendSrcAlpha: OneFactor,
       blendDstAlpha: OneMinusSrcAlphaFactor,
     });
+    this.emptyLogo.needsUpdate = true;
     this.mesh = new Mesh(new PlaneGeometry(2, 2), material);
     this.mesh.frustumCulled = false;
     this.mesh.renderOrder = 1;
@@ -89,6 +101,35 @@ export class Blob {
     hole.y += (orb.hole.y - hole.y) * ease;
     hole.z += (orb.hole.radius - hole.z) * ease;
     uHole.value.set(hole.x * pixelRatio, (canvasHeight - hole.y) * pixelRatio, hole.z * pixelRatio);
+    this.updateLogo(orb.logo, canvasHeight, pixelRatio);
+  }
+
+  /** Uploads the posed logo (once per image) and places its box, in drawing buffer pixels. */
+  private updateLogo(logo: OrbState["logo"], canvasHeight: number, pixelRatio: number): void {
+    const { uLogo, uLogoMix, uLogoBox } = this.mesh.material.uniforms;
+    if (!logo.image) {
+      uLogoMix.value = 0;
+      return;
+    }
+    if (this.logoImage !== logo.image) {
+      this.logoImage = logo.image;
+      let texture = this.logoTextures.get(logo.image);
+      if (!texture) {
+        texture = new Texture(logo.image);
+        texture.minFilter = LinearFilter;
+        texture.generateMipmaps = false;
+        texture.needsUpdate = true;
+        this.logoTextures.set(logo.image, texture);
+      }
+      uLogo.value = texture;
+    }
+    uLogoMix.value = logo.mix;
+    uLogoBox.value.set(
+      logo.x * pixelRatio,
+      (canvasHeight - logo.y) * pixelRatio,
+      logo.halfWidth * pixelRatio,
+      logo.halfHeight * pixelRatio,
+    );
   }
 
   /**
@@ -105,6 +146,7 @@ export class Blob {
       uCorners.value[index] = size;
     });
     uHole.value.set(0, 0, 0);
+    this.mesh.material.uniforms.uLogoMix.value = 0;
     this.mesh.visible = true;
   }
 
@@ -114,6 +156,8 @@ export class Blob {
   }
 
   dispose(): void {
+    this.emptyLogo.dispose();
+    this.logoTextures.forEach((texture) => texture.dispose());
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
   }

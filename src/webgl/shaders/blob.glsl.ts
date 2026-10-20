@@ -15,7 +15,9 @@ void main() {
  * of a sphere, which gives the surface normal. The orb is painted with the
  * hero's mesh gradient (navy base, mint bands, periwinkle halo) and a static
  * film grain. The experiences panels are this same orb split in two.
- * `uHole` (center, radius) cuts a circle out of the blob.
+ * `uHole` (center, radius) cuts a circle out of the blob. `uLogoMix` morphs the
+ * field into the alpha of a logo texture (2 * alpha is 1 on the half-opacity
+ * outline, like the metaball field), so the round orb melts into the logo.
  */
 export const blobFragment = /* glsl */ `
 #define SHAPES 8
@@ -32,6 +34,10 @@ uniform float uCorners[SHAPES];
 uniform vec3 uHole;
 // When above 0, size the gradient on this instead of each shape's own size (page transition cover).
 uniform float uGradientSize;
+// Logo the orb is moulded into: mix 0..1, box center and half size in drawing buffer pixels.
+uniform sampler2D uLogo;
+uniform float uLogoMix;
+uniform vec4 uLogoBox;
 
 ${simplexNoise3d}
 ${meshGradient}
@@ -58,6 +64,18 @@ float field(vec2 p) {
   return sum;
 }
 
+float logoField(vec2 p) {
+  vec2 uv = (p - uLogoBox.xy) / (2.0 * uLogoBox.zw) + 0.5;
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return 0.0;
+  return 2.0 * texture2D(uLogo, uv).a;
+}
+
+float orbField(vec2 p) {
+  if (uLogoMix >= 1.0) return logoField(p);
+  float circles = field(p);
+  return uLogoMix > 0.0 ? mix(circles, logoField(p), uLogoMix) : circles;
+}
+
 vec3 auroraColor(vec2 p) {
   float flowTime = uTime * 0.05;
   vec3 sum = vec3(0.0);
@@ -77,18 +95,25 @@ vec3 auroraColor(vec2 p) {
   return sum / max(weight, 1e-4);
 }
 
+// The gradient of the first shape, unweighted: a logo reaches where no round shape does.
+vec3 logoColor(vec2 p) {
+  vec4 shape = uShapes[0];
+  float size = max(min(shape.z, shape.w), 1.0);
+  return meshGradient((p - shape.xy) / size * ORB_ZOOM + ORB_OFFSET, 1.0, uTime * 0.05);
+}
+
 void main() {
   vec2 p = gl_FragCoord.xy;
-  float f = field(p);
+  float f = orbField(p);
   if (f < 0.5) discard;
-  vec2 gradient = vec2(field(p + vec2(1.0, 0.0)), field(p + vec2(0.0, 1.0))) - f;
+  vec2 gradient = vec2(orbField(p + vec2(1.0, 0.0)), orbField(p + vec2(0.0, 1.0))) - f;
   float slope = max(length(gradient), 1e-4);
   // One pixel of antialiasing along the outline.
   float coverage = clamp((f - 1.0) / slope + 0.5, 0.0, 1.0);
   if (uHole.z > 0.0) coverage *= clamp(length(p - uHole.xy) - uHole.z + 0.5, 0.0, 1.0);
   if (coverage == 0.0) discard;
 
-  vec3 color = auroraColor(p);
+  vec3 color = uLogoMix > 0.0 ? logoColor(p) : auroraColor(p);
 
   gl_FragColor = vec4(color, 1.0);
   #include <colorspace_fragment>

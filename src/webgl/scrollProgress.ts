@@ -59,6 +59,20 @@ export const scrollProgress = {
     isVisible: false,
     isLocked: false,
     hole: { x: 0, y: 0, radius: 0 },
+    /**
+     * A flat logo the orb is moulded into (skills section): its alpha channel
+     * becomes the outline. `mix` 0 keeps the round orb, 1 the logo, drawn in the
+     * box centered on `x`, `y` (CSS px). The scene eases none of it: the
+     * section tweens `mix` itself.
+     */
+    logo: {
+      image: null as HTMLImageElement | null,
+      mix: 0,
+      x: 0,
+      y: 0,
+      halfWidth: 0,
+      halfHeight: 0,
+    },
     shapes: Array.from({ length: BLOB_SHAPES }, (): BlobShape => ({
       x: 0,
       y: 0,
