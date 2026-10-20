@@ -4,9 +4,7 @@ import type { Link, Profile } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { NextMotion } from "./NextMotion";
-
-/** The sentence travels along this curve (viewBox units); both ends overshoot the frame. */
-const CURVE = "M -100 380 C 200 80, 500 520, 1100 160";
+import { CURVE, CURVE_X, VIEW } from "./nextCurve";
 
 interface NextSectionProps {
   profile: Profile;
@@ -39,22 +37,37 @@ export function NextSection({ profile, links, today, locale }: NextSectionProps)
           <svg
             data-next-curve
             aria-hidden="true"
-            viewBox="0 0 1000 500"
+            viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
             className="hidden size-full pinned:block"
           >
             <defs>
-              <linearGradient id="next-gradient" gradientUnits="userSpaceOnUse" x1="0" x2="1000">
+              <linearGradient
+                id="next-gradient"
+                gradientUnits="userSpaceOnUse"
+                x1={CURVE_X.start}
+                x2={CURVE_X.end}
+              >
                 <stop offset="0" style={{ stopColor: "var(--palette-primary-light)" }} />
                 <stop offset="0.5" style={{ stopColor: "var(--palette-primary)" }} />
                 <stop offset="1" style={{ stopColor: "var(--palette-secondary-light)" }} />
               </linearGradient>
             </defs>
-            <path id="next-curve" d={CURVE} fill="none" />
-            <text className="font-display font-medium" fontSize="72" fill="url(#next-gradient)">
-              <textPath href="#next-curve" startOffset="100%">
-                {title}
-              </textPath>
-            </text>
+            <g data-next-lift>
+              <g data-next-camera>
+                <path id="next-curve" d={CURVE} fill="none" />
+                <text
+                  className="font-display font-medium"
+                  fontSize="140"
+                  fill="url(#next-gradient)"
+                >
+                  <textPath href="#next-curve">
+                    {Array.from(title).map((letter, index) => (
+                      <tspan key={index}>{letter}</tspan>
+                    ))}
+                  </textPath>
+                </text>
+              </g>
+            </g>
           </svg>
           <SiteFooter profile={profile} links={links} today={today} locale={locale} />
         </PinnedStage>
