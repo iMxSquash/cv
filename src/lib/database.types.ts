@@ -318,6 +318,7 @@ export type Database = {
           details: string[];
           id: string;
           label: string;
+          logo_url: string | null;
           sort_order: number;
           visible: boolean;
         };
@@ -327,6 +328,7 @@ export type Database = {
           details?: string[];
           id?: string;
           label: string;
+          logo_url?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -336,6 +338,7 @@ export type Database = {
           details?: string[];
           id?: string;
           label?: string;
+          logo_url?: string | null;
           sort_order?: number;
           visible?: boolean;
         };
@@ -346,6 +349,7 @@ export type Database = {
           created_at: string;
           icon_key: string;
           id: string;
+          logo_url: string | null;
           name: string;
           purpose: string | null;
           purpose_en: string | null;
@@ -356,6 +360,7 @@ export type Database = {
           created_at?: string;
           icon_key: string;
           id?: string;
+          logo_url?: string | null;
           name: string;
           purpose?: string | null;
           purpose_en?: string | null;
@@ -366,6 +371,7 @@ export type Database = {
           created_at?: string;
           icon_key?: string;
           id?: string;
+          logo_url?: string | null;
           name?: string;
           purpose?: string | null;
           purpose_en?: string | null;

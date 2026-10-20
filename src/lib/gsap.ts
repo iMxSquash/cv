@@ -13,6 +13,8 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
 /** MOTION_OK from 900 px wide; the CSS `pinned-wide:` variant mirrors it. */
 export const MOTION_OK_WIDE = `${MOTION_OK} and (min-width: 900px)`;
+/** MOTION_OK below 900 px wide: the complement of MOTION_OK_WIDE. */
+export const MOTION_OK_NARROW = `${MOTION_OK} and (max-width: 899px)`;
 
 /** The tall wrapper of the PinnedStage inside `root`, if any. */
 export function findPin(root: Element): HTMLElement | null {

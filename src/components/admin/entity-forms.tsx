@@ -133,6 +133,7 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         hint="Séparées par des virgules, ex. NextJS, NestJS, PHP."
         defaultValue={row?.details.join(", ")}
       />
+      <ImageField kind="skill" label="Logo (forme du blob)" currentUrl={row?.logo_url ?? null} />
       <VisibleField row={row} />
     </AdminForm>
   ),
@@ -157,6 +158,7 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         options={ICON_OPTIONS}
         defaultValue={row?.icon_key}
       />
+      <ImageField kind="tool" label="Logo (forme du blob)" currentUrl={row?.logo_url ?? null} />
       <VisibleField row={row} />
     </AdminForm>
   ),

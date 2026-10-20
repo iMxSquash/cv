@@ -4,6 +4,7 @@ import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import type { ReactNode } from "react";
 import { gsap, MOTION_OK, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { registerLenis } from "./lenisInstance";
 import { isPageTransitionRunning, runPageTransition } from "./transitionRunner";
 
 /** Resolves once late layout shifts (web fonts, images) have landed. */
@@ -70,8 +71,10 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
       const removeAnchorHandler = handleAnchorClicks(instance);
+      const unregisterLenis = registerLenis(instance);
       lenis = instance;
       return () => {
+        unregisterLenis();
         removeAnchorHandler();
         gsap.ticker.remove(tick);
         instance.destroy();
