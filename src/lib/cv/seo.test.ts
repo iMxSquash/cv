@@ -77,6 +77,7 @@ describe("buildProfileJsonLd", () => {
       "@type": "ProfilePage",
       url: `${SITE}/`,
       dateModified: "2026-10-01T14:41:08Z",
+      isPartOf: { "@type": "WebSite", url: `${SITE}/`, name: "Ada Lovelace" },
       mainEntity: {
         "@type": "Person",
         name: "Ada Lovelace",
@@ -88,7 +89,8 @@ describe("buildProfileJsonLd", () => {
         ],
         knowsAbout: ["React", "Figma"],
         knowsLanguage: ["Anglais"],
-        sameAs: ["https://github.com/ada"],
+        "@id": "https://elwen.dev/#person",
+        sameAs: ["https://elwen.dev", "https://github.com/ada"],
       },
     });
   });
