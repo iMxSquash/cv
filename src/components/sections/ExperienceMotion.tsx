@@ -13,8 +13,23 @@ import { findPin, gsap, pinnedScrub, ScrollTrigger } from "@/lib/gsap";
 import type { BlobShape } from "@/webgl/scrollProgress";
 import { ORB_LANE } from "./orbLane";
 
-/** Timeline units: a step fades in, holds, then fades out. */
-const STEP = { in: 1, hold: 1, out: 1 };
+/** Timeline units: a step rises in, holds, then leaves upward while the next one rises in. */
+const STEP = { in: 1, hold: 1.5, out: 1 };
+/** Letters slide this far, beyond any step height: the step itself clips them (see `ExperienceSection`). */
+const LETTER_TRAVEL = "100vh";
+/**
+ * Share of a phase spent on the stagger between the first and last letter. The
+ * rest is one letter's own tween: letters overlap, hence the slanted wave.
+ */
+const LETTER_STAGGER_SHARE = 0.6;
+
+/** Spreads the letters of a step over `phase` timeline units, in reading order. */
+const letterStagger = (phase: number, ease: string) => ({
+  duration: phase * (1 - LETTER_STAGGER_SHARE),
+  ease,
+  stagger: { amount: phase * LETTER_STAGGER_SHARE },
+});
+
 /** Timeline units before the first step: the orb stretches into the side panels (or, without WebGL, they slide in). */
 const FORM = 2.5;
 /**
@@ -60,7 +75,8 @@ const applyBox = (shape: BlobShape, box: BlobShape) =>
 /** The journey steps follow one another while the side panels slide in, drift and slide out. */
 function animateJourney(pin: Element, visuals: HTMLElement[]): gsap.core.Timeline {
   const steps = gsap.utils.toArray<HTMLElement>("[data-trajectory-step]");
-  const stepLength = STEP.in + STEP.hold + STEP.out;
+  // A step leaves as the next one arrives, so the out phase does not add to the pace.
+  const stepLength = STEP.in + STEP.hold;
   const journeyEnd = FORM + steps.length * stepLength;
   const offscreen = mirrored(VISUAL_OFFSET_PERCENT);
 
@@ -79,14 +95,19 @@ function animateJourney(pin: Element, visuals: HTMLElement[]): gsap.core.Timelin
     .to(visuals, { xPercent: offscreen, duration: STEP.out }, journeyEnd);
   steps.forEach((step, index) => {
     const start = FORM + index * stepLength;
+    const letters = step.querySelectorAll("[data-letter]");
     timeline
       .fromTo(
-        step,
-        { yPercent: 40, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: STEP.in },
+        letters,
+        { y: LETTER_TRAVEL },
+        { y: 0, ...letterStagger(STEP.in, "power3.out") },
         start,
       )
-      .to(step, { yPercent: -40, autoAlpha: 0, duration: STEP.out }, start + STEP.in + STEP.hold);
+      .to(
+        letters,
+        { y: `-${LETTER_TRAVEL}`, ...letterStagger(STEP.out, "power3.in") },
+        start + stepLength,
+      );
   });
   return timeline;
 }
