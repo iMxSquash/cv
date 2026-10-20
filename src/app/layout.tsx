@@ -24,6 +24,12 @@ export async function generateMetadata(): Promise<Metadata> {
     creator: profile.full_name,
     openGraph: buildOpenGraphBase(profile, locale),
     twitter: { card: "summary_large_image" },
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION,
+      other: process.env.BING_SITE_VERIFICATION
+        ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+        : undefined,
+    },
   };
 }
 
