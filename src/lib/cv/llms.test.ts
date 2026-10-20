@@ -84,6 +84,17 @@ describe("buildLlmsTxt", () => {
     expect(text).toContain("- Développement : React");
     expect(text).toContain("- Anglais : B2");
     expect(text).toContain("- [GitHub](https://github.com/ada)");
+    expect(text).toContain("- [Portfolio](https://elwen.dev)");
+  });
+
+  it("appends the description of an experience without its keyword markup", () => {
+    const described = {
+      ...cv,
+      experiences: [{ ...cv.experiences[0], description: "Je conçois en **Angular**." }],
+    };
+    expect(buildLlmsTxt(described, "https://cv.example.dev", "fr")).toContain(
+      "Paris): Je conçois en Angular.",
+    );
   });
 
   it("skips a skill category without skills", () => {

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Internal linking with the elwen.dev portfolio: a crawlable "Portfolio" link in the footer and in `/llms.txt`.
+- SEO and GEO: the `Person` shares its `@id` with the elwen.dev portfolio (and lists it in `sameAs`) so engines see one identity across both sites; `WebSite` entity linked from the `ProfilePage` JSON-LD, experience descriptions in `/llms.txt`, and optional Google and Bing ownership meta tags (`GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`).
 - Availability title typed along a long curve: letters appear one by one on scroll while the camera keeps the letter being written at the center of the view, horizontally and vertically, then pulls back to frame the whole sentence (effect "Path text camera" of madewithgsap, plus the final pull-back). The orb is gone as soon as the section above ends, stays out while the sentence is typed, then appears at once, without animation, as a small full stop right after the last letter, just before the pull-back. It replaces the sentence sliding along the curve.
 - Experiences journey text reveal: each step rises letter by letter in a slanted wave inside its own mask while the previous one leaves upward, replacing the fades (pattern "Up & Down" of madewithgsap).
 - Wave page transition for section links: the orb flows out of the screen past the bottom-right corner, a wave made of its own gradient (same shader and grain, snapshotted by the WebGL scene) grows from there and covers the page, the section's name is spelled out, then a second wave sweeps the cover away while the orb flows in from the top-left. Skipped under reduced motion and for the current section.

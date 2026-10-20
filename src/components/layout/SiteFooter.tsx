@@ -7,6 +7,7 @@ import { formatLongDate } from "@/lib/cv/format";
 import type { Link, Profile } from "@/lib/cv/types";
 import { type Locale, localePath } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { PORTFOLIO_URL } from "@/lib/site";
 
 const LINK_CLASS = "link-slide inline-flex min-h-11 items-center gap-2 font-medium text-text";
 
@@ -80,6 +81,12 @@ export function SiteFooter({ profile, links, today, locale }: SiteFooterProps) {
                 </a>
               </li>
             )}
+            <li>
+              <ExternalLink href={PORTFOLIO_URL} className={LINK_CLASS} locale={locale}>
+                <CvIcon name="website" />
+                {t.portfolio}
+              </ExternalLink>
+            </li>
             {links.map((link) => (
               <li key={link.id}>
                 <ExternalLink href={link.url} className={LINK_CLASS} locale={locale}>
