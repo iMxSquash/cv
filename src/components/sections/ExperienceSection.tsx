@@ -17,6 +17,25 @@ const VISUAL_CLASS =
   "gradient-panel absolute top-1/2 h-[45vmin] w-[clamp(2.5rem,12vmin,11rem)] -translate-y-1/2 rounded-[clamp(1rem,3vmin,2rem)] in-data-[webgl=ready]:invisible";
 
 /**
+ * Text cut into letters for the reveal. Words stay unbreakable units so lines
+ * wrap between words; the parent is aria-hidden, so no screen reader alternative is needed.
+ */
+function Letters({ text }: { text: string }) {
+  return text.split(" ").map((word, wordIndex) => (
+    <span key={wordIndex}>
+      {wordIndex > 0 && " "}
+      <span className="inline-block whitespace-nowrap">
+        {Array.from(word).map((letter, letterIndex) => (
+          <span key={letterIndex} data-letter className="inline-block">
+            {letter}
+          </span>
+        ))}
+      </span>
+    </span>
+  ));
+}
+
+/**
  * The journey told one step at a time, centered between two gradient panels.
  * It only restates the cards below, so it is decorative: hidden from assistive
  * technologies, and not rendered at all when nothing is pinned.
@@ -37,15 +56,23 @@ function Trajectory({ experiences, education, locale }: Omit<ExperienceSectionPr
           <p
             key={step.label}
             data-trajectory-step
-            className="col-start-1 row-start-1 max-w-[min(64vw,52rem)] text-center"
+            className="col-start-1 row-start-1 max-w-[min(64vw,52rem)] overflow-clip py-[0.2em] text-center"
           >
             <span className="mb-4 block font-medium text-accent">
-              {step.end === null
-                ? `${step.start} – ${openEnd}`
-                : formatYearPeriod(step.start, step.end)}
+              <Letters
+                text={
+                  step.end === null
+                    ? `${step.start} – ${openEnd}`
+                    : formatYearPeriod(step.start, step.end)
+                }
+              />
             </span>
-            <span className="block title-section text-balance">{step.label}.</span>
-            <span className="mt-4 block text-text-muted">{step.organizations.join(" · ")}</span>
+            <span className="block title-section text-balance">
+              <Letters text={`${step.label}.`} />
+            </span>
+            <span className="mt-4 block text-text-muted">
+              <Letters text={step.organizations.join(" · ")} />
+            </span>
           </p>
         ))}
       </PinnedStage>
