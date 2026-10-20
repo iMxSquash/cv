@@ -58,10 +58,6 @@
   --accent-display: var(--accent-text);
   --focus-ring: var(--palette-primary-dark);
   --interface-color: var(--palette-primary-darkest);
-  /* Category accents of the skills deck (decorative bands, never behind text). */
-  --deck-design: var(--palette-primary);
-  --deck-development: var(--palette-secondary);
-  --deck-tools: var(--palette-info);
 }
 
 [data-theme="dark"] {

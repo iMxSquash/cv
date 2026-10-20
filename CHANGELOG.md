@@ -34,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pinned hero scene: a rounded frame over the WebGL gradient where the name splits apart and fades while the 3D monogram grows to the center. Stays in flow, without pin, under reduced motion or without JS.
 - Manifesto scene: the quote crosses a pinned stage as one giant rippling line, then the about text lights up word by word as it scrolls into view.
 - Experiences scene: the journey told one step at a time (roles and degrees in chronological order) between two gradient panels, then the detail cards rise into view.
-- Skills scene (from 900 px wide): a face-down deck where each skill card flips over then flies off, tools closing the pile, while the subtitle follows the current category. Smaller screens and reduced motion keep the grid.
+- Skills scene (from 900 px wide): every skill and tool on one wheel, a ratchet turning one click per 250 px scrolled (a new gesture clicks at once, so a soft tick moves it, and a fast scroll goes on as far as it is pushed; keys and swipes click once), while a still orb on the right melts into the logo of the item facing it. Smaller screens and reduced motion keep the grid.
+- Optional flat logo (PNG, WebP, JPEG or AVIF, no SVG) on skills and tools in `/admin`, used as the orb's shape (`cv_skills.logo_url`, `cv_tools.logo_url`).
 - Infos bento (availability, languages, mobility) whose tiles rise into view one after the other.
 - Closing scene: the availability sentence travels along a gradient curve until it settles in the middle, trailed by a glowing WebGL orb, before the email call to action and the footer.
 - Printable A4 version (`/print`, not indexed) laid out as the Figma resume from the same data, exactly one page, and a "Télécharger le CV (PDF)" button in the footer that opens it with the print dialog.
