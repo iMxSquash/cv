@@ -114,7 +114,11 @@
 - [x] JSON-LD `ProfilePage` + `Person` (`jobTitle`, `alumniOf`, `knowsAbout`, `sameAs` LinkedIn/GitHub, `worksFor`)
 - [x] `sitemap.ts`, `robots.ts` (bloque `/admin`, `/print`), `llms.txt`
 - [x] Date de mise à jour visible (depuis `cv_profile.updated_at`)
+- [x] Entité `WebSite` (`isPartOf`), descriptions des expériences dans `llms.txt`, balises de vérification Google/Bing via variables d'environnement
 - [ ] Rich Results Test sans erreur
+- [ ] Search Console : propriété « Domaine » `elwen.dev` (vérification DNS, couvre `cv.`), puis soumettre `https://cv.elwen.dev/sitemap.xml` ; idem Bing Webmaster Tools (importer depuis GSC ; Bing alimente ChatGPT search)
+- [x] Maillage CV vers portfolio (footer, `llms.txt`)
+- [ ] Portfolio (`../portfolio`, modifié en local, à committer sur une branche) : vrai lien `<a href="https://cv.elwen.dev">` crawlable dans `SeoFallbackContent` et `cv.elwen.dev` dans `llms.txt`/`sameAs` du portfolio (le contenu en iframe est crédité au sous-domaine)
 
 ## Phase 10 : Sécurité
 

@@ -35,6 +35,7 @@ export interface Messages {
     downloadPdf: string;
     updatedOn: string;
     legal: string;
+    portfolio: string;
   };
   linkPlatforms: Record<Enums<"cv_link_platform">, string>;
   notFound: { title: string; text: string; back: string };
@@ -108,6 +109,7 @@ const fr: Messages = {
     downloadPdf: "Télécharger le CV (PDF)",
     updatedOn: "Mis à jour le",
     legal: "Mentions légales",
+    portfolio: "Portfolio",
   },
   linkPlatforms: {
     linkedin: "LinkedIn",
@@ -189,6 +191,7 @@ const en: Messages = {
     downloadPdf: "Download the resume (PDF)",
     updatedOn: "Updated on",
     legal: "Legal notice",
+    portfolio: "Portfolio",
   },
   linkPlatforms: {
     linkedin: "LinkedIn",

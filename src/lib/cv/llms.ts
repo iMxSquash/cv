@@ -1,6 +1,7 @@
 import { type Locale, localePath } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { formatLongDate, formatMonthPeriod, formatYearPeriod } from "./format";
+import { PORTFOLIO_URL } from "@/lib/site";
 import { buildDescription, stripKeywords } from "./seo";
 import type { Cv } from "./types";
 
@@ -33,10 +34,10 @@ export function buildLlmsTxt(cv: Cv, siteUrl: string, locale: Locale): string {
     "",
     `## ${t.llms.experiences}`,
     "",
-    ...cv.experiences.map(
-      (job) =>
-        `- ${job.role}, ${job.company} (${formatMonthPeriod(job.start_date, job.end_date, locale)}${job.location ? `, ${job.location}` : ""})`,
-    ),
+    ...cv.experiences.map((job) => {
+      const summary = `- ${job.role}, ${job.company} (${formatMonthPeriod(job.start_date, job.end_date, locale)}${job.location ? `, ${job.location}` : ""})`;
+      return job.description ? `${summary}: ${stripKeywords(job.description)}` : summary;
+    }),
     "",
     `## ${t.llms.education}`,
     "",
@@ -58,6 +59,7 @@ export function buildLlmsTxt(cv: Cv, siteUrl: string, locale: Locale): string {
     "",
     `- ${t.llms.email}${t.llms.colon}${profile.email}`,
     ...(profile.location ? [`- ${t.llms.location}${t.llms.colon}${profile.location}`] : []),
+    `- [${t.footer.portfolio}](${PORTFOLIO_URL})`,
     ...cv.links.map((link) => `- [${t.linkPlatforms[link.platform]}](${link.url})`),
     "",
   ];

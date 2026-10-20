@@ -7,6 +7,7 @@ import {
   localePath,
 } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { PORTFOLIO_URL } from "@/lib/site";
 import { isOngoing, parseKeywords } from "./format";
 import type { Education, Experience, Language, Link, Profile, Skill, Tool } from "./types";
 
@@ -95,9 +96,16 @@ export function buildProfileJsonLd(cv: JsonLdSource, today: Date, siteUrl: strin
     name: buildTitle(profile, locale),
     inLanguage: LANGUAGE_TAGS[locale],
     dateModified: profile.updated_at,
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: `${siteUrl}/`,
+      name: profile.full_name,
+      inLanguage: LOCALES.map((candidate) => LANGUAGE_TAGS[candidate]),
+    },
     mainEntity: {
       "@type": "Person",
-      "@id": `${pageUrl}#person`,
+      "@id": `${PORTFOLIO_URL}/#person`,
       name: profile.full_name,
       jobTitle: profile.headline,
       description: buildDescription(profile),
@@ -113,7 +121,7 @@ export function buildProfileJsonLd(cv: JsonLdSource, today: Date, siteUrl: strin
       })),
       knowsAbout: [...cv.skills.map((skill) => skill.label), ...cv.tools.map((tool) => tool.name)],
       knowsLanguage: cv.languages.map((language) => language.name),
-      sameAs: cv.links.map((link) => link.url),
+      sameAs: [...new Set([PORTFOLIO_URL, ...cv.links.map((link) => link.url)])],
     },
   };
 }
