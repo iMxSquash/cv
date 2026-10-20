@@ -21,7 +21,7 @@ export const IMAGE_ACCEPT = Object.keys(IMAGE_EXTENSION_BY_MIME).join(",");
 export const CV_ASSETS_BUCKET = "cv-assets";
 
 /** What an uploaded image illustrates; also the prefix of its storage name. */
-const IMAGE_KINDS = ["avatar", "experience", "education"] as const;
+const IMAGE_KINDS = ["avatar", "experience", "education", "skill", "tool"] as const;
 
 export type ImageKind = (typeof IMAGE_KINDS)[number];
 

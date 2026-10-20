@@ -105,6 +105,16 @@ async function writeWithImage(
   return result;
 }
 
+type LogoTable = "cv_experiences" | "cv_education" | "cv_skills" | "cv_tools";
+
+/** Current logo of a row, null when creating. A failed read only leaves the replaced file orphaned, never a broken row. */
+async function readLogoUrl(supabase: Supabase, table: LogoTable, id: string | null) {
+  if (!id) return null;
+  return (
+    (await supabase.from(table).select("logo_url").eq("id", id).single()).data?.logo_url ?? null
+  );
+}
+
 export async function saveProfile(_previous: FormState, formData: FormData): Promise<FormState> {
   const { supabase } = await requireAdminAction();
   const parsed = parse(profileSchema, formData);
@@ -142,18 +152,12 @@ export async function saveExperience(
   if ("state" in parsed) return parsed.state;
 
   const table = "cv_experiences";
-  // A failed read only leaves the replaced file orphaned (logged), never a broken row.
-  const readPreviousUrl = async () =>
-    id
-      ? ((await supabase.from(table).select("logo_url").eq("id", id).single()).data?.logo_url ??
-        null)
-      : null;
 
   const result = await writeWithImage(
     supabase,
     formData,
     "experience",
-    readPreviousUrl,
+    () => readLogoUrl(supabase, table, id),
     async (logoUrl) => {
       const values = { ...parsed.data, logo_url: logoUrl };
       return id
@@ -176,18 +180,12 @@ export async function saveEducation(
   if ("state" in parsed) return parsed.state;
 
   const table = "cv_education";
-  // A failed read only leaves the replaced file orphaned (logged), never a broken row.
-  const readPreviousUrl = async () =>
-    id
-      ? ((await supabase.from(table).select("logo_url").eq("id", id).single()).data?.logo_url ??
-        null)
-      : null;
 
   const result = await writeWithImage(
     supabase,
     formData,
     "education",
-    readPreviousUrl,
+    () => readLogoUrl(supabase, table, id),
     async (logoUrl) => {
       const values = { ...parsed.data, logo_url: logoUrl };
       return id
@@ -210,11 +208,22 @@ export async function saveSkill(
   if ("state" in parsed) return parsed.state;
 
   const table = "cv_skills";
-  const sortOrder = id ? undefined : await nextSortOrder(supabase, table, parsed.data.category);
-  const result = id
-    ? await supabase.from(table).update(parsed.data).eq("id", id)
-    : await supabase.from(table).insert({ ...parsed.data, sort_order: sortOrder });
-  return finish("skills", id, result);
+  const result = await writeWithImage(
+    supabase,
+    formData,
+    "skill",
+    () => readLogoUrl(supabase, table, id),
+    async (logoUrl) => {
+      const values = { ...parsed.data, logo_url: logoUrl };
+      return id
+        ? supabase.from(table).update(values).eq("id", id)
+        : supabase.from(table).insert({
+            ...values,
+            sort_order: await nextSortOrder(supabase, table, parsed.data.category),
+          });
+    },
+  );
+  return "state" in result ? result.state : finish("skills", id, result);
 }
 
 export async function saveTool(
@@ -227,12 +236,21 @@ export async function saveTool(
   if ("state" in parsed) return parsed.state;
 
   const table = "cv_tools";
-  const result = id
-    ? await supabase.from(table).update(parsed.data).eq("id", id)
-    : await supabase
-        .from(table)
-        .insert({ ...parsed.data, sort_order: await nextSortOrder(supabase, table) });
-  return finish("tools", id, result);
+  const result = await writeWithImage(
+    supabase,
+    formData,
+    "tool",
+    () => readLogoUrl(supabase, table, id),
+    async (logoUrl) => {
+      const values = { ...parsed.data, logo_url: logoUrl };
+      return id
+        ? supabase.from(table).update(values).eq("id", id)
+        : supabase
+            .from(table)
+            .insert({ ...values, sort_order: await nextSortOrder(supabase, table) });
+    },
+  );
+  return "state" in result ? result.state : finish("tools", id, result);
 }
 
 export async function saveLanguage(

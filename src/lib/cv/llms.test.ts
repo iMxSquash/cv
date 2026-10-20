@@ -54,8 +54,10 @@ const cv: Cv = {
       logo_url: null,
     },
   ],
-  skills: [{ ...ROW, category: "development", label: "React", details: [] }],
-  tools: [{ ...ROW, name: "Figma", purpose: null, purpose_en: null, icon_key: "figma" }],
+  skills: [{ ...ROW, category: "development", label: "React", details: [], logo_url: null }],
+  tools: [
+    { ...ROW, name: "Figma", purpose: null, purpose_en: null, icon_key: "figma", logo_url: null },
+  ],
   languages: [
     { ...ROW, name: "Anglais", name_en: "English", level: "B2", level_en: null, flag_code: "gb" },
   ],
