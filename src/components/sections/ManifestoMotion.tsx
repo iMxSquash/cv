@@ -23,12 +23,8 @@ const WAVE = {
   heightPercent: 14,
   tiltDegrees: 6,
 };
-/**
- * Words of the about text wait in the muted text color (AA contrast, unlike a
- * low opacity) and settle on the full text color when their turn comes.
- */
-const DIMMED_WORD_COLOR = "var(--text-muted)";
-const LIT_WORD_COLOR = "var(--text)";
+/** Words of the about text start this thin and thicken to their own weight when their turn comes. */
+const THIN_WORD_WEIGHT = 200;
 
 /**
  * Pin progress milestones of the opening: the orb splits in two three times,
@@ -163,7 +159,7 @@ const isOnScreen = ({ x, y, radius }: { x: number; y: number; radius: number }) 
  * comes), picks that word up, which only then starts rippling with it, and the
  * whole line travels until its end is in view. The orb is not seen in
  * between: it shows up again as the line's full stop, then drifts down the
- * right of the about text, which lights up word by word. Without motion, both
+ * right of the about text, whose words thicken one after the other. Without motion, both
  * read as plain static text.
  */
 export function ManifestoMotion({ children }: { children: ReactNode }) {
@@ -322,21 +318,17 @@ export function ManifestoMotion({ children }: { children: ReactNode }) {
       });
     }
 
-    gsap.fromTo(
-      "[data-manifesto-word]",
-      { color: DIMMED_WORD_COLOR },
-      {
-        color: LIT_WORD_COLOR,
-        ease: "none",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: "[data-manifesto-about]",
-          start: "top 80%",
-          end: "bottom 50%",
-          scrub: true,
-        },
+    gsap.from("[data-manifesto-weight]", {
+      fontWeight: THIN_WORD_WEIGHT,
+      ease: "none",
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: "[data-manifesto-about]",
+        start: "top 80%",
+        end: "bottom 50%",
+        scrub: true,
       },
-    );
+    });
     return () => {
       releaseOrb?.();
       // Written by quick setters, outside the context's reach.
