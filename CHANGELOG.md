@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Printable resume skills adapt to their content: each category's width follows its number of skills, tiles wrap to fit, and a category without skills (or the whole section) is not printed.
 - Portfolio link (elwen.dev) at the top of the links group in the printable A4 resume, so the PDF points back to the portfolio.
 - Internal linking with the elwen.dev portfolio: a crawlable "Portfolio" link in the footer and in `/llms.txt`.
 - SEO and GEO: the `Person` shares its `@id` with the elwen.dev portfolio (and lists it in `sameAs`) so engines see one identity across both sites; `WebSite` entity linked from the `ProfilePage` JSON-LD, experience descriptions in `/llms.txt`, and optional Google and Bing ownership meta tags (`GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`).
