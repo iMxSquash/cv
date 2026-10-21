@@ -4,6 +4,7 @@ import { ExternalLink } from "@/components/ui/ExternalLink";
 import type { Language, Link, MobilityItem, Profile } from "@/lib/cv/types";
 import type { Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { PORTFOLIO_URL } from "@/lib/site";
 import { IconTile } from "./IconTile";
 
 /** A divider, then a titled list of rows; the contact group has no visible title in the Figma. */
@@ -59,6 +60,8 @@ function InfoRow({
 function DiscIcon({ name }: { name: string }) {
   return <IconTile name={name} className="size-[16pt] rounded-full" iconClassName="size-[10pt]" />;
 }
+
+const PORTFOLIO_HOST = new URL(PORTFOLIO_URL).host;
 
 interface PrintSidebarProps {
   profile: Profile;
@@ -121,22 +124,29 @@ export function PrintSidebar({ profile, links, languages, mobility, locale }: Pr
         )}
       </SidebarGroup>
 
-      {links.length > 0 && (
-        <SidebarGroup id="print-links" title={t.print.socials}>
-          {links.map((link) => (
-            <InfoRow
-              key={link.id}
-              icon={<DiscIcon name={link.platform} />}
-              label={t.linkPlatforms[link.platform]}
-              value={
-                <ExternalLink href={link.url} locale={locale}>
-                  {link.label}
-                </ExternalLink>
-              }
-            />
-          ))}
-        </SidebarGroup>
-      )}
+      <SidebarGroup id="print-links" title={t.print.socials}>
+        <InfoRow
+          icon={<DiscIcon name="website" />}
+          label={t.footer.portfolio}
+          value={
+            <ExternalLink href={PORTFOLIO_URL} locale={locale}>
+              {PORTFOLIO_HOST}
+            </ExternalLink>
+          }
+        />
+        {links.map((link) => (
+          <InfoRow
+            key={link.id}
+            icon={<DiscIcon name={link.platform} />}
+            label={t.linkPlatforms[link.platform]}
+            value={
+              <ExternalLink href={link.url} locale={locale}>
+                {link.label}
+              </ExternalLink>
+            }
+          />
+        ))}
+      </SidebarGroup>
 
       {languages.length > 0 && (
         <SidebarGroup id="print-languages" title={t.print.languages}>

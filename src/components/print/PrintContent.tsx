@@ -134,7 +134,8 @@ function SkillGroup({
 }) {
   const group = SKILL_GROUPS[category];
   return (
-    <div className="min-w-0 flex-1">
+    // Width follows the skill count so each group's tiles get the room they need.
+    <div className="min-w-[30%] basis-0" style={{ flexGrow: skills.length }}>
       <h3 className="flex items-center gap-[4pt] text-print-body-2 font-medium">
         <span
           className={`grid size-[12pt] place-items-center rounded-full ${group.tint} ${group.text}`}
@@ -182,6 +183,13 @@ export function PrintContent({
   locale,
 }: PrintContentProps) {
   const t = getMessages(locale);
+  // A category without skills is not printed at all.
+  const skillGroups = Constants.public.Enums.cv_skill_category
+    .map((category) => ({
+      category,
+      skills: skills.filter((skill) => skill.category === category),
+    }))
+    .filter((group) => group.skills.length > 0);
   return (
     <div className="min-w-0 flex-1 py-[32pt] pr-[24pt]">
       <TimelineSection id="print-about" title={t.about.title}>
@@ -219,18 +227,20 @@ export function PrintContent({
         </ol>
       </TimelineSection>
 
-      <TimelineSection id="print-skills" title={t.skills.title}>
-        <div className="flex gap-[12pt]">
-          {Constants.public.Enums.cv_skill_category.map((category) => (
-            <SkillGroup
-              key={category}
-              category={category}
-              label={t.skills.categories[category]}
-              skills={skills.filter((skill) => skill.category === category)}
-            />
-          ))}
-        </div>
-      </TimelineSection>
+      {skillGroups.length > 0 && (
+        <TimelineSection id="print-skills" title={t.skills.title}>
+          <div className="flex gap-[12pt]">
+            {skillGroups.map(({ category, skills: groupSkills }) => (
+              <SkillGroup
+                key={category}
+                category={category}
+                label={t.skills.categories[category]}
+                skills={groupSkills}
+              />
+            ))}
+          </div>
+        </TimelineSection>
+      )}
 
       <TimelineSection id="print-tools" title={t.print.tools} isLast>
         <ul className="flex gap-[4pt]">
