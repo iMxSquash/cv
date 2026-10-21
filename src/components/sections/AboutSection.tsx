@@ -107,7 +107,7 @@ export function AboutSection({ profile, locale }: { profile: Profile; locale: Lo
           <h2 id="manifesto-title" className="title-card">
             {t.about.title}
           </h2>
-          <p data-manifesto-about className="mt-4 max-w-3xl">
+          <p data-manifesto-about className="mt-4 max-w-3xl whitespace-pre-line">
             {parseKeywords(profile.about).map((segment, index) =>
               segment.isKeyword ? (
                 <strong key={index} className="font-medium text-accent">

@@ -56,4 +56,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Line breaks typed in the admin about text are kept on the page and in the printable resume.
 - The hero gradient kept the shrunken frame size after jumping back to the hero through an anchor: the frame is now measured on the ticker, after the scrubbed timeline has rendered.

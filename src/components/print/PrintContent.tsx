@@ -193,7 +193,7 @@ export function PrintContent({
   return (
     <div className="min-w-0 flex-1 py-[32pt] pr-[24pt]">
       <TimelineSection id="print-about" title={t.about.title}>
-        <p className={`p-[12pt] text-print-body-1 font-medium ${TILE_CLASS}`}>
+        <p className={`p-[12pt] text-print-body-1 font-medium whitespace-pre-line ${TILE_CLASS}`}>
           {parseKeywords(profile.about).map((segment, index) =>
             segment.isKeyword ? (
               <strong key={index} className="font-medium text-accent">
