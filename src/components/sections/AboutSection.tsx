@@ -49,14 +49,22 @@ function KineticLetters({ text }: { text: string }) {
   });
 }
 
-/** One span per word, revealed one after the other on scroll. */
+/**
+ * One span per word, thickened one after the other on scroll. A hidden copy at
+ * the final weight reserves the final width, so the paragraph never reflows
+ * while the weight moves (the animated inner span is centered in that box).
+ */
 function RevealWords({ text }: { text: string }) {
   return text.split(/(\s+)/).map((part, index) =>
     part.trim() === "" ? (
       part
     ) : (
-      <span key={index} data-manifesto-word>
-        {part}
+      <span
+        key={index}
+        data-text={part}
+        className="inline-grid justify-items-center after:invisible after:h-0 after:content-[attr(data-text)]"
+      >
+        <span data-manifesto-weight>{part}</span>
       </span>
     ),
   );
