@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Portfolio link (elwen.dev) at the top of the links group in the printable A4 resume, so the PDF points back to the portfolio.
 - Internal linking with the elwen.dev portfolio: a crawlable "Portfolio" link in the footer and in `/llms.txt`.
 - SEO and GEO: the `Person` shares its `@id` with the elwen.dev portfolio (and lists it in `sameAs`) so engines see one identity across both sites; `WebSite` entity linked from the `ProfilePage` JSON-LD, experience descriptions in `/llms.txt`, and optional Google and Bing ownership meta tags (`GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`).
 - Availability title typed along a long curve: letters appear one by one on scroll while the camera keeps the letter being written at the center of the view, horizontally and vertically, then pulls back to frame the whole sentence (effect "Path text camera" of madewithgsap, plus the final pull-back). The orb is gone as soon as the section above ends, stays out while the sentence is typed, then appears at once, without animation, as a small full stop right after the last letter, just before the pull-back. It replaces the sentence sliding along the curve.
