@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `claude` icon key (Claude spark logo) available for tools in the admin and the CV.
 - Printable resume skills adapt to their content: each category's width follows its number of skills, tiles wrap to fit, and a category without skills (or the whole section) is not printed.
 - Portfolio link (elwen.dev) at the top of the links group in the printable A4 resume, so the PDF points back to the portfolio.
 - Internal linking with the elwen.dev portfolio: a crawlable "Portfolio" link in the footer and in `/llms.txt`.
