@@ -41,7 +41,7 @@ function TimelineSection({
         </span>
         {!isLast && <span className="w-[0.5pt] flex-1 bg-line" />}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-[16pt] pb-[24pt]">
+      <div className={`flex min-w-0 flex-1 flex-col gap-[16pt] ${isLast ? "" : "pb-[24pt]"}`}>
         <h2 id={id} className="font-display text-print-h2 font-medium">
           {title}
         </h2>
