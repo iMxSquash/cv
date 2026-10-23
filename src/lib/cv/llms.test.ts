@@ -54,6 +54,7 @@ const cv: Cv = {
       logo_url: null,
     },
   ],
+  projects: [],
   skills: [{ ...ROW, category: "development", label: "React", details: [], logo_url: null }],
   tools: [
     { ...ROW, name: "Figma", purpose: null, purpose_en: null, icon_key: "figma", logo_url: null },

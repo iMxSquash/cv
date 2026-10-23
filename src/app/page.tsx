@@ -10,6 +10,7 @@ import { NextSection } from "@/components/sections/NextSection";
 import { SkillsSection } from "@/components/sections/SkillsSection";
 import { WebGLBackground } from "@/components/webgl/WebGLBackground";
 import { getCv, getProfile } from "@/lib/cv/queries";
+import { getSiteSkills } from "@/lib/cv/skills";
 import {
   buildAlternates,
   buildDescription,
@@ -71,7 +72,7 @@ export default async function Home() {
           today={today}
           locale={locale}
         />
-        <SkillsSection skills={cv.skills} tools={cv.tools} locale={locale} />
+        <SkillsSection skills={getSiteSkills(cv.skills)} tools={cv.tools} locale={locale} />
         <InfosSection
           profile={cv.profile}
           languages={cv.languages}

@@ -13,7 +13,7 @@ import { Constants } from "@/lib/database.types";
 const SHORT_TEXT_MAX = 120;
 const MEDIUM_TEXT_MAX = 300;
 const LONG_TEXT_MAX = 2000;
-const SKILL_DETAILS_MAX = 10;
+const LIST_ITEMS_MAX = 10;
 export const YEAR_MIN = 1990;
 export const YEAR_MAX = 2100;
 
@@ -106,23 +106,40 @@ export const educationSchema = z
     error: "L'année de fin doit suivre l'année de début.",
   });
 
+/** A comma-separated list typed in a single field, e.g. skill details or a project stack. */
+const commaSeparatedList = z
+  .string({ error: REQUIRED })
+  .transform((value) =>
+    value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  )
+  .pipe(
+    z
+      .array(z.string().max(SHORT_TEXT_MAX, tooLong(SHORT_TEXT_MAX)))
+      .max(LIST_ITEMS_MAX, `${LIST_ITEMS_MAX} éléments maximum.`),
+  );
+
 export const skillSchema = z.object({
   category: z.enum(Constants.public.Enums.cv_skill_category, { error: "Catégorie inconnue." }),
   label: requiredText(),
-  // Typed as a comma-separated list in a single field.
-  details: z
-    .string({ error: REQUIRED })
-    .transform((value) =>
-      value
-        .split(",")
-        .map((detail) => detail.trim())
-        .filter(Boolean),
+  details: commaSeparatedList,
+  visible: checkbox,
+});
+
+export const projectSchema = z.object({
+  name: requiredText(),
+  description: optionalText(LONG_TEXT_MAX),
+  // Typed as a comma-separated list in a single field, like the skill details.
+  stack: commaSeparatedList,
+  // Same rule as the CHECK constraint on `cv_projects.url`: https only.
+  url: z
+    .preprocess(
+      emptyToUndefined,
+      z.url({ protocol: /^https$/, error: "Adresse https:// complète attendue." }).optional(),
     )
-    .pipe(
-      z
-        .array(z.string().max(SHORT_TEXT_MAX, tooLong(SHORT_TEXT_MAX)))
-        .max(SKILL_DETAILS_MAX, `${SKILL_DETAILS_MAX} précisions maximum.`),
-    ),
+    .transform((v) => v ?? null),
   visible: checkbox,
 });
 

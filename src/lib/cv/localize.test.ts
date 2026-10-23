@@ -40,6 +40,7 @@ const cv: Cv = {
     },
   ],
   education: [],
+  projects: [],
   skills: [],
   tools: [],
   languages: [

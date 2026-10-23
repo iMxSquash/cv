@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Printable resume: one contact block (email, phone, age, address, portfolio and social links), skills and tools listed by category in the left column, work missions as dashes under each experience, a projects section before the education, and an "alternance" mention on the work-study roles. Navigo, remote work and French are left off the sheet.
+- `cv_projects` table (RLS, `/admin/projects` form) and a `soft` skill category. Soft skills are printed only: the website, its structured data and `llms.txt` leave them out.
+- Optional `BIRTH_DATE` environment variable: the age printed on `/print` is computed from it server-side, so the birth date is never stored in the public `cv_*` tables.
 - `claude` icon key (Claude spark logo) available for tools in the admin and the CV.
 - Printable resume skills adapt to their content: each category's width follows its number of skills, tiles wrap to fit, and a category without skills (or the whole section) is not printed.
 - Portfolio link (elwen.dev) at the top of the links group in the printable A4 resume, so the PDF points back to the portfolio.

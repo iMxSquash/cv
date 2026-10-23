@@ -3,6 +3,7 @@ import { getMessages } from "@/lib/i18n/messages";
 import { formatLongDate, formatMonthPeriod, formatYearPeriod } from "./format";
 import { PORTFOLIO_URL } from "@/lib/site";
 import { buildDescription, stripKeywords } from "./seo";
+import { getSiteSkills } from "./skills";
 import type { Cv } from "./types";
 
 /**
@@ -12,8 +13,9 @@ import type { Cv } from "./types";
 export function buildLlmsTxt(cv: Cv, siteUrl: string, locale: Locale): string {
   const { profile } = cv;
   const t = getMessages(locale);
+  const siteSkills = getSiteSkills(cv.skills);
   const skillsByCategory = Object.entries(t.skills.categories).flatMap(([category, label]) => {
-    const skills = cv.skills.filter((skill) => skill.category === category);
+    const skills = siteSkills.filter((skill) => skill.category === category);
     return skills.length > 0
       ? [`- ${label}${t.llms.colon}${skills.map((skill) => skill.label).join(", ")}`]
       : [];

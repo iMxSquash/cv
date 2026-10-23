@@ -10,6 +10,7 @@ import {
   saveLanguage,
   saveLink,
   saveMobility,
+  saveProject,
   saveSkill,
   saveTool,
 } from "../save-actions";
@@ -20,6 +21,7 @@ export const SAVE_ACTIONS: Record<
 > = {
   experiences: saveExperience,
   education: saveEducation,
+  projects: saveProject,
   skills: saveSkill,
   tools: saveTool,
   languages: saveLanguage,

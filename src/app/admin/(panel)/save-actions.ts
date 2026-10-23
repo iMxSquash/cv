@@ -22,6 +22,7 @@ import {
   linkSchema,
   mobilitySchema,
   profileSchema,
+  projectSchema,
   readFormValues,
   skillSchema,
   toFieldErrors,
@@ -305,4 +306,22 @@ export async function saveMobility(
         .from(table)
         .insert({ ...parsed.data, sort_order: await nextSortOrder(supabase, table) });
   return finish("mobility", id, result);
+}
+
+export async function saveProject(
+  id: string | null,
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const { supabase } = await requireAdminAction();
+  const parsed = parse(projectSchema, formData);
+  if ("state" in parsed) return parsed.state;
+
+  const table = "cv_projects";
+  const result = id
+    ? await supabase.from(table).update(parsed.data).eq("id", id)
+    : await supabase
+        .from(table)
+        .insert({ ...parsed.data, sort_order: await nextSortOrder(supabase, table) });
+  return finish("projects", id, result);
 }

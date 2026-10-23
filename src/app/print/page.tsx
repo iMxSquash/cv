@@ -4,6 +4,7 @@ import { PrintContent } from "@/components/print/PrintContent";
 import { PrintControls } from "@/components/print/PrintControls";
 import { PrintSidebar } from "@/components/print/PrintSidebar";
 import { LocaleSwitch } from "@/components/ui/LocaleSwitch";
+import { calculateAge } from "@/lib/cv/format";
 import { getCv } from "@/lib/cv/queries";
 import { localePath } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -28,6 +29,9 @@ export default async function PrintPage() {
   const locale = await getLocale();
   const t = getMessages(locale).print;
   const cv = await getCv(locale);
+  const today = new Date();
+  const birthDate = process.env.BIRTH_DATE;
+  const age = birthDate ? calculateAge(birthDate, today) : null;
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 print:hidden">
@@ -49,8 +53,24 @@ export default async function PrintPage() {
           data-theme="light"
           className="mx-auto flex min-h-[297mm] w-[210mm] bg-white shadow-elevation [print-color-adjust:exact] print:shadow-none"
         >
-          <PrintSidebar {...cv} locale={locale} />
-          <PrintContent {...cv} today={new Date()} locale={locale} />
+          <PrintSidebar
+            profile={cv.profile}
+            links={cv.links}
+            languages={cv.languages}
+            mobility={cv.mobility}
+            skills={cv.skills}
+            tools={cv.tools}
+            age={age}
+            locale={locale}
+          />
+          <PrintContent
+            profile={cv.profile}
+            experiences={cv.experiences}
+            projects={cv.projects}
+            education={cv.education}
+            today={today}
+            locale={locale}
+          />
         </article>
       </main>
     </>

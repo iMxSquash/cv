@@ -87,3 +87,28 @@ export function formatMonthPeriod(start: string, end: string | null, locale: Loc
 export function formatYearPeriod(start: number | null, end: number): string {
   return hasDistinctStartYear(start, end) ? `${start} – ${end}` : String(end);
 }
+
+const SQL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Full years elapsed between a "YYYY-MM-DD" birth date and `today` (UTC). */
+export function calculateAge(birthDate: string, today: Date): number {
+  const birth = parseSqlDate(birthDate);
+  if (!SQL_DATE_PATTERN.test(birthDate) || Number.isNaN(birth.getTime())) {
+    throw new Error(`Invalid birth date "${birthDate}", expected YYYY-MM-DD`);
+  }
+  const hadBirthdayThisYear =
+    today.getUTCMonth() > birth.getUTCMonth() ||
+    (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() >= birth.getUTCDate());
+  return today.getUTCFullYear() - birth.getUTCFullYear() - (hadBirthdayThisYear ? 0 : 1);
+}
+
+const BULLET_PREFIX = /^[-–•]\s*/;
+
+/** One bullet point per non-empty line; a leading dash typed in the admin is dropped. */
+export function splitBulletLines(text: string | null): string[] {
+  if (!text) return [];
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(BULLET_PREFIX, ""))
+    .filter(Boolean);
+}

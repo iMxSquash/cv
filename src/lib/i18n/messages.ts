@@ -48,10 +48,13 @@ export interface Messages {
     email: string;
     phone: string;
     address: string;
-    socials: string;
+    age: string;
+    ageValue: (years: number) => string;
+    contact: string;
     languages: string;
     mobility: string;
     tools: string;
+    projects: string;
   };
   llms: {
     /** Colon before a value: French typography puts a space before it. */
@@ -100,7 +103,7 @@ const fr: Messages = {
   skills: {
     title: "Compétences",
     tools: "Outils",
-    categories: { design: "Design", development: "Développement" },
+    categories: { design: "Design", development: "Développement", soft: "Soft skills" },
   },
   infos: { title: "Infos pratiques", languages: "Langues", mobility: "Mobilité" },
   next: { fallbackTitle: "Me contacter", writeEmail: "Écrire un email" },
@@ -132,10 +135,13 @@ const fr: Messages = {
     email: "Email",
     phone: "Téléphone",
     address: "Adresse",
-    socials: "Réseaux sociaux",
+    age: "Âge",
+    ageValue: (years) => `${years} ans`,
+    contact: "Contact",
     languages: "Langues",
     mobility: "Mobilité et disponibilité",
     tools: "Outils",
+    projects: "Projets",
   },
   llms: {
     colon: " : ",
@@ -182,7 +188,7 @@ const en: Messages = {
   skills: {
     title: "Skills",
     tools: "Tools",
-    categories: { design: "Design", development: "Development" },
+    categories: { design: "Design", development: "Development", soft: "Soft skills" },
   },
   infos: { title: "Practical info", languages: "Languages", mobility: "Mobility" },
   next: { fallbackTitle: "Get in touch", writeEmail: "Send an email" },
@@ -214,10 +220,13 @@ const en: Messages = {
     email: "Email",
     phone: "Phone",
     address: "Address",
-    socials: "Social networks",
+    age: "Age",
+    ageValue: (years) => `${years} years old`,
+    contact: "Contact",
     languages: "Languages",
     mobility: "Mobility and availability",
     tools: "Tools",
+    projects: "Projects",
   },
   llms: {
     colon: ": ",

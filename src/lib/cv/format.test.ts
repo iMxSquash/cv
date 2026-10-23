@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  calculateAge,
   formatLongDate,
   formatMonthPeriod,
   formatMonthYear,
   isOngoing,
   parseKeywords,
+  splitBulletLines,
 } from "./format";
 
 describe("parseKeywords", () => {
@@ -91,5 +93,32 @@ describe("formatMonthPeriod", () => {
 
   it("joins two dates of a closed period", () => {
     expect(formatMonthPeriod("2024-06-01", "2025-09-01", "fr")).toBe("juin 2024 – sept. 2025");
+  });
+});
+
+describe("calculateAge", () => {
+  const today = new Date("2026-10-23T12:00:00Z");
+
+  it("counts the birthday as reached on the day itself", () => {
+    expect(calculateAge("2005-10-23", today)).toBe(21);
+  });
+
+  it("does not count a birthday still to come this year", () => {
+    expect(calculateAge("2005-10-24", today)).toBe(20);
+  });
+
+  it("rejects a malformed date", () => {
+    expect(() => calculateAge("23/10/2005", today)).toThrow("Invalid birth date");
+  });
+});
+
+describe("splitBulletLines", () => {
+  it("returns one bullet per non-empty line without the typed dash", () => {
+    expect(splitBulletLines("- First\r\n\n– Second\nThird")).toEqual(["First", "Second", "Third"]);
+  });
+
+  it("returns nothing for an empty description", () => {
+    expect(splitBulletLines(null)).toEqual([]);
+    expect(splitBulletLines("  \n ")).toEqual([]);
   });
 });
