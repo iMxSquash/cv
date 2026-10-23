@@ -80,7 +80,7 @@ Toute nouvelle paire texte/fond est mesurée avant d'être utilisée.
 
 ## Version A4 imprimable (`/print`)
 
-- Route dédiée qui reproduit **fidèlement la maquette Figma** (sidebar gauche avec photo, contact, réseaux, langues, mobilité ; colonne droite À propos, Expériences, Éducation, Compétences, Tools) à partir des **mêmes données Supabase**.
+- Route dédiée qui reproduit **fidèlement la maquette Figma** (sidebar gauche avec photo, bloc contact unique (âge via `BIRTH_DATE`), compétences par catégorie dont soft skills, outils, langues sans le français, mobilité sans Navigo ni télétravail ; colonne droite À propos, Expériences avec missions en tirets, Projets, Éducation) à partir des **mêmes données Supabase**.
 - `@page { size: A4; margin: 0 }` (dans `src/app/print/print.css`, importé par la seule route `/print`), feuille de 210 × 297 mm, `print-color-adjust: exact`, aucune animation, aucune WebGL, `noindex`.
 - Cotes internes en **points** : le Figma A4 mesure 594 × 842, soit 1 px Figma ≈ 1 pt. Les styles de texte Figma sont des tokens `text-print-*` (`h1` 16 pt, `h2` 12 pt, `h3` 9 pt, `body-1` 8 pt, `body-2` 7 pt, `caption-1` 6 pt, `caption-2` 5 pt) ; les halos de la sidebar sont la classe `print-halos` de `print.css` (dégradés radiaux, imprimés pareil partout, contrairement aux `filter: blur`).
 - Écarts assumés avec le Figma pour le contraste AA : `Gray/Default` → `Gray/Dark` pour les libellés et `Gray/Darker` pour les valeurs ; mots-clés et titre en `Primary/Dark` au lieu du dégradé ; compétences en `Primary/Dark` / `Secondary/Dark`.

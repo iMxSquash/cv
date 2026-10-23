@@ -58,7 +58,7 @@ create table public.cv_education (
 
 create table public.cv_skills (
   id uuid primary key default gen_random_uuid(),
-  category public.cv_skill_category not null,   -- enum ('design', 'development')
+  category public.cv_skill_category not null,   -- enum ('design', 'development', 'soft'); 'soft' is printed only
   label text not null,                      -- 'CSS'
   details text[] not null default '{}',     -- {'Tailwind'} / {'NextJS','NestJS','PHP'}
   sort_order int not null default 0, visible boolean not null default true,
