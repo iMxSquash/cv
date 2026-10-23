@@ -65,7 +65,10 @@ describe("buildProfileJsonLd", () => {
       { company: "Actuelle", start_date: "2025-09-01", end_date: null },
     ],
     education: [{ school: "Digital Campus", city: "Paris" }],
-    skills: [{ label: "React" }],
+    skills: [
+      { label: "React", category: "development" as const },
+      { label: "Rigueur", category: "soft" as const },
+    ],
     tools: [{ name: "Figma" }],
     languages: [{ name: "Anglais" }],
     links: [{ url: "https://github.com/ada" }],

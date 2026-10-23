@@ -9,6 +9,7 @@ import {
 import { getMessages } from "@/lib/i18n/messages";
 import { PORTFOLIO_URL } from "@/lib/site";
 import { isOngoing, parseKeywords } from "./format";
+import { getSiteSkills } from "./skills";
 import type { Education, Experience, Language, Link, Profile, Skill, Tool } from "./types";
 
 // Search engines cut meta descriptions around 155-160 characters.
@@ -74,7 +75,7 @@ interface JsonLdSource {
   >;
   experiences: Pick<Experience, "company" | "start_date" | "end_date">[];
   education: Pick<Education, "school" | "city">[];
-  skills: Pick<Skill, "label">[];
+  skills: Pick<Skill, "label" | "category">[];
   tools: Pick<Tool, "name">[];
   languages: Pick<Language, "name">[];
   links: Pick<Link, "url">[];
@@ -119,7 +120,10 @@ export function buildProfileJsonLd(cv: JsonLdSource, today: Date, siteUrl: strin
         name: entry.school,
         address: entry.city ?? undefined,
       })),
-      knowsAbout: [...cv.skills.map((skill) => skill.label), ...cv.tools.map((tool) => tool.name)],
+      knowsAbout: [
+        ...getSiteSkills(cv.skills).map((skill) => skill.label),
+        ...cv.tools.map((tool) => tool.name),
+      ],
       knowsLanguage: cv.languages.map((language) => language.name),
       sameAs: [...new Set([PORTFOLIO_URL, ...cv.links.map((link) => link.url)])],
     },
