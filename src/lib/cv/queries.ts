@@ -38,26 +38,37 @@ const getRawCv = cache(
     async (): Promise<Cv> => {
       const supabase = createPublicClient();
       try {
-        const [profile, experiences, education, skills, tools, languages, links, mobility] =
-          await Promise.all([
-            supabase.from("cv_profile").select("*").single().throwOnError(),
-            supabase.from("cv_experiences").select("*").order("sort_order").throwOnError(),
-            supabase.from("cv_education").select("*").order("sort_order").throwOnError(),
-            supabase
-              .from("cv_skills")
-              .select("*")
-              .order("category")
-              .order("sort_order")
-              .throwOnError(),
-            supabase.from("cv_tools").select("*").order("sort_order").throwOnError(),
-            supabase.from("cv_languages").select("*").order("sort_order").throwOnError(),
-            supabase.from("cv_links").select("*").order("sort_order").throwOnError(),
-            supabase.from("cv_mobility").select("*").order("sort_order").throwOnError(),
-          ]);
+        const [
+          profile,
+          experiences,
+          education,
+          projects,
+          skills,
+          tools,
+          languages,
+          links,
+          mobility,
+        ] = await Promise.all([
+          supabase.from("cv_profile").select("*").single().throwOnError(),
+          supabase.from("cv_experiences").select("*").order("sort_order").throwOnError(),
+          supabase.from("cv_education").select("*").order("sort_order").throwOnError(),
+          supabase.from("cv_projects").select("*").order("sort_order").throwOnError(),
+          supabase
+            .from("cv_skills")
+            .select("*")
+            .order("category")
+            .order("sort_order")
+            .throwOnError(),
+          supabase.from("cv_tools").select("*").order("sort_order").throwOnError(),
+          supabase.from("cv_languages").select("*").order("sort_order").throwOnError(),
+          supabase.from("cv_links").select("*").order("sort_order").throwOnError(),
+          supabase.from("cv_mobility").select("*").order("sort_order").throwOnError(),
+        ]);
         return {
           profile: profile.data,
           experiences: experiences.data,
           education: education.data,
+          projects: projects.data,
           skills: skills.data,
           tools: tools.data,
           languages: languages.data,

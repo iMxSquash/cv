@@ -311,6 +311,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      cv_projects: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          sort_order: number;
+          stack: string[];
+          url: string | null;
+          visible: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          sort_order?: number;
+          stack?: string[];
+          url?: string | null;
+          visible?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          sort_order?: number;
+          stack?: string[];
+          url?: string | null;
+          visible?: boolean;
+        };
+        Relationships: [];
+      };
       cv_skills: {
         Row: {
           category: Database["public"]["Enums"]["cv_skill_category"];
@@ -479,7 +512,7 @@ export type Database = {
     };
     Enums: {
       cv_link_platform: "linkedin" | "github" | "freecodecamp" | "website" | "other";
-      cv_skill_category: "design" | "development";
+      cv_skill_category: "design" | "development" | "soft";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -602,7 +635,7 @@ export const Constants = {
   public: {
     Enums: {
       cv_link_platform: ["linkedin", "github", "freecodecamp", "website", "other"],
-      cv_skill_category: ["design", "development"],
+      cv_skill_category: ["design", "development", "soft"],
     },
   },
 } as const;

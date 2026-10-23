@@ -18,6 +18,8 @@ import {
   IconPrinter,
   IconSchool,
   IconTrain,
+  IconUser,
+  IconUsers,
   IconWorld,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
@@ -67,6 +69,8 @@ const ICONS = {
   phone: IconPhone,
   printer: IconPrinter,
   school: IconSchool,
+  soft: IconUsers,
+  user: IconUser,
   vscode: IconBrandVscode,
   website: IconWorld,
 } satisfies Record<string, ComponentType<IconProps>>;

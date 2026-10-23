@@ -74,7 +74,13 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         hint="Vide : le texte français est affiché."
         defaultValue={row?.location_en}
       />
-      <TextField name="description" label="Description" rows={4} defaultValue={row?.description} />
+      <TextField
+        name="description"
+        label="Description"
+        hint="Une ligne par tiret sur le CV imprimable."
+        rows={4}
+        defaultValue={row?.description}
+      />
       <VisibleField row={row} />
     </AdminForm>
   ),
@@ -114,6 +120,32 @@ const ENTITY_FORMS: { [K in EntitySlug]: (props: FormProps<K>) => React.ReactNod
         max={YEAR_MAX}
         defaultValue={row?.end_year}
         isRequired
+      />
+      <VisibleField row={row} />
+    </AdminForm>
+  ),
+  projects: ({ row, action }) => (
+    <AdminForm action={action}>
+      <TextField name="name" label="Nom" defaultValue={row?.name} isRequired />
+      <TextField
+        name="description"
+        label="Description"
+        hint="Une ligne par tiret sur le CV imprimable."
+        rows={5}
+        defaultValue={row?.description}
+      />
+      <TextField
+        name="stack"
+        label="Technologies"
+        hint="Séparées par des virgules, ex. Next.js, TypeScript."
+        defaultValue={row?.stack.join(", ")}
+      />
+      <TextField
+        name="url"
+        label="Adresse"
+        type="url"
+        hint="Adresse complète en https://, facultative."
+        defaultValue={row?.url}
       />
       <VisibleField row={row} />
     </AdminForm>
@@ -269,6 +301,7 @@ const ENTITY_SUMMARIES: { [K in EntitySlug]: (row: EntityRow<K>) => RowSummary }
     title: `${row.degree} · ${row.school}`,
     detail: <YearPeriod start={row.start_year} end={row.end_year} />,
   }),
+  projects: (row) => ({ title: row.name, detail: row.stack.join(" · ") }),
   skills: (row) => ({
     title: row.label,
     detail: [SKILL_CATEGORY_LABELS[row.category], ...row.details].join(" · "),

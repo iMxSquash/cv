@@ -8,6 +8,7 @@ export const ADMIN_ENTITIES = {
     createLabel: "Nouvelle expérience",
   },
   education: { table: "cv_education", title: "Éducation", createLabel: "Nouvelle formation" },
+  projects: { table: "cv_projects", title: "Projets", createLabel: "Nouveau projet" },
   skills: { table: "cv_skills", title: "Compétences", createLabel: "Nouvelle compétence" },
   tools: { table: "cv_tools", title: "Outils", createLabel: "Nouvel outil" },
   languages: { table: "cv_languages", title: "Langues", createLabel: "Nouvelle langue" },

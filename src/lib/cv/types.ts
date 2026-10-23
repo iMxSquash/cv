@@ -3,6 +3,7 @@ import type { Tables } from "@/lib/database.types";
 export type Profile = Tables<"cv_profile">;
 export type Experience = Tables<"cv_experiences">;
 export type Education = Tables<"cv_education">;
+export type Project = Tables<"cv_projects">;
 export type Skill = Tables<"cv_skills">;
 export type Tool = Tables<"cv_tools">;
 export type Language = Tables<"cv_languages">;
@@ -13,6 +14,7 @@ export interface Cv {
   profile: Profile;
   experiences: Experience[];
   education: Education[];
+  projects: Project[];
   skills: Skill[];
   tools: Tool[];
   languages: Language[];
