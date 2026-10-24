@@ -24,11 +24,11 @@ function SidebarGroup({
   return (
     <>
       <hr className="h-[0.5pt] border-0 bg-line" />
-      <section aria-labelledby={id} className="grid gap-[12pt]">
+      <section aria-labelledby={id} className="grid gap-[10pt]">
         <h2 id={id} className={isTitleHidden ? "sr-only" : "text-print-caption-1 text-text-muted"}>
           {title}
         </h2>
-        <ul className="grid gap-[12pt]">{children}</ul>
+        <ul className="grid gap-[10pt]">{children}</ul>
       </section>
     </>
   );
@@ -78,7 +78,7 @@ function ToolList({ label, tools }: { label: string; tools: Tool[] }) {
         {tools.map((tool) => (
           <li
             key={tool.id}
-            className="flex items-center gap-[2pt] rounded-[2pt] bg-surface-raised px-[4pt] py-[1pt] text-print-caption-1"
+            className="flex items-center gap-[2pt] rounded-[2pt] bg-white px-[4pt] py-[1pt] text-print-caption-1"
           >
             <CvIcon name={tool.icon_key} className="size-[6pt]" />
             {tool.name}
@@ -108,7 +108,7 @@ function SkillList({
         {skills.map((skill) => (
           <li
             key={skill.id}
-            className="rounded-[2pt] bg-surface-raised px-[4pt] py-[1pt] text-print-caption-1"
+            className="rounded-[2pt] bg-white px-[4pt] py-[1pt] text-print-caption-1"
           >
             {skill.label}
             {skill.details.length > 0 && (
@@ -158,8 +158,8 @@ export function PrintSidebar({
     }))
     .filter((group) => group.skills.length > 0);
   return (
-    <aside className="relative isolate flex w-[160pt] shrink-0 flex-col gap-[16pt] py-[28pt] pr-[20pt] pl-[28pt]">
-      <div aria-hidden="true" className="print-halos absolute inset-y-0 left-0 -z-10 w-[168pt]" />
+    <aside className="relative isolate flex w-[164pt] shrink-0 flex-col gap-[12pt] py-[32pt] pr-[20pt] pl-[30pt]">
+      <div aria-hidden="true" className="print-halos absolute inset-y-0 left-0 -z-10 w-[164pt]" />
 
       <header>
         {profile.avatar_url && (

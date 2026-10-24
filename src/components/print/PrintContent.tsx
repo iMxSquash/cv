@@ -40,7 +40,7 @@ function TimelineSection({
   return (
     <section aria-labelledby={id} className="flex gap-[16pt] break-inside-avoid">
       <div aria-hidden="true" className="flex shrink-0 flex-col items-center">
-        <span className="grid size-[16pt] place-items-center rounded-full bg-white shadow-elevation">
+        <span className="grid size-[16pt] place-items-center rounded-full border-[0.5pt] border-line bg-white">
           <span className="size-[4pt] rounded-full bg-text" />
         </span>
         {!isLast && <span className="w-[0.5pt] flex-1 bg-line" />}
@@ -170,7 +170,7 @@ export function PrintContent({
 }: PrintContentProps) {
   const t = getMessages(locale);
   return (
-    <div className="min-w-0 flex-1 py-[28pt] pr-[28pt]">
+    <div className="relative min-w-0 flex-1 -ml-[8pt] pt-[48pt] pr-[30pt] pb-[32pt]">
       <TimelineSection id="print-about" title={t.about.title}>
         <p className={`p-[12pt] text-print-body-1 font-medium whitespace-pre-line ${TILE_CLASS}`}>
           {parseKeywords(profile.about).map((segment, index) =>
