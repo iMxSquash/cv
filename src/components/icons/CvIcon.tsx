@@ -3,6 +3,8 @@ import {
   IconBrandFigma,
   IconBrandGithub,
   IconBrandLinkedin,
+  IconBrandSupabase,
+  IconBrandVercel,
   IconBrandVscode,
   IconBriefcase,
   IconCampfire,
@@ -70,7 +72,9 @@ const ICONS = {
   printer: IconPrinter,
   school: IconSchool,
   soft: IconUsers,
+  supabase: IconBrandSupabase,
   user: IconUser,
+  vercel: IconBrandVercel,
   vscode: IconBrandVscode,
   website: IconWorld,
 } satisfies Record<string, ComponentType<IconProps>>;
